@@ -7,7 +7,7 @@ This final phase focuses on polishing the application, enhancing performance, im
 - Refine UI/UX with advanced interactions and animations
 - Implement performance optimizations
 - Add comprehensive error handling and user feedback
-- Implement optional cloud synchronization
+- Implement optional cloud synchronization with user-controlled PostgreSQL instances
 - Add accessibility features
 - Create comprehensive testing suite
 - Optimize for mobile and desktop experiences
@@ -27,7 +27,10 @@ This final phase focuses on polishing the application, enhancing performance, im
     "virtual": "^0.3.0",               // Virtual scrolling
     "web-push": "^3.6.0",              // Push notifications
     "idb": "^8.0.0",                   // Enhanced IndexedDB
-    "compressorjs": "^1.2.0"           // Image compression
+    "compressorjs": "^1.2.0",           // Image compression
+    "pg": "^8.11.0",                    // PostgreSQL client
+    "postgres-connection-string": "^1.0.3", // Connection utility
+    "crypto-js": "^4.2.0"                 // Client-side encryption
   },
   "devDependencies": {
     "@types/react-beautiful-dnd": "^13.1.0",
