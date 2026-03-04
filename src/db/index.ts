@@ -21,6 +21,21 @@ export class CharacterDatabase extends Dexie {
       spells: 'name, level, school, *classes',
       equipment: 'name, equipmentCategory, weaponCategory, armorCategory'
     });
+    this.version(2).stores({
+      characters: '++id, name, race, level, xp, createdAt',
+      classes: 'name',
+      spells: 'name, level, school, *classes',
+      equipment: 'name, equipmentCategory, weaponCategory, armorCategory'
+    }).upgrade(tx => {
+      return tx.table('characters').toCollection().modify(character => {
+        if (character.xp === undefined) {
+          character.xp = 0;
+        }
+        if (character.portrait === undefined) {
+          character.portrait = null;
+        }
+      });
+    });
     this.on('populate', tx => {
       tx.table('classes').bulkAdd(srdClasses);
       tx.table('spells').bulkAdd(srdSpells);

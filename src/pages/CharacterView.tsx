@@ -1,7 +1,8 @@
-import { useParams } from 'react-router-dom';
 import { useLiveQuery } from 'dexie-react-hooks';
-import { getCharacterById } from '../db/characters';
+import { useParams } from 'react-router-dom';
 import { AbilityScoresPanel } from '../components/AbilityScoresPanel';
+import { CharacterHeader } from '../components/CharacterHeader';
+import { getCharacterById, updateCharacter } from '../db/characters';
 
 export function CharacterView() {
   const { characterId } = useParams<{ characterId: string }>();
@@ -25,9 +26,15 @@ export function CharacterView() {
     return <div className="p-4 text-red-500">Character not found</div>;
   }
 
+  const handleUpdate = async (updates: Partial<typeof result>) => {
+    if (result.id) {
+      await updateCharacter(result.id, updates);
+    }
+  };
+
   return (
     <div className="p-4">
-      <h1 className="text-2xl font-bold mb-4">{result.name}</h1>
+      <CharacterHeader character={result} onUpdate={handleUpdate} />
       <AbilityScoresPanel character={result} />
     </div>
   );

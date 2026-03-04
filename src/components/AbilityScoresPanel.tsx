@@ -1,6 +1,7 @@
 import type { Ability, Character } from '../types';
 import { getAbilityBreakdown } from '../utils/abilityScores';
 import { AbilityScoreBox } from './AbilityScoreBox';
+import { TooltipProvider } from '@/components/ui/tooltip';
 
 const abilityOrder: Ability[] = [
   'strength',
@@ -17,10 +18,12 @@ export function AbilityScoresPanel({ character }: { character: Character }) {
   );
 
   return (
-    <div className="flex flex-col gap-2">
-      {breakdowns.map((breakdown) => (
-        <AbilityScoreBox key={breakdown.ability} breakdown={breakdown} />
-      ))}
-    </div>
+    <TooltipProvider delayDuration={200}>
+      <div className="flex flex-col gap-2">
+        {breakdowns.map((breakdown) => (
+          <AbilityScoreBox key={breakdown.ability} breakdown={breakdown} />
+        ))}
+      </div>
+    </TooltipProvider>
   );
 }

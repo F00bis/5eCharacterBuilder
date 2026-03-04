@@ -90,6 +90,8 @@ export interface Character {
   classes: ClassEntry[];
   abilityScores: AbilityScores;
   level: number;
+  xp: number;
+  portrait: string | null;
   hp: number;
   maxHp: number;
   currentHp: number;
