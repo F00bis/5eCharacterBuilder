@@ -45,6 +45,7 @@ export interface Equipment {
   rarity: Rarity;
   weight: number;
   description: string;
+  statModifiers?: Partial<AbilityScores>;
 }
 
 export interface SpellSlot {
