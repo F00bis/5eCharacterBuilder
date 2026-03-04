@@ -6,10 +6,17 @@ export interface AbilityModifierSource {
   value: number;
 }
 
+export interface AbilityOverrideSource {
+  name: string;
+  value: number;
+}
+
 export interface AbilityBreakdown {
   ability: Ability;
   baseScore: number;
-  sources: AbilityModifierSource[];
+  featSources: AbilityModifierSource[];
+  equipmentSources: AbilityModifierSource[];
+  override: AbilityOverrideSource | null;
   totalScore: number;
   modifier: number;
 }
@@ -26,24 +33,53 @@ export function formatModifier(modifier: number): string {
 
 export function getAbilityBreakdown(ability: Ability, character: Character): AbilityBreakdown {
   const baseScore = character.abilityScores[ability];
-  const sources: AbilityModifierSource[] = [];
+  const featSources: AbilityModifierSource[] = [];
+  const equipmentSources: AbilityModifierSource[] = [];
 
   for (const feat of character.feats) {
     const bonus = feat.statModifiers[ability];
     if (bonus !== undefined && bonus !== 0) {
-      sources.push({ name: feat.name, type: 'feat', value: bonus });
+      featSources.push({ name: feat.name, type: 'feat', value: bonus });
     }
   }
 
   for (const item of character.equipment) {
     const bonus = item.statModifiers?.[ability];
     if (bonus !== undefined && bonus !== 0) {
-      sources.push({ name: item.name, type: 'equipment', value: bonus });
+      equipmentSources.push({ name: item.name, type: 'equipment', value: bonus });
     }
   }
 
-  const totalScore = baseScore + sources.reduce((sum, s) => sum + s.value, 0);
+  // Find the highest ability override from equipment
+  let override: AbilityOverrideSource | null = null;
+  for (const item of character.equipment) {
+    const overrideValue = item.abilityOverride?.[ability];
+    if (overrideValue !== undefined) {
+      if (override === null || overrideValue > override.value) {
+        override = { name: item.name, value: overrideValue };
+      }
+    }
+  }
+
+  const featBonus = featSources.reduce((sum, s) => sum + s.value, 0);
+  const equipmentBonus = equipmentSources.reduce((sum, s) => sum + s.value, 0);
+  const computedWithoutOverride = baseScore + featBonus + equipmentBonus;
+
+  // When an override applies, it replaces base + equipment bonuses,
+  // but feat bonuses still stack on top.
+  const overrideTotal = override !== null
+    ? override.value + featBonus
+    : -Infinity;
+
+  const appliedOverride = override !== null && overrideTotal > computedWithoutOverride
+    ? override
+    : null;
+
+  const totalScore = appliedOverride !== null
+    ? overrideTotal
+    : computedWithoutOverride;
+
   const modifier = getModifier(totalScore);
 
-  return { ability, baseScore, sources, totalScore, modifier };
+  return { ability, baseScore, featSources, equipmentSources, override: appliedOverride, totalScore, modifier };
 }

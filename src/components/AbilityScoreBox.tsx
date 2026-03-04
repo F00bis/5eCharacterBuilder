@@ -49,12 +49,38 @@ export function AbilityScoreBox({ breakdown }: { breakdown: AbilityBreakdown }) 
           {fullName}: {breakdown.totalScore}
         </div>
         <hr className="my-1 border-gray-300" />
-        <div className="text-gray-700">Base: {breakdown.baseScore}</div>
-        {breakdown.sources.map((source, i) => (
-          <div key={i} className="text-gray-700">
-            {source.name} ({source.type}): {formatModifier(source.value)}
-          </div>
-        ))}
+        {breakdown.override ? (
+          <>
+            <div className="text-purple-700 font-medium">
+              Set to {breakdown.override.value} by {breakdown.override.name}
+            </div>
+            <div className="text-gray-400 line-through">Base: {breakdown.baseScore}</div>
+            {breakdown.featSources.map((source, i) => (
+              <div key={`feat-${i}`} className="text-gray-700">
+                {source.name} ({source.type}): {formatModifier(source.value)}
+              </div>
+            ))}
+            {breakdown.equipmentSources.map((source, i) => (
+              <div key={`equip-${i}`} className="text-gray-400 line-through">
+                {source.name} ({source.type}): {formatModifier(source.value)}
+              </div>
+            ))}
+          </>
+        ) : (
+          <>
+            <div className="text-gray-700">Base: {breakdown.baseScore}</div>
+            {breakdown.featSources.map((source, i) => (
+              <div key={`feat-${i}`} className="text-gray-700">
+                {source.name} ({source.type}): {formatModifier(source.value)}
+              </div>
+            ))}
+            {breakdown.equipmentSources.map((source, i) => (
+              <div key={`equip-${i}`} className="text-gray-700">
+                {source.name} ({source.type}): {formatModifier(source.value)}
+              </div>
+            ))}
+          </>
+        )}
       </div>
     </div>
   );

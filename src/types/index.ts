@@ -46,6 +46,7 @@ export interface Equipment {
   weight: number;
   description: string;
   statModifiers?: Partial<AbilityScores>;
+  abilityOverride?: Partial<AbilityScores>;
 }
 
 export interface SpellSlot {

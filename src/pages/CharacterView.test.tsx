@@ -534,4 +534,409 @@ describe('CharacterView ability scores section', () => {
       expect(strSourceLines).toHaveLength(1);
     });
   });
+
+  describe('ability score overrides', () => {
+    it('overrides ability score when override exceeds computed total', () => {
+      mockQueryResult = baseCharacter({
+        abilityScores: {
+          strength: 14,
+          dexterity: 10,
+          constitution: 10,
+          intelligence: 10,
+          wisdom: 10,
+          charisma: 10,
+        },
+        equipment: [
+          {
+            name: 'Gauntlets of Ogre Power',
+            rarity: 'uncommon',
+            weight: 1,
+            description: 'Your Strength score is 19 while you wear these gauntlets.',
+            abilityOverride: { strength: 19 },
+          },
+        ],
+      });
+
+      renderCharacterView();
+
+      // STR base 14, override to 19
+      expect(screen.getByText('19')).toBeInTheDocument();
+      // modifier for 19 is +4
+      expect(screen.getByText('+4')).toBeInTheDocument();
+    });
+
+    it('does not override when computed total already exceeds override value', () => {
+      mockQueryResult = baseCharacter({
+        abilityScores: {
+          strength: 20,
+          dexterity: 10,
+          constitution: 10,
+          intelligence: 10,
+          wisdom: 10,
+          charisma: 10,
+        },
+        equipment: [
+          {
+            name: 'Gauntlets of Ogre Power',
+            rarity: 'uncommon',
+            weight: 1,
+            description: 'Your Strength score is 19 while you wear these gauntlets.',
+            abilityOverride: { strength: 19 },
+          },
+        ],
+      });
+
+      renderCharacterView();
+
+      // STR stays at 20 since 20 > 19
+      expect(screen.getByText('20')).toBeInTheDocument();
+      expect(screen.getByText('+5')).toBeInTheDocument();
+    });
+
+    it('picks the highest override when multiple items override the same ability', () => {
+      mockQueryResult = baseCharacter({
+        abilityScores: {
+          strength: 10,
+          dexterity: 10,
+          constitution: 10,
+          intelligence: 10,
+          wisdom: 10,
+          charisma: 10,
+        },
+        equipment: [
+          {
+            name: 'Gauntlets of Ogre Power',
+            rarity: 'uncommon',
+            weight: 1,
+            description: 'Your Strength score is 19.',
+            abilityOverride: { strength: 19 },
+          },
+          {
+            name: 'Belt of Fire Giant Strength',
+            rarity: 'veryRare',
+            weight: 2,
+            description: 'Your Strength score is 25.',
+            abilityOverride: { strength: 25 },
+          },
+        ],
+      });
+
+      renderCharacterView();
+
+      // Highest override wins: 25
+      expect(screen.getByText('25')).toBeInTheDocument();
+      expect(screen.getByText('+7')).toBeInTheDocument();
+    });
+
+    it('stacks feat bonuses on top of override', () => {
+      mockQueryResult = baseCharacter({
+        abilityScores: {
+          strength: 14,
+          dexterity: 10,
+          constitution: 10,
+          intelligence: 10,
+          wisdom: 10,
+          charisma: 10,
+        },
+        feats: [
+          {
+            name: 'Heavy Armor Master',
+            description: '+1 to Strength',
+            statModifiers: { strength: 1 },
+          },
+        ],
+        equipment: [
+          {
+            name: 'Gauntlets of Ogre Power',
+            rarity: 'uncommon',
+            weight: 1,
+            description: 'Your Strength score is 19.',
+            abilityOverride: { strength: 19 },
+          },
+        ],
+      });
+
+      renderCharacterView();
+
+      // Override 19 + feat +1 = 20 (beats base 14 + feat 1 = 15)
+      expect(screen.getByText('20')).toBeInTheDocument();
+      expect(screen.getByText('+5')).toBeInTheDocument();
+    });
+
+    it('stacks multiple feat bonuses on top of override', () => {
+      mockQueryResult = baseCharacter({
+        abilityScores: {
+          strength: 10,
+          dexterity: 10,
+          constitution: 10,
+          intelligence: 10,
+          wisdom: 10,
+          charisma: 10,
+        },
+        feats: [
+          {
+            name: 'Heavy Armor Master',
+            description: '+1 to Strength',
+            statModifiers: { strength: 1 },
+          },
+          {
+            name: 'Tavern Brawler',
+            description: '+1 to Strength',
+            statModifiers: { strength: 1 },
+          },
+        ],
+        equipment: [
+          {
+            name: 'Gauntlets of Ogre Power',
+            rarity: 'uncommon',
+            weight: 1,
+            description: 'Your Strength score is 19.',
+            abilityOverride: { strength: 19 },
+          },
+        ],
+      });
+
+      renderCharacterView();
+
+      // Override 19 + feat 1 + feat 1 = 21 (beats base 10 + 1 + 1 = 12)
+      expect(screen.getByText('21')).toBeInTheDocument();
+      expect(screen.getByText('+5')).toBeInTheDocument();
+    });
+
+    it('does not use override when base + feats already exceed override + feats', () => {
+      mockQueryResult = baseCharacter({
+        abilityScores: {
+          strength: 18,
+          dexterity: 10,
+          constitution: 10,
+          intelligence: 10,
+          wisdom: 10,
+          charisma: 10,
+        },
+        feats: [
+          {
+            name: 'Heavy Armor Master',
+            description: '+1 to Strength',
+            statModifiers: { strength: 1 },
+          },
+        ],
+        equipment: [
+          {
+            name: 'Gauntlets of Ogre Power',
+            rarity: 'uncommon',
+            weight: 1,
+            description: 'Your Strength score is 19.',
+            abilityOverride: { strength: 19 },
+          },
+        ],
+      });
+
+      renderCharacterView();
+
+      // base 18 + feat 1 = 19, override 19 + feat 1 = 20
+      // Override wins: 20
+      expect(screen.getByText('20')).toBeInTheDocument();
+      expect(screen.getByText('+5')).toBeInTheDocument();
+    });
+
+    it('uses base when base + feats exceed override + feats', () => {
+      mockQueryResult = baseCharacter({
+        abilityScores: {
+          strength: 20,
+          dexterity: 10,
+          constitution: 10,
+          intelligence: 10,
+          wisdom: 10,
+          charisma: 10,
+        },
+        feats: [
+          {
+            name: 'Heavy Armor Master',
+            description: '+1 to Strength',
+            statModifiers: { strength: 1 },
+          },
+        ],
+        equipment: [
+          {
+            name: 'Gauntlets of Ogre Power',
+            rarity: 'uncommon',
+            weight: 1,
+            description: 'Your Strength score is 19.',
+            abilityOverride: { strength: 19 },
+          },
+        ],
+      });
+
+      renderCharacterView();
+
+      // base 20 + feat 1 = 21, override 19 + feat 1 = 20
+      // Base path wins: 21
+      expect(screen.getByText('21')).toBeInTheDocument();
+      expect(screen.getByText('+5')).toBeInTheDocument();
+    });
+  });
+
+  describe('tooltip with ability score overrides', () => {
+    function getTooltip(abilityAbbr: string): HTMLElement {
+      const box = screen.getByText(abilityAbbr).closest('.group')!;
+      return box.querySelector(':scope > div:last-child')!;
+    }
+
+    it('shows override line with feats active and base struck through', () => {
+      mockQueryResult = baseCharacter({
+        abilityScores: {
+          strength: 14,
+          dexterity: 10,
+          constitution: 10,
+          intelligence: 10,
+          wisdom: 10,
+          charisma: 10,
+        },
+        feats: [
+          {
+            name: 'Heavy Armor Master',
+            description: '+1 to Strength',
+            statModifiers: { strength: 1 },
+          },
+        ],
+        equipment: [
+          {
+            name: 'Gauntlets of Ogre Power',
+            rarity: 'uncommon',
+            weight: 1,
+            description: 'Your Strength score is 19.',
+            abilityOverride: { strength: 19 },
+          },
+        ],
+      });
+
+      renderCharacterView();
+
+      const tooltip = getTooltip('STR');
+      // Total: override 19 + feat 1 = 20
+      expect(within(tooltip).getByText('Strength: 20')).toBeInTheDocument();
+      // Override description
+      expect(within(tooltip).getByText('Set to 19 by Gauntlets of Ogre Power')).toBeInTheDocument();
+      // Base is struck through
+      const struckBase = within(tooltip).getByText('Base: 14');
+      expect(struckBase.closest('.line-through')).not.toBeNull();
+      // Feat is NOT struck through — it stacks on override
+      const featLine = within(tooltip).getByText('Heavy Armor Master (feat): +1');
+      expect(featLine.closest('.line-through')).toBeNull();
+    });
+
+    it('shows equipment stat bonuses struck through when override applies', () => {
+      mockQueryResult = baseCharacter({
+        abilityScores: {
+          strength: 10,
+          dexterity: 10,
+          constitution: 10,
+          intelligence: 10,
+          wisdom: 10,
+          charisma: 10,
+        },
+        equipment: [
+          {
+            name: 'Gauntlets of Ogre Power',
+            rarity: 'uncommon',
+            weight: 1,
+            description: 'Your Strength score is 19.',
+            abilityOverride: { strength: 19 },
+          },
+          {
+            name: 'Magic Bracers',
+            rarity: 'uncommon',
+            weight: 1,
+            description: '+2 to Strength',
+            statModifiers: { strength: 2 },
+          },
+        ],
+      });
+
+      renderCharacterView();
+
+      const tooltip = getTooltip('STR');
+      // Override 19 > base 10 + equip 2 = 12, so override applies. Total = 19.
+      expect(within(tooltip).getByText('Strength: 19')).toBeInTheDocument();
+      expect(within(tooltip).getByText('Set to 19 by Gauntlets of Ogre Power')).toBeInTheDocument();
+      // Equipment stat bonus is struck through
+      const equipLine = within(tooltip).getByText('Magic Bracers (equipment): +2');
+      expect(equipLine.closest('.line-through')).not.toBeNull();
+    });
+
+    it('shows normal tooltip when override does not apply', () => {
+      mockQueryResult = baseCharacter({
+        abilityScores: {
+          strength: 20,
+          dexterity: 10,
+          constitution: 10,
+          intelligence: 10,
+          wisdom: 10,
+          charisma: 10,
+        },
+        equipment: [
+          {
+            name: 'Gauntlets of Ogre Power',
+            rarity: 'uncommon',
+            weight: 1,
+            description: 'Your Strength score is 19.',
+            abilityOverride: { strength: 19 },
+          },
+        ],
+      });
+
+      renderCharacterView();
+
+      const tooltip = getTooltip('STR');
+      expect(within(tooltip).getByText('Strength: 20')).toBeInTheDocument();
+      expect(within(tooltip).getByText('Base: 20')).toBeInTheDocument();
+      // No override line should be present
+      expect(within(tooltip).queryByText(/Set to/)).toBeNull();
+      // Base should not be struck through
+      const baseLine = within(tooltip).getByText('Base: 20');
+      expect(baseLine.closest('.line-through')).toBeNull();
+    });
+
+    it('shows override only for the affected ability, not others', () => {
+      mockQueryResult = baseCharacter({
+        abilityScores: {
+          strength: 14,
+          dexterity: 10,
+          constitution: 13,
+          intelligence: 10,
+          wisdom: 10,
+          charisma: 10,
+        },
+        feats: [
+          {
+            name: 'Resilient',
+            description: '+1 to Constitution',
+            statModifiers: { constitution: 1 },
+          },
+        ],
+        equipment: [
+          {
+            name: 'Gauntlets of Ogre Power',
+            rarity: 'uncommon',
+            weight: 1,
+            description: 'Your Strength score is 19.',
+            abilityOverride: { strength: 19 },
+          },
+        ],
+      });
+
+      renderCharacterView();
+
+      // STR tooltip shows override
+      const strTooltip = getTooltip('STR');
+      expect(within(strTooltip).getByText('Set to 19 by Gauntlets of Ogre Power')).toBeInTheDocument();
+
+      // CON tooltip shows normal breakdown, no override
+      const conTooltip = getTooltip('CON');
+      expect(within(conTooltip).getByText('Constitution: 14')).toBeInTheDocument();
+      expect(within(conTooltip).getByText('Base: 13')).toBeInTheDocument();
+      expect(within(conTooltip).getByText('Resilient (feat): +1')).toBeInTheDocument();
+      expect(within(conTooltip).queryByText(/Set to/)).toBeNull();
+    });
+  });
 });
