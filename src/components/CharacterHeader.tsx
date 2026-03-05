@@ -7,6 +7,7 @@ import {
   DialogTitle,
 } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
 import { Progress } from '@/components/ui/progress';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { useEffect, useRef, useState } from 'react';
@@ -20,10 +21,11 @@ interface CharacterHeaderProps {
 }
 
 function InfoRow({ label, value }: { label: string; value: string }) {
+  const id = `info-${label.toLowerCase()}`;
   return (
-    <div className="flex justify-between text-xs">
-      <span className="text-slate-500">{label}</span>
-      <span className="text-slate-700 font-medium">{value}</span>
+    <div className="flex flex-col gap-0.5">
+      <Label htmlFor={id}>{label}</Label>
+      <span id={id} className="text-sm text-slate-700 font-medium">{value}</span>
     </div>
   );
 }
@@ -143,8 +145,8 @@ export function CharacterHeader({ character, onUpdate }: CharacterHeaderProps) {
 
   return (
     <TooltipProvider delayDuration={200}>
-      <Card className="w-480 p-3">
-        <div className="flex gap-3">
+      <Card className="w-full max-w-3xl p-4">
+        <div className="flex gap-4">
           <div 
             className="shrink-0 cursor-pointer"
             onClick={() => setIsModalOpen(true)}
@@ -153,7 +155,7 @@ export function CharacterHeader({ character, onUpdate }: CharacterHeaderProps) {
             <img 
               src={portraitSrc} 
               alt="Character portrait" 
-              className="w-12 h-12 rounded-md"
+              className="w-32 h-32 rounded-md object-cover"
               onError={(e) => {
                 (e.target as HTMLImageElement).src = DEFAULT_PORTRAIT;
               }}
@@ -161,61 +163,72 @@ export function CharacterHeader({ character, onUpdate }: CharacterHeaderProps) {
           </div>
           
           <div className="flex-1 min-w-0">
-            {isEditingName ? (
-              <Input
-                ref={nameInputRef}
-                type="text"
-                value={editedName}
-                onChange={(e) => setEditedName(e.target.value)}
-                onBlur={handleNameSave}
-                onKeyDown={handleNameKeyDown}
-                className="text-lg font-bold border-0 border-b-2 border-purple-700 px-0 focus-visible:ring-0 h-7"
-              />
-            ) : (
-              <h2 
-                className="text-lg font-bold text-slate-900 cursor-pointer hover:text-purple-700 truncate"
-                onClick={() => setIsEditingName(true)}
-                title="Click to edit name"
-              >
-                {character.name}
-              </h2>
-            )}
-
-            <div className="grid grid-cols-2 gap-x-4 gap-y-1 mt-1">
-              <div className="text-xs text-slate-600 font-medium truncate flex items-center gap-1">
-                <span>Level {character.level} {getPrimaryClass()}</span>
-                {getMulticlassCount() > 0 && (
-                  <Tooltip>
-                    <TooltipTrigger asChild>
-                      <span className="text-purple-700 font-bold cursor-help hover:text-purple-800">
-                        +{getMulticlassCount()}
-                      </span>
-                    </TooltipTrigger>
-                    <TooltipContent side="bottom">
-                      <p>{formatClasses()}</p>
-                    </TooltipContent>
-                  </Tooltip>
+            <div className="grid grid-cols-3 gap-x-4 gap-y-3 h-full">
+              <div className="flex flex-col gap-1">
+                <Label htmlFor="name">Name</Label>
+                {isEditingName ? (
+                  <Input
+                    ref={nameInputRef}
+                    type="text"
+                    value={editedName}
+                    onChange={(e) => setEditedName(e.target.value)}
+                    onBlur={handleNameSave}
+                    onKeyDown={handleNameKeyDown}
+                    className="font-bold"
+                  />
+                ) : (
+                  <h2 
+                    className="text-base font-bold text-slate-900 cursor-pointer hover:text-purple-700 truncate"
+                    onClick={() => setIsEditingName(true)}
+                    title="Click to edit name"
+                  >
+                    {character.name}
+                  </h2>
                 )}
               </div>
+
               <InfoRow label="Race" value={character.race} />
               <InfoRow label="Background" value={character.background} />
+
+              <div className="flex flex-col gap-1">
+                <Label>Class</Label>
+                <div className="text-sm text-slate-700 font-medium flex items-center gap-1">
+                  <span>Level {character.level} {getPrimaryClass()}</span>
+                  {getMulticlassCount() > 0 && (
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <span className="text-purple-700 font-bold cursor-help hover:text-purple-800">
+                          +{getMulticlassCount()}
+                        </span>
+                      </TooltipTrigger>
+                      <TooltipContent side="bottom">
+                        <p>{formatClasses()}</p>
+                      </TooltipContent>
+                    </Tooltip>
+                  )}
+                </div>
+              </div>
+
               <InfoRow label="Alignment" value={character.alignment} />
-              
-              <div className="col-span-2 flex items-center gap-2">
-                <Tooltip>
-                  <TooltipTrigger asChild>
-                    <div 
-                      className="text-xs text-slate-700 cursor-pointer hover:text-purple-700"
-                      onClick={() => setIsEditingXp(true)}
-                    >
-                      XP: {(character.xp ?? 0).toLocaleString()}
-                    </div>
-                  </TooltipTrigger>
-                  <TooltipContent>
-                    <p>{xpToNextLevel.toLocaleString()} to next level</p>
-                  </TooltipContent>
-                </Tooltip>
-                {isEditingXp && (
+
+              <div className="flex flex-col gap-1">
+                <div className="flex items-center gap-1">
+                  <Label htmlFor="xp">XP</Label>
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <span 
+                        className="text-xs text-slate-500 cursor-pointer hover:text-purple-700"
+                        onClick={() => setIsEditingXp(true)}
+                      >
+                        {xpToNextLevel.toLocaleString()} to next
+                      </span>
+                    </TooltipTrigger>
+                    <TooltipContent>
+                      <p>{xpToNextLevel.toLocaleString()} XP to next level</p>
+                    </TooltipContent>
+                  </Tooltip>
+                </div>
+                {isEditingXp ? (
                   <Input
                     ref={xpInputRef}
                     type="number"
@@ -223,17 +236,18 @@ export function CharacterHeader({ character, onUpdate }: CharacterHeaderProps) {
                     onChange={(e) => setEditedXp(e.target.value)}
                     onBlur={handleXpSave}
                     onKeyDown={handleXpKeyDown}
-                    className="h-5 text-xs w-20"
+                    className="h-8"
                     min="0"
                   />
+                ) : (
+                  <div 
+                    className="text-sm text-slate-700 cursor-pointer hover:text-purple-700"
+                    onClick={() => setIsEditingXp(true)}
+                  >
+                    {character.xp?.toLocaleString() ?? 0} / {getXpForNextLevel(character.level).toLocaleString()}
+                  </div>
                 )}
-              </div>
-              
-              <div className="col-span-2">
-                <Progress value={xpProgress.percentage} className="h-1.5" />
-                <div className="text-[10px] text-slate-500 mt-0.5">
-                  {xpProgress.current.toLocaleString()} / {xpProgress.needed.toLocaleString()}
-                </div>
+                <Progress value={xpProgress.percentage} className="h-1" />
               </div>
             </div>
           </div>
