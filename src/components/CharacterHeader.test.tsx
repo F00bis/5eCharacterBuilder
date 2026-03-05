@@ -53,7 +53,9 @@ describe('CharacterHeader', () => {
     expect(screen.getByText('Test Hero')).toBeInTheDocument();
     expect(screen.getAllByText('Human').length).toBeGreaterThan(0);
     expect(screen.getByText(/Level 7 Fighter/)).toBeInTheDocument();
-    expect(screen.getByText('3,500 XP')).toBeInTheDocument();
+    expect(screen.getByText(/3,500/)).toBeInTheDocument();
+    expect(screen.getByText('Background')).toBeInTheDocument();
+    expect(screen.getByText('Alignment')).toBeInTheDocument();
   });
 
   it('displays default portrait when no portrait is set', () => {
@@ -131,7 +133,7 @@ describe('CharacterHeader', () => {
   it('allows XP inline editing', () => {
     render(<CharacterHeader character={baseCharacter} onUpdate={mockOnUpdate} />);
 
-    const xpElement = screen.getByText('3,500 XP');
+    const xpElement = screen.getByText(/3,500/);
     fireEvent.click(xpElement);
 
     const input = screen.getByDisplayValue('3500') as HTMLInputElement;
@@ -146,7 +148,7 @@ describe('CharacterHeader', () => {
   it('cancels XP editing on Escape', () => {
     render(<CharacterHeader character={baseCharacter} onUpdate={mockOnUpdate} />);
 
-    const xpElement = screen.getByText('3,500 XP');
+    const xpElement = screen.getByText(/3,500/);
     fireEvent.click(xpElement);
 
     const input = screen.getByDisplayValue('3500') as HTMLInputElement;
@@ -154,17 +156,17 @@ describe('CharacterHeader', () => {
     fireEvent.keyDown(input, { key: 'Escape' });
 
     expect(mockOnUpdate).not.toHaveBeenCalled();
-    expect(screen.getByText('3,500 XP')).toBeInTheDocument();
+    expect(screen.getByText(/3,500/)).toBeInTheDocument();
   });
 
   it('displays XP progress bar with correct percentage', () => {
     render(<CharacterHeader character={baseCharacter} onUpdate={mockOnUpdate} />);
 
-    const progressBar = screen.getByText(/\/.*to next level/);
+    const progressBar = screen.getByRole('progressbar');
     expect(progressBar).toBeInTheDocument();
     
-    const xpText = screen.getByText(/\/.*to next level/);
-    expect(xpText).toBeInTheDocument();
+    const xpProgress = screen.getByText(/0 \/ /);
+    expect(xpProgress).toBeInTheDocument();
   });
 
   it('shows classes tooltip on level field', () => {
@@ -174,10 +176,27 @@ describe('CharacterHeader', () => {
     expect(levelElement).toBeInTheDocument();
   });
 
+  it('shows +X for multiclassed characters', () => {
+    const multiClassCharacter = {
+      ...baseCharacter,
+      classes: [
+        { className: 'Fighter', level: 3 },
+        { className: 'Wizard', level: 2 },
+        { className: 'Rogue', level: 1 },
+        { className: 'Cleric', level: 1 },
+      ],
+      level: 7,
+    };
+    render(<CharacterHeader character={multiClassCharacter} onUpdate={mockOnUpdate} />);
+
+    expect(screen.getByText('+3')).toBeInTheDocument();
+    expect(screen.getByText(/Level 7 Fighter/)).toBeInTheDocument();
+  });
+
   it('shows tooltip for XP to next level', () => {
     render(<CharacterHeader character={baseCharacter} onUpdate={mockOnUpdate} />);
 
-    const xpElement = screen.getByText('3,500 XP');
+    const xpElement = screen.getByText(/3,500/);
     expect(xpElement).toBeInTheDocument();
   });
 });

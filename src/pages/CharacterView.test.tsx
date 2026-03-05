@@ -77,18 +77,19 @@ describe('CharacterView ability scores section', () => {
 
       renderCharacterView();
 
-      expect(screen.getByText('STR')).toBeInTheDocument();
-      expect(screen.getByText('16')).toBeInTheDocument();
-      expect(screen.getByText('DEX')).toBeInTheDocument();
-      expect(screen.getByText('14')).toBeInTheDocument();
-      expect(screen.getByText('CON')).toBeInTheDocument();
-      expect(screen.getByText('12')).toBeInTheDocument();
-      expect(screen.getByText('INT')).toBeInTheDocument();
-      expect(screen.getByText('8')).toBeInTheDocument();
-      expect(screen.getByText('WIS')).toBeInTheDocument();
-      expect(screen.getByText('13')).toBeInTheDocument();
-      expect(screen.getByText('CHA')).toBeInTheDocument();
-      expect(screen.getByText('10')).toBeInTheDocument();
+      // STR appears in both ability scores panel and skills panel
+      expect(screen.getAllByText('STR').length).toBeGreaterThanOrEqual(1);
+      expect(screen.getAllByText('16').length).toBeGreaterThanOrEqual(1);
+      expect(screen.getAllByText('DEX').length).toBeGreaterThanOrEqual(1);
+      expect(screen.getAllByText('14').length).toBeGreaterThanOrEqual(1);
+      expect(screen.getAllByText('CON').length).toBeGreaterThanOrEqual(1);
+      expect(screen.getAllByText('12').length).toBeGreaterThanOrEqual(1);
+      expect(screen.getAllByText('INT').length).toBeGreaterThanOrEqual(1);
+      expect(screen.getAllByText('8').length).toBeGreaterThanOrEqual(1);
+      expect(screen.getAllByText('WIS').length).toBeGreaterThanOrEqual(1);
+      expect(screen.getAllByText('13').length).toBeGreaterThanOrEqual(1);
+      expect(screen.getAllByText('CHA').length).toBeGreaterThanOrEqual(1);
+      expect(screen.getAllByText('10').length).toBeGreaterThanOrEqual(1);
     });
 
     it('displays correct modifiers for base stats', () => {
@@ -106,12 +107,13 @@ describe('CharacterView ability scores section', () => {
       renderCharacterView();
 
       // STR 16 -> +3, DEX 14 -> +2, CON 12 -> +1, INT 8 -> -1, WIS 13 -> +1, CHA 10 -> 0
-      expect(screen.getByText('+3')).toBeInTheDocument();
-      expect(screen.getByText('+2')).toBeInTheDocument();
-      // +1 appears twice (CON and WIS)
-      expect(screen.getAllByText('+1')).toHaveLength(2);
-      expect(screen.getByText('-1')).toBeInTheDocument();
-      expect(screen.getByText('0')).toBeInTheDocument();
+      // Skills panel may also show these bonuses, so check they exist at least once
+      expect(screen.getAllByText('+3').length).toBeGreaterThanOrEqual(1);
+      expect(screen.getAllByText('+2').length).toBeGreaterThanOrEqual(1);
+      // +1 appears at least twice (CON and WIS)
+      expect(screen.getAllByText('+1').length).toBeGreaterThanOrEqual(2);
+      expect(screen.getAllByText('-1').length).toBeGreaterThanOrEqual(1);
+      expect(screen.getAllByText('0').length).toBeGreaterThanOrEqual(1);
     });
   });
 
@@ -138,9 +140,9 @@ describe('CharacterView ability scores section', () => {
       renderCharacterView();
 
       // base 14 + feat 2 = 16
-      expect(screen.getByText('16')).toBeInTheDocument();
+      expect(screen.getAllByText('16').length).toBeGreaterThanOrEqual(1);
       // modifier for 16 is +3
-      expect(screen.getByText('+3')).toBeInTheDocument();
+      expect(screen.getAllByText('+3').length).toBeGreaterThanOrEqual(1);
     });
 
     it('applies multiple feats to different abilities', () => {
@@ -199,9 +201,9 @@ describe('CharacterView ability scores section', () => {
       renderCharacterView();
 
       // base 14 + equipment 5 = 19
-      expect(screen.getByText('19')).toBeInTheDocument();
+      expect(screen.getAllByText('19').length).toBeGreaterThanOrEqual(1);
       // modifier for 19 is +4
-      expect(screen.getByText('+4')).toBeInTheDocument();
+      expect(screen.getAllByText('+4').length).toBeGreaterThanOrEqual(1);
     });
 
     it('applies equipment bonuses to multiple abilities', () => {
@@ -235,8 +237,9 @@ describe('CharacterView ability scores section', () => {
       renderCharacterView();
 
       // STR: 10 + 4 = 14, CON: 10 + 4 = 14
-      expect(screen.getAllByText('14')).toHaveLength(2);
-      expect(screen.getAllByText('+2')).toHaveLength(2);
+      // Skills panel may also show these values, so check at least 2
+      expect(screen.getAllByText('14').length).toBeGreaterThanOrEqual(2);
+      expect(screen.getAllByText('+2').length).toBeGreaterThanOrEqual(2);
     });
   });
 
@@ -328,8 +331,8 @@ describe('CharacterView ability scores section', () => {
       renderCharacterView();
 
       // STR: 12 + 1 (feat) + 7 (equipment) = 20 -> +5
-      expect(screen.getByText('20')).toBeInTheDocument();
-      expect(screen.getByText('+5')).toBeInTheDocument();
+      expect(screen.getAllByText('20').length).toBeGreaterThanOrEqual(1);
+      expect(screen.getAllByText('+5').length).toBeGreaterThanOrEqual(1);
     });
 
     it('renders the character name', () => {
@@ -349,6 +352,50 @@ describe('CharacterView ability scores section', () => {
     });
   });
 
+  describe('skills panel integration', () => {
+    it('renders the skills panel alongside ability scores', () => {
+      mockQueryResult = baseCharacter({
+        skills: [
+          { skill: 'athletics', ability: 'strength', level: 'proficient' },
+          { skill: 'perception', ability: 'wisdom', level: 'proficient' },
+        ],
+      });
+
+      renderCharacterView();
+
+      // Check that both panels are rendered
+      expect(screen.getAllByText('STR').length).toBeGreaterThanOrEqual(1); // Ability scores panel + skills panel
+      expect(screen.getByText('Skills')).toBeInTheDocument(); // Skills panel header
+      expect(screen.getByText('Athletics')).toBeInTheDocument(); // Skill in panel
+    });
+
+    it('displays skill bonuses correctly with proficiency', () => {
+      mockQueryResult = baseCharacter({
+        abilityScores: {
+          strength: 16, // +3
+          dexterity: 10,
+          constitution: 10,
+          intelligence: 10,
+          wisdom: 14, // +2
+          charisma: 10,
+        },
+        proficiencyBonus: 3,
+        skills: [
+          { skill: 'athletics', ability: 'strength', level: 'proficient' },
+          { skill: 'perception', ability: 'wisdom', level: 'expertise' },
+        ],
+      });
+
+      renderCharacterView();
+
+      // Athletics: +3 (ability) + 3 (proficiency) = +6
+      expect(screen.getByText('Athletics').parentElement?.textContent).toContain('+6');
+
+      // Perception: +2 (ability) + 6 (expertise) = +8
+      expect(screen.getByText('Perception').parentElement?.textContent).toContain('+8');
+    });
+  });
+
   describe('tooltip breakdown content', () => {
     it('displays ability scores correctly', () => {
       mockQueryResult = baseCharacter({
@@ -364,12 +411,12 @@ describe('CharacterView ability scores section', () => {
 
       renderCharacterView();
 
-      expect(screen.getByText('16')).toBeInTheDocument();
-      expect(screen.getByText('14')).toBeInTheDocument();
-      expect(screen.getByText('12')).toBeInTheDocument();
-      expect(screen.getByText('8')).toBeInTheDocument();
-      expect(screen.getByText('13')).toBeInTheDocument();
-      expect(screen.getByText('10')).toBeInTheDocument();
+      expect(screen.getAllByText('16').length).toBeGreaterThanOrEqual(1);
+      expect(screen.getAllByText('14').length).toBeGreaterThanOrEqual(1);
+      expect(screen.getAllByText('12').length).toBeGreaterThanOrEqual(1);
+      expect(screen.getAllByText('8').length).toBeGreaterThanOrEqual(1);
+      expect(screen.getAllByText('13').length).toBeGreaterThanOrEqual(1);
+      expect(screen.getAllByText('10').length).toBeGreaterThanOrEqual(1);
     });
 
     it('displays ability modifiers correctly', () => {
@@ -386,11 +433,11 @@ describe('CharacterView ability scores section', () => {
 
       renderCharacterView();
 
-      expect(screen.getByText('+3')).toBeInTheDocument();
-      expect(screen.getByText('+2')).toBeInTheDocument();
-      expect(screen.getAllByText('+1')).toHaveLength(2);
-      expect(screen.getByText('-1')).toBeInTheDocument();
-      expect(screen.getByText('0')).toBeInTheDocument();
+      expect(screen.getAllByText('+3').length).toBeGreaterThanOrEqual(1);
+      expect(screen.getAllByText('+2').length).toBeGreaterThanOrEqual(1);
+      expect(screen.getAllByText('+1').length).toBeGreaterThanOrEqual(2);
+      expect(screen.getAllByText('-1').length).toBeGreaterThanOrEqual(1);
+      expect(screen.getAllByText('0').length).toBeGreaterThanOrEqual(1);
     });
   });
 
@@ -419,9 +466,9 @@ describe('CharacterView ability scores section', () => {
       renderCharacterView();
 
       // STR base 14, override to 19
-      expect(screen.getByText('19')).toBeInTheDocument();
+      expect(screen.getAllByText('19').length).toBeGreaterThanOrEqual(1);
       // modifier for 19 is +4
-      expect(screen.getByText('+4')).toBeInTheDocument();
+      expect(screen.getAllByText('+4').length).toBeGreaterThanOrEqual(1);
     });
 
     it('does not override when computed total already exceeds override value', () => {
@@ -448,8 +495,8 @@ describe('CharacterView ability scores section', () => {
       renderCharacterView();
 
       // STR stays at 20 since 20 > 19
-      expect(screen.getByText('20')).toBeInTheDocument();
-      expect(screen.getByText('+5')).toBeInTheDocument();
+      expect(screen.getAllByText('20').length).toBeGreaterThanOrEqual(1);
+      expect(screen.getAllByText('+5').length).toBeGreaterThanOrEqual(1);
     });
 
     it('picks the highest override when multiple items override the same ability', () => {
@@ -483,8 +530,8 @@ describe('CharacterView ability scores section', () => {
       renderCharacterView();
 
       // Highest override wins: 25
-      expect(screen.getByText('25')).toBeInTheDocument();
-      expect(screen.getByText('+7')).toBeInTheDocument();
+      expect(screen.getAllByText('25').length).toBeGreaterThanOrEqual(1);
+      expect(screen.getAllByText('+7').length).toBeGreaterThanOrEqual(1);
     });
 
     it('stacks feat bonuses on top of override', () => {
@@ -518,8 +565,8 @@ describe('CharacterView ability scores section', () => {
       renderCharacterView();
 
       // Override 19 + feat +1 = 20 (beats base 14 + feat 1 = 15)
-      expect(screen.getByText('20')).toBeInTheDocument();
-      expect(screen.getByText('+5')).toBeInTheDocument();
+      expect(screen.getAllByText('20').length).toBeGreaterThanOrEqual(1);
+      expect(screen.getAllByText('+5').length).toBeGreaterThanOrEqual(1);
     });
 
     it('stacks multiple feat bonuses on top of override', () => {
@@ -558,8 +605,8 @@ describe('CharacterView ability scores section', () => {
       renderCharacterView();
 
       // Override 19 + feat 1 + feat 1 = 21 (beats base 10 + 1 + 1 = 12)
-      expect(screen.getByText('21')).toBeInTheDocument();
-      expect(screen.getByText('+5')).toBeInTheDocument();
+      expect(screen.getAllByText('21').length).toBeGreaterThanOrEqual(1);
+      expect(screen.getAllByText('+5').length).toBeGreaterThanOrEqual(1);
     });
 
     it('does not use override when base + feats already exceed override + feats', () => {
@@ -594,8 +641,8 @@ describe('CharacterView ability scores section', () => {
 
       // base 18 + feat 1 = 19, override 19 + feat 1 = 20
       // Override wins: 20
-      expect(screen.getByText('20')).toBeInTheDocument();
-      expect(screen.getByText('+5')).toBeInTheDocument();
+      expect(screen.getAllByText('20').length).toBeGreaterThanOrEqual(1);
+      expect(screen.getAllByText('+5').length).toBeGreaterThanOrEqual(1);
     });
 
     it('uses base when base + feats exceed override + feats', () => {
@@ -630,8 +677,8 @@ describe('CharacterView ability scores section', () => {
 
       // base 20 + feat 1 = 21, override 19 + feat 1 = 20
       // Base path wins: 21
-      expect(screen.getByText('21')).toBeInTheDocument();
-      expect(screen.getByText('+5')).toBeInTheDocument();
+      expect(screen.getAllByText('21').length).toBeGreaterThanOrEqual(1);
+      expect(screen.getAllByText('+5').length).toBeGreaterThanOrEqual(1);
     });
   });
 
@@ -666,8 +713,8 @@ describe('CharacterView ability scores section', () => {
 
       renderCharacterView();
 
-      expect(screen.getByText('20')).toBeInTheDocument();
-      expect(screen.getByText('+5')).toBeInTheDocument();
+      expect(screen.getAllByText('20').length).toBeGreaterThanOrEqual(1);
+      expect(screen.getAllByText('+5').length).toBeGreaterThanOrEqual(1);
     });
 
     it('shows correct score when override does not apply', () => {
@@ -693,8 +740,8 @@ describe('CharacterView ability scores section', () => {
 
       renderCharacterView();
 
-      expect(screen.getByText('20')).toBeInTheDocument();
-      expect(screen.getByText('+5')).toBeInTheDocument();
+      expect(screen.getAllByText('20').length).toBeGreaterThanOrEqual(1);
+      expect(screen.getAllByText('+5').length).toBeGreaterThanOrEqual(1);
     });
 
     it('applies override only to the affected ability', () => {

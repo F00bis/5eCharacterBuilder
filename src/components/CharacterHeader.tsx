@@ -1,9 +1,12 @@
+import { Button } from '@/components/ui/button';
+import { Card } from '@/components/ui/card';
 import {
   Dialog,
   DialogContent,
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog';
+import { Input } from '@/components/ui/input';
 import { Progress } from '@/components/ui/progress';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { useEffect, useRef, useState } from 'react';
@@ -14,6 +17,15 @@ import { getXpForNextLevel, getXpProgress } from '../utils/xpThresholds';
 interface CharacterHeaderProps {
   character: Character;
   onUpdate: (updates: Partial<Character>) => void;
+}
+
+function InfoRow({ label, value }: { label: string; value: string }) {
+  return (
+    <div className="flex justify-between text-xs">
+      <span className="text-slate-500">{label}</span>
+      <span className="text-slate-700 font-medium">{value}</span>
+    </div>
+  );
 }
 
 export function CharacterHeader({ character, onUpdate }: CharacterHeaderProps) {
@@ -27,8 +39,6 @@ export function CharacterHeader({ character, onUpdate }: CharacterHeaderProps) {
   const nameInputRef = useRef<HTMLInputElement>(null);
   const xpInputRef = useRef<HTMLInputElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
-
-  console.log(character.xp);
 
   const xpProgress = getXpProgress(character.xp, character.level);
 
@@ -125,111 +135,124 @@ export function CharacterHeader({ character, onUpdate }: CharacterHeaderProps) {
     return sorted[0].className;
   };
 
+  const getMulticlassCount = () => {
+    return Math.max(0, character.classes.length - 1);
+  };
+
   const portraitSrc = character.portrait || DEFAULT_PORTRAIT;
 
   return (
     <TooltipProvider delayDuration={200}>
-      <div className="fixed top-4 right-4 w-[360px] bg-white border border-gray-200 rounded-lg shadow-lg p-4">
+      <Card className="w-480 p-3">
         <div className="flex gap-3">
           <div 
-            className="flex-shrink-0 cursor-pointer"
+            className="shrink-0 cursor-pointer"
             onClick={() => setIsModalOpen(true)}
             title="Click to change portrait"
           >
-          <img 
-            src={portraitSrc} 
-            alt="Character portrait" 
-            className="w-12 h-12 rounded-md"
-            onError={(e) => {
-              (e.target as HTMLImageElement).src = DEFAULT_PORTRAIT;
-            }}
-          />
-        </div>
-        
-        <div className="flex-1 min-w-0">
-          {isEditingName ? (
-            <input
-              ref={nameInputRef}
-              type="text"
-              value={editedName}
-              onChange={(e) => setEditedName(e.target.value)}
-              onBlur={handleNameSave}
-              onKeyDown={handleNameKeyDown}
-              className="text-xl font-bold text-gray-900 w-full outline-none border-b-2 border-purple-700"
+            <img 
+              src={portraitSrc} 
+              alt="Character portrait" 
+              className="w-12 h-12 rounded-md"
+              onError={(e) => {
+                (e.target as HTMLImageElement).src = DEFAULT_PORTRAIT;
+              }}
             />
-          ) : (
-            <h2 
-              className="text-xl font-bold text-gray-900 cursor-pointer hover:text-purple-700 truncate"
-              onClick={() => setIsEditingName(true)}
-              title="Click to edit name"
-            >
-              {character.name}
-            </h2>
-          )}
+          </div>
           
-          <p className="text-sm text-gray-500">{character.race}</p>
-          
-          <Tooltip>
-            <TooltipTrigger asChild>
-              <div className="text-sm text-gray-600 font-medium cursor-help">
-                Level {character.level} {getPrimaryClass()}
-              </div>
-            </TooltipTrigger>
-            <TooltipContent side="bottom">
-              <p>{formatClasses()}</p>
-            </TooltipContent>
-          </Tooltip>
-        </div>
-      </div>
+          <div className="flex-1 min-w-0">
+            {isEditingName ? (
+              <Input
+                ref={nameInputRef}
+                type="text"
+                value={editedName}
+                onChange={(e) => setEditedName(e.target.value)}
+                onBlur={handleNameSave}
+                onKeyDown={handleNameKeyDown}
+                className="text-lg font-bold border-0 border-b-2 border-purple-700 px-0 focus-visible:ring-0 h-7"
+              />
+            ) : (
+              <h2 
+                className="text-lg font-bold text-slate-900 cursor-pointer hover:text-purple-700 truncate"
+                onClick={() => setIsEditingName(true)}
+                title="Click to edit name"
+              >
+                {character.name}
+              </h2>
+            )}
 
-      <div className="mt-3">
-        <Tooltip>
-          <TooltipTrigger asChild>
-            <div 
-              className="text-sm text-gray-700 cursor-pointer hover:text-purple-700 inline-block"
-              onClick={() => setIsEditingXp(true)}
-            >
-              {(character.xp ?? 0).toLocaleString()} XP
+            <div className="grid grid-cols-2 gap-x-4 gap-y-1 mt-1">
+              <div className="text-xs text-slate-600 font-medium truncate flex items-center gap-1">
+                <span>Level {character.level} {getPrimaryClass()}</span>
+                {getMulticlassCount() > 0 && (
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <span className="text-purple-700 font-bold cursor-help hover:text-purple-800">
+                        +{getMulticlassCount()}
+                      </span>
+                    </TooltipTrigger>
+                    <TooltipContent side="bottom">
+                      <p>{formatClasses()}</p>
+                    </TooltipContent>
+                  </Tooltip>
+                )}
+              </div>
+              <InfoRow label="Race" value={character.race} />
+              <InfoRow label="Background" value={character.background} />
+              <InfoRow label="Alignment" value={character.alignment} />
+              
+              <div className="col-span-2 flex items-center gap-2">
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <div 
+                      className="text-xs text-slate-700 cursor-pointer hover:text-purple-700"
+                      onClick={() => setIsEditingXp(true)}
+                    >
+                      XP: {(character.xp ?? 0).toLocaleString()}
+                    </div>
+                  </TooltipTrigger>
+                  <TooltipContent>
+                    <p>{xpToNextLevel.toLocaleString()} to next level</p>
+                  </TooltipContent>
+                </Tooltip>
+                {isEditingXp && (
+                  <Input
+                    ref={xpInputRef}
+                    type="number"
+                    value={editedXp}
+                    onChange={(e) => setEditedXp(e.target.value)}
+                    onBlur={handleXpSave}
+                    onKeyDown={handleXpKeyDown}
+                    className="h-5 text-xs w-20"
+                    min="0"
+                  />
+                )}
+              </div>
+              
+              <div className="col-span-2">
+                <Progress value={xpProgress.percentage} className="h-1.5" />
+                <div className="text-[10px] text-slate-500 mt-0.5">
+                  {xpProgress.current.toLocaleString()} / {xpProgress.needed.toLocaleString()}
+                </div>
+              </div>
             </div>
-          </TooltipTrigger>
-          <TooltipContent>
-            <p>XP to next level: {xpToNextLevel.toLocaleString()}</p>
-          </TooltipContent>
-        </Tooltip>
-        
-        {isEditingXp ? (
-          <input
-            ref={xpInputRef}
-            type="number"
-            value={editedXp}
-            onChange={(e) => setEditedXp(e.target.value)}
-            onBlur={handleXpSave}
-            onKeyDown={handleXpKeyDown}
-            className="text-sm text-gray-700 ml-2 w-24 outline-none border-b-2 border-purple-700"
-            min="0"
-          />
-        ) : null}
-        
-        <Progress value={xpProgress.percentage} className="mt-1" />
-        
-        <div className="text-xs text-gray-500 mt-1">
-          {xpProgress.current.toLocaleString()} / {xpProgress.needed.toLocaleString()} to next level
+          </div>
         </div>
-      </div>
+      </Card>
 
       <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
-        <DialogContent className="sm:max-w-[325px]">
+        <DialogContent className="sm:max-w-325">
           <DialogHeader>
             <DialogTitle>Change Portrait</DialogTitle>
           </DialogHeader>
           
           <div className="space-y-4">
-            <button
+            <Button
               onClick={() => fileInputRef.current?.click()}
-              className="w-full px-4 py-2 bg-purple-700 text-white rounded hover:bg-purple-800"
+              className="w-full"
             >
               Upload File
-            </button>
+            </Button>
             <input
               ref={fileInputRef}
               type="file"
@@ -239,25 +262,23 @@ export function CharacterHeader({ character, onUpdate }: CharacterHeaderProps) {
             />
             
             <div className="flex gap-2">
-              <input
+              <Input
                 type="text"
                 value={portraitUrl}
                 onChange={(e) => setPortraitUrl(e.target.value)}
                 onKeyDown={handleUrlKeyDown}
                 placeholder="Paste image URL"
-                className="flex-1 px-3 py-2 border border-gray-300 rounded text-sm"
               />
-              <button
+              <Button
                 onClick={handleUrlSubmit}
-                className="px-4 py-2 bg-gray-200 text-gray-700 rounded hover:bg-gray-300"
+                variant="secondary"
               >
                 Add
-              </button>
+              </Button>
             </div>
           </div>
         </DialogContent>
       </Dialog>
-      </div>
     </TooltipProvider>
   );
 }
