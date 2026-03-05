@@ -1,19 +1,10 @@
 import { Card } from '@/components/ui/card';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
-import type { Character } from '../types';
+import type { Character, Ability } from '../types';
 import { formatModifier } from '../utils/abilityScores';
-import { getAllSkillBreakdowns, SKILL_DISPLAY_NAMES, SKILLS_BY_ABILITY, type SkillBreakdown } from '../utils/skills';
+import { getAllSavingThrowBreakdowns, ABILITY_DISPLAY_NAMES, type SavingThrowBreakdown } from '../utils/savingThrows';
 
-const abilityAbbreviations: Record<string, string> = {
-  strength: 'STR',
-  dexterity: 'DEX',
-  constitution: 'CON',
-  intelligence: 'INT',
-  wisdom: 'WIS',
-  charisma: 'CHA',
-};
-
-const abilityOrder = ['strength', 'dexterity', 'constitution', 'intelligence', 'wisdom', 'charisma'] as const;
+const abilityOrder: Ability[] = ['strength', 'dexterity', 'constitution', 'intelligence', 'wisdom', 'charisma'];
 
 function ProficiencyIndicator({ level }: { level: 'none' | 'proficient' | 'expertise' }) {
   const tooltipContent = {
@@ -48,19 +39,29 @@ function ProficiencyIndicator({ level }: { level: 'none' | 'proficient' | 'exper
   );
 }
 
-function SkillRow({ breakdown }: { breakdown: SkillBreakdown }) {
-  const formattedBonus = formatModifier(breakdown.totalBonus);
-  const displayName = SKILL_DISPLAY_NAMES[breakdown.skill];
+function getProficiencyLevel(breakdown: SavingThrowBreakdown): 'none' | 'proficient' | 'expertise' {
+  const hasProficiency = breakdown.sources.some(s => s.type === 'proficiency');
+  const hasExpertise = breakdown.sources.some(s => s.type === 'expertise');
+  
+  if (hasExpertise) return 'expertise';
+  if (hasProficiency) return 'proficient';
+  return 'none';
+}
+
+function SavingThrowRow({ breakdown }: { breakdown: SavingThrowBreakdown }) {
+  const formattedBonus = formatModifier(breakdown.total);
+  const displayName = ABILITY_DISPLAY_NAMES[breakdown.ability];
+  const proficiencyLevel = getProficiencyLevel(breakdown);
 
   let bonusColor = 'text-slate-500';
-  if (breakdown.totalBonus > 0) bonusColor = 'text-green-600';
-  else if (breakdown.totalBonus < 0) bonusColor = 'text-red-600';
+  if (breakdown.total > 0) bonusColor = 'text-green-600';
+  else if (breakdown.total < 0) bonusColor = 'text-red-600';
 
   return (
     <Tooltip>
       <TooltipTrigger asChild>
         <div className="flex items-center gap-1 px-1 py-0.5 hover:bg-slate-50 rounded cursor-help transition-colors">
-          <ProficiencyIndicator level={breakdown.proficiencyLevel} />
+          <ProficiencyIndicator level={proficiencyLevel} />
           <span className="text-xs flex-1">{displayName}</span>
           <span className={`text-xs font-medium ${bonusColor} w-6 text-right`}>
             {formattedBonus}
@@ -69,28 +70,14 @@ function SkillRow({ breakdown }: { breakdown: SkillBreakdown }) {
       </TooltipTrigger>
       <TooltipContent side="right" className="w-64">
         <div className="font-bold text-slate-900">
-          {displayName}: {formattedBonus}
+          {displayName} Saving Throw: {formattedBonus}
         </div>
         <hr className="my-1 border-slate-300" />
         {breakdown.sources.map((source, i) => {
           const formattedValue = formatModifier(source.value);
-          let sourceLabel = source.name;
-          
-          // Add type suffix for feat and equipment
-          if (source.type === 'feat') {
-            sourceLabel = `${source.name} (feat)`;
-          } else if (source.type === 'equipment') {
-            sourceLabel = `${source.name} (equipment)`;
-          }
-
-          // Special formatting for expertise to show it's double proficiency
-          if (source.type === 'expertise') {
-            sourceLabel = `${source.name} (2x proficiency bonus)`;
-          }
-
           return (
             <div key={`${source.type}-${i}`} className="text-slate-700 text-sm">
-              {sourceLabel}: {formattedValue}
+              {source.description}: {formattedValue}
             </div>
           );
         })}
@@ -99,33 +86,17 @@ function SkillRow({ breakdown }: { breakdown: SkillBreakdown }) {
   );
 }
 
-export function SkillsPanel({ character }: { character: Character }) {
-  const breakdowns = getAllSkillBreakdowns(character);
-  const breakdownMap = new Map(breakdowns.map((b) => [b.skill, b]));
+export function SavingThrowsPanel({ character }: { character: Character }) {
+  const breakdowns = getAllSavingThrowBreakdowns(character);
 
   return (
     <TooltipProvider delayDuration={200}>
       <Card className="w-44 p-1 h-fit">
-        <h3 className="text-xs font-bold uppercase tracking-wide text-slate-500 mb-1">Skills</h3>
+        <h3 className="text-xs font-bold uppercase tracking-wide text-slate-500 mb-1">Saving Throws</h3>
         <div className="flex flex-col gap-0.5">
           {abilityOrder.map((ability) => {
-            const skills = SKILLS_BY_ABILITY[ability];
-            if (skills.length === 0) return null; // Skip CON (no skills)
-
-            return (
-              <div key={ability}>
-                <div className="text-[10px] font-bold uppercase tracking-wide text-slate-500 mb-0.5 px-1">
-                  {abilityAbbreviations[ability]}
-                </div>
-                <div className="flex flex-col">
-                  {skills.map((skill) => {
-                    const breakdown = breakdownMap.get(skill);
-                    if (!breakdown) return null;
-                    return <SkillRow key={skill} breakdown={breakdown} />;
-                  })}
-                </div>
-              </div>
-            );
+            const breakdown = breakdowns[ability];
+            return <SavingThrowRow key={ability} breakdown={breakdown} />;
           })}
         </div>
       </Card>

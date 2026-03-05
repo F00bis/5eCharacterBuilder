@@ -48,6 +48,7 @@ export interface Equipment {
   statModifiers?: Partial<AbilityScores>;
   abilityOverride?: Partial<AbilityScores>;
   skillModifiers?: Partial<Record<Skill, number>>;
+  savingThrowModifiers?: Partial<Record<Ability, number>>;
 }
 
 export interface SpellSlot {
@@ -75,6 +76,7 @@ export interface Feat {
   description: string;
   statModifiers: Partial<AbilityScores>;
   skillModifiers?: Partial<Record<Skill, number>>;
+  savingThrowProficiencies?: Partial<Record<Ability, ProficiencyLevel>>;
 }
 
 export interface ClassEntry {
@@ -87,6 +89,7 @@ export interface Character {
   id?: number;
   name: string;
   race: string;
+  subrace?: string;
   background: string;
   alignment: string;
   classes: ClassEntry[];

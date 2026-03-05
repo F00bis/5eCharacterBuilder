@@ -111,6 +111,7 @@ const TEST_CHARACTER: Character = {
       name: 'Resilient (Wisdom)',
       description: 'You gain proficiency in Wisdom saving throws. Your Wisdom score increases by 1.',
       statModifiers: { wisdom: 1 },
+      savingThrowProficiencies: { wisdom: 'proficient' },
     },
     {
       name: 'Heavy Armor Master',
