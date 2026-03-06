@@ -2,18 +2,7 @@ import { Card } from '@/components/ui/card';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import type { Character } from '../types';
 import { formatModifier } from '../utils/abilityScores';
-import { getAllSkillBreakdowns, SKILL_DISPLAY_NAMES, SKILLS_BY_ABILITY, type SkillBreakdown } from '../utils/skills';
-
-const abilityAbbreviations: Record<string, string> = {
-  strength: 'STR',
-  dexterity: 'DEX',
-  constitution: 'CON',
-  intelligence: 'INT',
-  wisdom: 'WIS',
-  charisma: 'CHA',
-};
-
-const abilityOrder = ['strength', 'dexterity', 'constitution', 'intelligence', 'wisdom', 'charisma'] as const;
+import { getAllSkillBreakdowns, SKILL_DISPLAY_NAMES, type SkillBreakdown } from '../utils/skills';
 
 function ProficiencyIndicator({ level }: { level: 'none' | 'proficient' | 'expertise' }) {
   const tooltipContent = {
@@ -101,32 +90,15 @@ function SkillRow({ breakdown }: { breakdown: SkillBreakdown }) {
 
 export function SkillsPanel({ character }: { character: Character }) {
   const breakdowns = getAllSkillBreakdowns(character);
-  const breakdownMap = new Map(breakdowns.map((b) => [b.skill, b]));
 
   return (
     <TooltipProvider delayDuration={200}>
       <Card className="w-44 p-1 h-fit">
         <h3 className="text-xs font-bold uppercase tracking-wide text-slate-500 mb-1">Skills</h3>
         <div className="flex flex-col gap-0.5">
-          {abilityOrder.map((ability) => {
-            const skills = SKILLS_BY_ABILITY[ability];
-            if (skills.length === 0) return null; // Skip CON (no skills)
-
-            return (
-              <div key={ability}>
-                <div className="text-[10px] font-bold uppercase tracking-wide text-slate-500 mb-0.5 px-1">
-                  {abilityAbbreviations[ability]}
-                </div>
-                <div className="flex flex-col">
-                  {skills.map((skill) => {
-                    const breakdown = breakdownMap.get(skill);
-                    if (!breakdown) return null;
-                    return <SkillRow key={skill} breakdown={breakdown} />;
-                  })}
-                </div>
-              </div>
-            );
-          })}
+          {breakdowns.map((breakdown) => (
+            <SkillRow key={breakdown.skill} breakdown={breakdown} />
+          ))}
         </div>
       </Card>
     </TooltipProvider>

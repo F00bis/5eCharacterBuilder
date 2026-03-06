@@ -2,6 +2,7 @@ import { useLiveQuery } from 'dexie-react-hooks';
 import { useParams } from 'react-router-dom';
 import { AbilityScoresPanel } from '../components/AbilityScoresPanel';
 import { CharacterHeader } from '../components/CharacterHeader';
+import { PassivesPanel } from '../components/PassivesPanel';
 import { SavingThrowsPanel } from '../components/SavingThrowsPanel';
 import { SkillsPanel } from '../components/SkillsPanel';
 import { getCharacterById, updateCharacter } from '../db/characters';
@@ -36,13 +37,14 @@ export function CharacterView() {
 
   return (
     <div className='p-1 h-full'>
-      <div className="flex flex-col gap-1 h-full">
+      <div className="flex flex-col gap-2 h-full">
         <CharacterHeader character={result} onUpdate={handleUpdate} />
-        <div className="flex flex-row gap-1 h-full">
+        <div className="flex flex-row gap-1 h-4/5">
           <AbilityScoresPanel character={result} />
           <div className="flex flex-col gap-1">
             <SavingThrowsPanel character={result} />
             <SkillsPanel character={result} />
+            <PassivesPanel character={result} />
           </div>
         </div>
       </div>
