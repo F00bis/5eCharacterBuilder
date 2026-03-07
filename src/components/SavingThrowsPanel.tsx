@@ -70,7 +70,7 @@ function SavingThrowRow({ breakdown }: { breakdown: SavingThrowBreakdown }) {
       </TooltipTrigger>
       <TooltipContent side="right" className="w-64">
         <div className="font-bold text-slate-900">
-          {displayName} Saving Throw: {formattedBonus}
+          {formattedBonus}
         </div>
         <hr className="my-1 border-slate-300" />
         {breakdown.sources.map((source, i) => {

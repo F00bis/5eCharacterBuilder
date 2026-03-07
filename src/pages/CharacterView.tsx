@@ -2,6 +2,7 @@ import { useLiveQuery } from 'dexie-react-hooks';
 import { useParams } from 'react-router-dom';
 import { AbilityScoresPanel } from '../components/AbilityScoresPanel';
 import { CharacterHeader } from '../components/CharacterHeader';
+import { CombatStatsPanel } from '../components/CombatStatsPanel';
 import { PassivesPanel } from '../components/PassivesPanel';
 import { SavingThrowsPanel } from '../components/SavingThrowsPanel';
 import { SkillsPanel } from '../components/SkillsPanel';
@@ -46,6 +47,7 @@ export function CharacterView() {
             <SkillsPanel character={result} />
             <PassivesPanel character={result} />
           </div>
+          <CombatStatsPanel character={result} onUpdate={handleUpdate} />
         </div>
       </div>
     </div>

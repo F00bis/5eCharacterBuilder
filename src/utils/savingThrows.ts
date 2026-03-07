@@ -104,7 +104,7 @@ export function getSavingThrowBreakdown(ability: Ability, character: Character):
   sources.push({
     type: 'ability',
     value: abilityModifier,
-    description: `Ability Modifier (${ability.toUpperCase()} ${abilityBreakdown.totalScore})`,
+    description: 'Ability Modifier',
   });
 
   if (proficiencyLevel === 'proficient') {

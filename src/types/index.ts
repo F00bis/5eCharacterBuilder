@@ -49,6 +49,8 @@ export interface Equipment {
   abilityOverride?: Partial<AbilityScores>;
   skillModifiers?: Partial<Record<Skill, number>>;
   savingThrowModifiers?: Partial<Record<Ability, number>>;
+  armorCategory?: 'Light' | 'Medium' | 'Heavy' | 'Shield';
+  armorClass?: number;
 }
 
 export interface SpellSlot {
