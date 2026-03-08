@@ -31,6 +31,9 @@ const TEST_CHARACTER: Character = {
   tempHp: 0,
   ac: 18,
   speed: 30,
+  initiative: 1,
+  vision: { darkvision: 60 },
+  deathSaves: { successes: 0, failures: 0 },
   proficiencyBonus: 3,
   skills: [
     { skill: 'athletics', ability: 'strength', level: 'proficient' },

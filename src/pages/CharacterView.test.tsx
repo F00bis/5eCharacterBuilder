@@ -34,6 +34,9 @@ function baseCharacter(overrides: Partial<Character> = {}): Character {
     tempHp: 0,
     ac: 16,
     speed: 30,
+    initiative: 0,
+    vision: {},
+    deathSaves: { successes: 0, failures: 0 },
     proficiencyBonus: 3,
     skills: [],
     equipment: [],
@@ -293,12 +296,12 @@ describe('CharacterView ability scores section', () => {
       // +4 appears for both STR and INT
       expect(screen.getAllByText('+4').length).toBeGreaterThanOrEqual(2);
       // DEX: 12 (no bonuses) -> +1
-      expect(screen.getByText('12')).toBeInTheDocument();
+      expect(screen.getAllByText('12').length).toBeGreaterThanOrEqual(1);
       // CON: 13 + 1 (feat) = 14 -> +2
-      expect(screen.getByText('14')).toBeInTheDocument();
+      expect(screen.getAllByText('14').length).toBeGreaterThanOrEqual(1);
       // WIS: 10 (no bonuses) -> 0
       // CHA: 15 + 1 (feat) = 16 -> +3
-      expect(screen.getByText('16')).toBeInTheDocument();
+      expect(screen.getAllByText('16').length).toBeGreaterThanOrEqual(1);
     });
 
     it('stacks multiple sources on the same ability', () => {
@@ -390,10 +393,12 @@ describe('CharacterView ability scores section', () => {
       renderCharacterView();
 
       // Athletics: +3 (ability) + 3 (proficiency) = +6
-      expect(screen.getByText('Athletics').parentElement?.textContent).toContain('+6');
+      const athleticsElements = screen.getAllByText('Athletics');
+      expect(athleticsElements[0].closest('div')?.textContent).toContain('+6');
 
       // Perception: +2 (ability) + 6 (expertise) = +8
-      expect(screen.getByText('Perception').parentElement?.textContent).toContain('+8');
+      const perceptionElements = screen.getAllByText('Perception');
+      expect(perceptionElements[0].closest('div')?.textContent).toContain('+8');
     });
   });
 

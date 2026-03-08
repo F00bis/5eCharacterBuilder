@@ -116,6 +116,16 @@ export interface Character {
   tempHp: number;
   ac: number;
   speed: number;
+  initiative: number;
+  vision: {
+    darkvision?: number;
+    truesight?: number;
+    blindsight?: number;
+  };
+  deathSaves: {
+    successes: number;
+    failures: number;
+  };
   proficiencyBonus: number;
   skills: SkillProficiency[];
   equipment: Equipment[];

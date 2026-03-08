@@ -56,9 +56,9 @@ export function CharacterView() {
               <PassivesPanel character={result} />
             </div>
           </div>
-          <div className='w-1/2 flex flex-col gap-1'>
+          <div className='w-5/12 flex flex-col gap-1'>
             <div className="w-full h-fit flex flex-row gap-1">
-              <div className="w-1/2 h-fit">
+              <div className="w-1/2 h-full">
                 <CombatStatsPanel character={result} onUpdate={handleUpdate} />
               </div>
               <div className="w-1/2 h-fit">

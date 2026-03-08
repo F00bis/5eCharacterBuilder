@@ -31,6 +31,8 @@ function Combobox({
   const [open, setOpen] = React.useState(false)
   const [search, setSearch] = React.useState("")
   const inputRef = React.useRef<HTMLInputElement>(null)
+  const triggerRef = React.useRef<HTMLButtonElement>(null)
+  const [triggerWidth, setTriggerWidth] = React.useState<string | undefined>()
 
   const filteredOptions = React.useMemo(() => {
     if (!search) return options
@@ -55,9 +57,16 @@ function Combobox({
   }
 
   return (
-    <PopoverPrimitive.Root open={open} onOpenChange={(open) => { setOpen(open); onOpenChange?.(open); }}>
+    <PopoverPrimitive.Root open={open} onOpenChange={(open) => { 
+      setOpen(open); 
+      onOpenChange?.(open);
+      if (open && triggerRef.current) {
+        setTriggerWidth(`${triggerRef.current.offsetWidth}px`)
+      }
+    }}>
       <PopoverPrimitive.Trigger asChild>
         <button
+          ref={triggerRef}
           type="button"
           className={cn(
             "flex h-10 w-full items-center justify-between rounded-md border border-slate-200 bg-white px-3 py-2 text-sm ring-offset-white placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-purple-700 focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50",
@@ -76,7 +85,8 @@ function Combobox({
       </PopoverPrimitive.Trigger>
       <PopoverPrimitive.Portal>
         <PopoverPrimitive.Content
-          className="z-50 w-[--radix-popover-trigger-width] overflow-hidden rounded-md border bg-white p-1 shadow-md animate-in fade-in-0 zoom-in-95"
+          style={{ width: triggerWidth }}
+          className="z-50 overflow-hidden rounded-md border bg-white p-1 shadow-md animate-in fade-in-0 zoom-in-95"
           sideOffset={4}
           onKeyDown={handleKeyDown}
         >

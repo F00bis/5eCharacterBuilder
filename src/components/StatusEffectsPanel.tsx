@@ -112,13 +112,14 @@ export function StatusEffectsPanel({ character, onUpdate }: StatusEffectsPanelPr
             No active status effects
           </div>
         ) : (
-          <div className="flex flex-wrap gap-1.5 mb-3">
+          <div className="flex overflow-x-auto gap-1.5 mb-3 py-1">
             {character.statusEffects.map((effect) => (
               <Tooltip key={effect.id}>
                 <TooltipTrigger asChild>
                   <Badge
                     variant={getBadgeVariant(effect.category)}
                     onRemove={() => handleRemoveEffect(effect.id)}
+                    className="shrink-0"
                   >
                     {effect.name}
                   </Badge>
