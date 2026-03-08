@@ -1,5 +1,4 @@
 import { Badge } from "@/components/ui/badge"
-import { Card } from "@/components/ui/card"
 import { Combobox, type ComboboxOption } from "@/components/ui/combobox"
 import { CustomEffectDialog } from "@/components/ui/custom-effect-dialog"
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip"
@@ -8,7 +7,7 @@ import { getCustomStatusEffects, saveCustomStatusEffect } from "@/db/statusEffec
 import type { Character, StatusEffect, StatusEffectCategory } from "@/types"
 import { useCallback, useEffect, useState } from "react"
 
-interface StatusEffectsPanelProps {
+interface StatusEffectsSectionProps {
   character: Character
   onUpdate: (updates: Partial<Character>) => void
 }
@@ -24,7 +23,7 @@ function getBadgeVariant(category: StatusEffectCategory): "destructive" | "warni
   }
 }
 
-export function StatusEffectsPanel({ character, onUpdate }: StatusEffectsPanelProps) {
+export function StatusEffectsSection({ character, onUpdate }: StatusEffectsSectionProps) {
   const [customDialogOpen, setCustomDialogOpen] = useState(false)
   const [savedCustomEffects, setSavedCustomEffects] = useState<StatusEffect[]>([])
   const [availableEffects, setAvailableEffects] = useState<ComboboxOption[]>([])
@@ -102,55 +101,53 @@ export function StatusEffectsPanel({ character, onUpdate }: StatusEffectsPanelPr
 
   return (
     <TooltipProvider delayDuration={200}>
-      <Card className="w-full h-full p-3">
-        <h3 className="text-xs font-bold uppercase tracking-wide text-slate-500 mb-2">
-          Status Effects
-        </h3>
+      <h3 className="text-xs font-bold uppercase tracking-wide text-slate-500 mb-2">
+        Status Effects
+      </h3>
 
-        {character.statusEffects.length === 0 ? (
-          <div className="text-sm text-slate-400 italic mb-2">
-            No active status effects
-          </div>
-        ) : (
-          <div className="flex overflow-x-auto gap-1.5 mb-3 py-1">
-            {character.statusEffects.map((effect) => (
-              <Tooltip key={effect.id}>
-                <TooltipTrigger asChild>
-                  <Badge
-                    variant={getBadgeVariant(effect.category)}
-                    onRemove={() => handleRemoveEffect(effect.id)}
-                    className="shrink-0"
-                  >
-                    {effect.name}
-                  </Badge>
-                </TooltipTrigger>
-                <TooltipContent side="top" className="max-w-62.5">
-                  <div className="font-semibold text-slate-900">{effect.name}</div>
-                  <div className="text-xs text-slate-600 mt-1">{effect.description}</div>
-                  {effect.isCustom && (
-                    <div className="text-xs text-purple-600 mt-1">(Custom)</div>
-                  )}
-                </TooltipContent>
-              </Tooltip>
-            ))}
-          </div>
-        )}
+      {character.statusEffects.length === 0 ? (
+        <div className="text-sm text-slate-400 italic mb-2">
+          No active status effects
+        </div>
+      ) : (
+        <div className="flex overflow-x-auto gap-1.5 mb-3 py-1">
+          {character.statusEffects.map((effect) => (
+            <Tooltip key={effect.id}>
+              <TooltipTrigger asChild>
+                <Badge
+                  variant={getBadgeVariant(effect.category)}
+                  onRemove={() => handleRemoveEffect(effect.id)}
+                  className="shrink-0"
+                >
+                  {effect.name}
+                </Badge>
+              </TooltipTrigger>
+              <TooltipContent side="top" className="max-w-62.5">
+                <div className="font-semibold text-slate-900">{effect.name}</div>
+                <div className="text-xs text-slate-600 mt-1">{effect.description}</div>
+                {effect.isCustom && (
+                  <div className="text-xs text-purple-600 mt-1">(Custom)</div>
+                )}
+              </TooltipContent>
+            </Tooltip>
+          ))}
+        </div>
+      )}
 
-        <Combobox
-          options={availableEffects}
-          value=""
-          onChange={handleAddEffect}
-          placeholder="Add status effect..."
-          onCreateCustom={() => setCustomDialogOpen(true)}
-          onOpenChange={handleComboboxOpenChange}
-        />
+      <Combobox
+        options={availableEffects}
+        value=""
+        onChange={handleAddEffect}
+        placeholder="Add status effect..."
+        onCreateCustom={() => setCustomDialogOpen(true)}
+        onOpenChange={handleComboboxOpenChange}
+      />
 
-        <CustomEffectDialog
-          open={customDialogOpen}
-          onOpenChange={setCustomDialogOpen}
-          onCreate={handleCreateCustomEffect}
-        />
-      </Card>
+      <CustomEffectDialog
+        open={customDialogOpen}
+        onOpenChange={setCustomDialogOpen}
+        onCreate={handleCreateCustomEffect}
+      />
     </TooltipProvider>
   )
 }

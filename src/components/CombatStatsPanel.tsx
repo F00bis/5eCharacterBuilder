@@ -4,6 +4,7 @@ import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/comp
 import { Shield } from 'lucide-react';
 import { useEffect, useRef, useState } from 'react';
 import type { Character } from '../types';
+import { StatusEffectsSection } from './StatusEffectsSection';
 import { getArmorClass } from '../utils/armorClass';
 import { getInitiativeBreakdown, getSpeedBreakdown, getVisionBreakdown, type StatBreakdown, type VisionBreakdown } from '../utils/combatStats';
 
@@ -338,6 +339,48 @@ export function CombatStatsPanel({ character, onUpdate }: CombatStatsPanelProps)
               </div>
             </div>
           </div>
+
+          <div className="flex-1 flex justify-center">
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <div className="flex flex-col items-center gap-1 cursor-help">
+                  <div className="flex gap-0.5">
+                    {[0, 1, 2].map((i) => (
+                      <button
+                        key={`success-${i}`}
+                        onClick={() => toggleDeathSave('successes', i)}
+                        className={`w-4 h-4 border rounded transition-colors ${
+                          character.deathSaves.successes > i
+                            ? 'bg-green-500 border-green-600'
+                            : 'bg-green-50 border-green-300 hover:bg-green-100'
+                        }`}
+                      />
+                    ))}
+                  </div>
+                  <div className="flex gap-0.5">
+                    {[0, 1, 2].map((i) => (
+                      <button
+                        key={`fail-${i}`}
+                        onClick={() => toggleDeathSave('failures', i)}
+                        className={`w-4 h-4 border rounded transition-colors ${
+                          character.deathSaves.failures > i
+                            ? 'bg-red-500 border-red-600'
+                            : 'bg-red-50 border-red-300 hover:bg-red-100'
+                        }`}
+                      />
+                    ))}
+                  </div>
+                </div>
+              </TooltipTrigger>
+              <TooltipContent side="top" className="w-72">
+                <p className="text-sm">
+                  When at 0 HP: roll d20. 10+ = success, 9- = failure. 
+                  3 successes = stable, 3 failures = death. 
+                  1 = 2 failures, 20 = regain 1 HP.
+                </p>
+              </TooltipContent>
+            </Tooltip>
+          </div>
         </div>
 
         <div className="flex flex-1 mb-3">
@@ -349,6 +392,9 @@ export function CombatStatsPanel({ character, onUpdate }: CombatStatsPanelProps)
           </div>
           <div className="flex-1 flex justify-center">
             <span className="text-xs text-slate-500">Temp HP</span>
+          </div>
+          <div className="flex-1 flex justify-center">
+            <span className="text-xs text-slate-500">Death Saves</span>
           </div>
         </div>
 
@@ -503,55 +549,7 @@ export function CombatStatsPanel({ character, onUpdate }: CombatStatsPanelProps)
 
         <div className="border-t border-slate-200 mb-2" />
 
-        <Tooltip>
-          <TooltipTrigger asChild>
-            <div className="flex flex-row items-center justify-center gap-2 cursor-help mb-2">
-              <span className="text-xs text-slate-500">Death Saves</span>
-            </div>
-          </TooltipTrigger>
-          <TooltipContent side="top" className="w-72">
-            <p className="text-sm">
-              When at 0 HP: roll d20. 10+ = success, 9- = failure. 
-              3 successes = stable, 3 failures = death. 
-              1 = 2 failures, 20 = regain 1 HP.
-            </p>
-          </TooltipContent>
-        </Tooltip>
-
-        <div className="flex flex-col gap-2">
-          <div className="flex items-center justify-center gap-2">
-            <span className="text-xs text-green-600 w-12 text-right">Success</span>
-            <div className="flex gap-1">
-              {[0, 1, 2].map((i) => (
-                <button
-                  key={i}
-                  onClick={() => toggleDeathSave('successes', i)}
-                  className={`w-5 h-5 border rounded transition-colors ${
-                    character.deathSaves.successes > i
-                      ? 'bg-green-500 border-green-600'
-                      : 'bg-white border-slate-300 hover:bg-slate-100'
-                  }`}
-                />
-              ))}
-            </div>
-          </div>
-          <div className="flex items-center justify-center gap-2">
-            <span className="text-xs text-red-600 w-12 text-right">Fail</span>
-            <div className="flex gap-1">
-              {[0, 1, 2].map((i) => (
-                <button
-                  key={i}
-                  onClick={() => toggleDeathSave('failures', i)}
-                  className={`w-5 h-5 border rounded transition-colors ${
-                    character.deathSaves.failures > i
-                      ? 'bg-red-500 border-red-600'
-                      : 'bg-white border-slate-300 hover:bg-slate-100'
-                  }`}
-                />
-              ))}
-            </div>
-          </div>
-        </div>
+        <StatusEffectsSection character={character} onUpdate={onUpdate} />
       </Card>
     </TooltipProvider>
   );
