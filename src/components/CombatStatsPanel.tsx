@@ -234,7 +234,7 @@ export function CombatStatsPanel({ character, onUpdate }: CombatStatsPanelProps)
       <Card className="w-full h-full p-2">
         <h3 className="text-xs font-bold uppercase tracking-wide text-slate-500 mb-2">Combat</h3>
         
-        <div className="flex flex-1 mb-3">
+        <div className="flex flex-1 mb-2">
           <div className="flex-1 flex justify-center">
             <Tooltip>
               <TooltipTrigger asChild>
@@ -244,8 +244,8 @@ export function CombatStatsPanel({ character, onUpdate }: CombatStatsPanelProps)
                   tabIndex={0}
                   title="Click for AC breakdown"
                 >
-                  <Shield className="w-12 h-12 text-slate-700" strokeWidth={1.5} />
-                  <span className="absolute inset-0 flex items-center justify-center text-xl font-bold text-slate-800">
+                  <Shield className="w-10 h-10 text-slate-700" strokeWidth={1.5} />
+                  <span className="absolute inset-0 flex items-center justify-center text-lg font-bold text-slate-800">
                     {acBreakdown.total}
                   </span>
                 </div>
@@ -279,12 +279,12 @@ export function CombatStatsPanel({ character, onUpdate }: CombatStatsPanelProps)
                     onChange={(e) => setEditedCurrentHp(e.target.value)}
                     onBlur={handleCurrentHpSave}
                     onKeyDown={handleCurrentHpKeyDown}
-                    className="h-6 w-12 text-sm"
+                    className="h-5 w-10 text-xs"
                     min="0"
                   />
                 ) : (
                   <div
-                    className="text-lg font-bold text-red-600 cursor-pointer hover:text-purple-700 transition-colors"
+                    className="text-base font-bold text-red-600 cursor-pointer hover:text-purple-700 transition-colors"
                     onClick={() => setIsEditingCurrentHp(true)}
                   >
                     {character.currentHp}
@@ -299,12 +299,12 @@ export function CombatStatsPanel({ character, onUpdate }: CombatStatsPanelProps)
                     onChange={(e) => setEditedMaxHp(e.target.value)}
                     onBlur={handleMaxHpSave}
                     onKeyDown={handleMaxHpKeyDown}
-                    className="h-6 w-12 text-sm"
+                    className="h-5 w-10 text-xs"
                     min="1"
                   />
                 ) : (
                   <div
-                    className="text-lg font-bold text-slate-700 cursor-pointer hover:text-purple-700 transition-colors"
+                    className="text-base font-bold text-slate-700 cursor-pointer hover:text-purple-700 transition-colors"
                     onClick={() => setIsEditingMaxHp(true)}
                   >
                     {character.maxHp}
@@ -325,12 +325,12 @@ export function CombatStatsPanel({ character, onUpdate }: CombatStatsPanelProps)
                     onChange={(e) => setEditedTempHp(e.target.value)}
                     onBlur={handleTempHpSave}
                     onKeyDown={handleTempHpKeyDown}
-                    className="h-6 w-12 text-sm"
+                    className="h-5 w-10 text-xs"
                     min="0"
                   />
                 ) : (
                   <div
-                    className="text-lg font-bold text-blue-600 cursor-pointer hover:text-purple-700 transition-colors"
+                    className="text-base font-bold text-blue-600 cursor-pointer hover:text-purple-700 transition-colors"
                     onClick={() => setIsEditingTempHp(true)}
                   >
                     {character.tempHp}
@@ -343,13 +343,13 @@ export function CombatStatsPanel({ character, onUpdate }: CombatStatsPanelProps)
           <div className="flex-1 flex justify-center">
             <Tooltip>
               <TooltipTrigger asChild>
-                <div className="flex flex-col items-center gap-1 cursor-help">
+                <div className="flex flex-col items-center gap-0.5 cursor-help">
                   <div className="flex gap-0.5">
                     {[0, 1, 2].map((i) => (
                       <button
                         key={`success-${i}`}
                         onClick={() => toggleDeathSave('successes', i)}
-                        className={`w-4 h-4 border rounded transition-colors ${
+                        className={`w-3.5 h-3.5 border rounded transition-colors ${
                           character.deathSaves.successes > i
                             ? 'bg-green-500 border-green-600'
                             : 'bg-green-50 border-green-300 hover:bg-green-100'
@@ -362,7 +362,7 @@ export function CombatStatsPanel({ character, onUpdate }: CombatStatsPanelProps)
                       <button
                         key={`fail-${i}`}
                         onClick={() => toggleDeathSave('failures', i)}
-                        className={`w-4 h-4 border rounded transition-colors ${
+                        className={`w-3.5 h-3.5 border rounded transition-colors ${
                           character.deathSaves.failures > i
                             ? 'bg-red-500 border-red-600'
                             : 'bg-red-50 border-red-300 hover:bg-red-100'
@@ -383,7 +383,7 @@ export function CombatStatsPanel({ character, onUpdate }: CombatStatsPanelProps)
           </div>
         </div>
 
-        <div className="flex flex-1 mb-3">
+        <div className="flex flex-1 mb-1.5">
           <div className="flex-1 flex justify-center">
             <span className="text-xs text-slate-500">Armor Class</span>
           </div>

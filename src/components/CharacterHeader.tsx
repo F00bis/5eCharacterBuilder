@@ -23,7 +23,7 @@ interface CharacterHeaderProps {
 function InfoRow({ label, value }: { label: string; value: string }) {
   const id = `info-${label.toLowerCase()}`;
   return (
-    <div className="flex flex-col gap-0.5">
+    <div className="flex flex-col gap-0">
       <Label htmlFor={id}>{label}</Label>
       <span id={id} className="text-sm text-slate-700 font-medium">{value}</span>
     </div>
@@ -145,8 +145,8 @@ export function CharacterHeader({ character, onUpdate }: CharacterHeaderProps) {
 
   return (
     <TooltipProvider delayDuration={200}>
-      <Card className="w-full max-w-3xl p-4">
-        <div className="flex gap-4">
+      <Card className="w-full h-full p-2">
+        <div className="flex gap-3">
           <div 
             className="shrink-0 cursor-pointer"
             onClick={() => setIsModalOpen(true)}
@@ -155,7 +155,7 @@ export function CharacterHeader({ character, onUpdate }: CharacterHeaderProps) {
             <img 
               src={portraitSrc} 
               alt="Character portrait" 
-              className="w-32 h-32 rounded-md object-cover"
+              className="w-20 h-20 rounded-md object-cover"
               onError={(e) => {
                 (e.target as HTMLImageElement).src = DEFAULT_PORTRAIT;
               }}
@@ -163,8 +163,8 @@ export function CharacterHeader({ character, onUpdate }: CharacterHeaderProps) {
           </div>
           
           <div className="flex-1 min-w-0">
-            <div className="grid grid-cols-3 gap-x-4 gap-y-3 h-full">
-              <div className="flex flex-col gap-1">
+            <div className="grid grid-cols-3 gap-x-4 gap-y-2 h-full">
+              <div className="flex flex-col gap-0.5">
                 <Label htmlFor="name">Name</Label>
                 {isEditingName ? (
                   <Input
@@ -190,9 +190,9 @@ export function CharacterHeader({ character, onUpdate }: CharacterHeaderProps) {
               <InfoRow label="Race" value={character.race} />
               <InfoRow label="Background" value={character.background} />
 
-              <div className="flex flex-col gap-1">
+              <div className="flex flex-col gap-0.5">
                 <Label>Class</Label>
-                <div className="text-sm text-slate-700 font-medium flex items-center gap-1">
+                <div className="text-sm text-slate-700 font-medium flex items-center gap-0.5">
                   <span>Level {character.level} {getPrimaryClass()}</span>
                   {getMulticlassCount() > 0 && (
                     <Tooltip>
@@ -211,7 +211,7 @@ export function CharacterHeader({ character, onUpdate }: CharacterHeaderProps) {
 
               <InfoRow label="Alignment" value={character.alignment} />
 
-              <div className="flex flex-col gap-1">
+              <div className="flex flex-col gap-0.5">
                 <div className="flex items-center gap-1">
                   <Label htmlFor="xp">XP</Label>
                   <Tooltip>
@@ -236,7 +236,7 @@ export function CharacterHeader({ character, onUpdate }: CharacterHeaderProps) {
                     onChange={(e) => setEditedXp(e.target.value)}
                     onBlur={handleXpSave}
                     onKeyDown={handleXpKeyDown}
-                    className="h-8"
+                    className="h-7"
                     min="0"
                   />
                 ) : (

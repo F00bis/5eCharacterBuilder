@@ -39,31 +39,35 @@ export function CharacterView() {
 
   return (
     <div className='p-1 h-full'>
-      <div className="flex flex-col gap-2 h-full">
-        <CharacterHeader character={result} onUpdate={handleUpdate} />
-        <div className="flex flex-row gap-1 h-4/5 w-full">
-          <div className="w-[5%] h-full">
-            <AbilityScoresPanel character={result} />
+      <div className="flex flex-row gap-1 h-full">
+        <div className="flex flex-col gap-2 w-2/3">
+          <div className="h-fit">
+            <CharacterHeader character={result} onUpdate={handleUpdate} />
           </div>
-          <div className="w-[10%] h-full flex flex-col gap-1">
-            <div className="h-[25%]">
-              <SavingThrowsPanel character={result} />
+          <div className="flex flex-row gap-1 h-[calc(100%-theme(spacing.10))]">
+            <div className="w-[7%] h-full">
+              <AbilityScoresPanel character={result} />
             </div>
-            <div className="h-[62%]">
-              <SkillsPanel character={result} />
+            <div className="w-[14%] h-full flex flex-col gap-1">
+              <div className="h-[25%]">
+                <SavingThrowsPanel character={result} />
+              </div>
+              <div className="h-[62%]">
+                <SkillsPanel character={result} />
+              </div>
+              <div className="h-[13%]">
+                <PassivesPanel character={result} />
+              </div>
             </div>
-            <div className="h-[13%]">
-              <PassivesPanel character={result} />
+            <div className='flex-1 flex flex-col gap-1'>
+              <div className="w-full h-fit">
+                <CombatStatsPanel character={result} onUpdate={handleUpdate} />
+              </div>
             </div>
           </div>
-          <div className='w-5/12 flex flex-col gap-1'>
-            <div className="w-full h-fit">
-              <CombatStatsPanel character={result} onUpdate={handleUpdate} />
-            </div>
-          </div>
-          <div className="w-[29.17%] h-full flex items-center justify-center">
-            <span className="text-gray-400 text-sm">Inventory (coming soon)</span>
-          </div>
+        </div>
+        <div className="w-[29.17%] h-full flex items-center justify-center">
+          <span className="text-gray-400 text-sm">Inventory (coming soon)</span>
         </div>
       </div>
     </div>
