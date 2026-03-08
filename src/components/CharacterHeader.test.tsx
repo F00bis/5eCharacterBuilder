@@ -34,6 +34,7 @@ const baseCharacter: Character = {
   equipment: [],
   spellSlots: [],
   spells: [],
+  statusEffects: [],
   feats: [],
   notes: '',
   createdAt: new Date(),

@@ -33,6 +33,7 @@ function baseCharacter(overrides: Partial<Character> = {}): Character {
     equipment: [],
     spellSlots: [],
     spells: [],
+    statusEffects: [],
     feats: [],
     notes: '',
     createdAt: new Date(),

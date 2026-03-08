@@ -1,9 +1,9 @@
-import { useEffect, useRef, useState } from 'react';
-import { Shield } from 'lucide-react';
 import { Card } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Progress } from '@/components/ui/progress';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
+import { Shield } from 'lucide-react';
+import { useEffect, useRef, useState } from 'react';
 import type { Character } from '../types';
 import { getArmorClass } from '../utils/armorClass';
 
@@ -110,7 +110,7 @@ export function CombatStatsPanel({ character, onUpdate }: CombatStatsPanelProps)
 
   return (
     <TooltipProvider delayDuration={200}>
-      <Card className="w-36 p-2 h-fit">
+      <Card className="w-full h-full p-2">
         <h3 className="text-xs font-bold uppercase tracking-wide text-slate-500 mb-2">Combat</h3>
         
         <div className="mb-3">

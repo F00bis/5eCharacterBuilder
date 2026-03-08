@@ -33,7 +33,7 @@ export function AbilityScoreBox({ breakdown }: { breakdown: AbilityBreakdown }) 
   return (
     <Tooltip>
       <TooltipTrigger asChild>
-        <Card className="flex-1 cursor-help hover:shadow-md transition-shadow w-24">
+        <Card className="flex-1 cursor-help hover:shadow-md transition-shadow w-full">
           <div className="flex flex-col items-center justify-center p-3 h-full">
             <span className="text-xs font-bold uppercase tracking-wide text-slate-500">
               {abbr}

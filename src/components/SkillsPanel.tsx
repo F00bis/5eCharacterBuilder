@@ -93,7 +93,7 @@ export function SkillsPanel({ character }: { character: Character }) {
 
   return (
     <TooltipProvider delayDuration={200}>
-      <Card className="w-44 p-1 h-fit">
+      <Card className="w-full h-full p-1">
         <h3 className="text-xs font-bold uppercase tracking-wide text-slate-500 mb-1">Skills</h3>
         <div className="flex flex-col gap-0.5">
           {breakdowns.map((breakdown) => (

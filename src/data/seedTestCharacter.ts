@@ -122,6 +122,7 @@ const TEST_CHARACTER: Character = {
   ],
   spellSlots: [],
   spells: [],
+  statusEffects: [],
   feats: [
     {
       name: 'Resilient (Wisdom)',

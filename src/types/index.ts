@@ -24,6 +24,17 @@ export type ProficiencyLevel = 'none' | 'proficient' | 'expertise';
 
 export type Rarity = 'common' | 'uncommon' | 'rare' | 'veryRare' | 'legendary' | 'artifact';
 
+export type StatusEffectCategory = 'harmful' | 'neutral' | 'beneficial';
+
+export type StatusEffect = {
+  id: string;
+  name: string;
+  category: StatusEffectCategory;
+  description: string;
+  isCustom: boolean;
+  isStacking: boolean;
+};
+
 export interface AbilityScores {
   strength: number;
   dexterity: number;
@@ -111,6 +122,7 @@ export interface Character {
   spellSlots: SpellSlot[];
   spells: CharacterSpell[];
   feats: Feat[];
+  statusEffects: StatusEffect[];
   notes: string;
   createdAt: Date;
   updatedAt: Date;

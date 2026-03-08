@@ -124,7 +124,7 @@ export function PassivesPanel({ character }: { character: Character }) {
 
   return (
     <TooltipProvider delayDuration={200}>
-      <Card className="w-44 p-1 h-fit">
+      <Card className="w-full h-full p-1">
         <h3 className="text-[10px] font-bold uppercase tracking-wide text-slate-500 mb-0.5">Passives</h3>
         <div className="flex flex-col gap-0">
           {breakdowns.map((breakdown) => (

@@ -19,7 +19,7 @@ export function AbilityScoresPanel({ character }: { character: Character }) {
 
   return (
     <TooltipProvider delayDuration={200}>
-      <div className="flex flex-col items-center gap-2 h-full">
+      <div className="flex flex-col items-center gap-2 w-full h-full">
         {breakdowns.map((breakdown) => (
           <AbilityScoreBox key={breakdown.ability} breakdown={breakdown} />
         ))}
