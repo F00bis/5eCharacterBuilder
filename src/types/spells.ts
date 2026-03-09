@@ -1,3 +1,5 @@
+import type { Ability } from './index';
+
 export type SpellSchool =
   | 'Abjuration'
   | 'Conjuration'
@@ -21,5 +23,7 @@ export interface DndSpell {
   classes: string[];
   ritual?: boolean;
   concentration?: boolean;
+  requiresAttackRoll?: boolean;
+  savingThrowAbility?: Ability;
   isSRD: boolean;
 }

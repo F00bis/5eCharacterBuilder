@@ -3,15 +3,10 @@ import { Input } from '@/components/ui/input';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { Shield } from 'lucide-react';
 import { useEffect, useRef, useState } from 'react';
-import type { Character } from '../types';
+import { useCharacter } from '../contexts/CharacterContext';
 import { StatusEffectsSection } from './StatusEffectsSection';
 import { getArmorClass } from '../utils/armorClass';
 import { getInitiativeBreakdown, getSpeedBreakdown, getVisionBreakdown, type StatBreakdown, type VisionBreakdown } from '../utils/combatStats';
-
-interface CombatStatsPanelProps {
-  character: Character;
-  onUpdate: (updates: Partial<Character>) => void;
-}
 
 function formatModifier(value: number): string {
   return value >= 0 ? `+${value}` : String(value);
@@ -44,7 +39,18 @@ function renderBreakdownTooltip(
   );
 }
 
-export function CombatStatsPanel({ character, onUpdate }: CombatStatsPanelProps) {
+interface CombatStatsPanelProps {
+  character?: import('../types').Character;
+  onUpdate?: (updates: Partial<import('../types').Character>) => void;
+}
+
+export function CombatStatsPanel(_props: CombatStatsPanelProps) {
+  const context = useCharacter();
+  // Use prop if provided (for backward compatibility with tests), otherwise use context
+  // Non-null assertion because CharacterView handles loading/not-found states before rendering
+  const character = _props.character ?? context.character!;
+  const update = _props.onUpdate ?? context.update;
+  
   const [isEditingCurrentHp, setIsEditingCurrentHp] = useState(false);
   const [isEditingMaxHp, setIsEditingMaxHp] = useState(false);
   const [isEditingTempHp, setIsEditingTempHp] = useState(false);
@@ -95,7 +101,7 @@ export function CombatStatsPanel({ character, onUpdate }: CombatStatsPanelProps)
     const value = parseInt(editedCurrentHp, 10);
     if (!isNaN(value) && value >= 0) {
       const cappedValue = Math.min(value, character.maxHp);
-      onUpdate({ currentHp: cappedValue });
+      update({ currentHp: cappedValue });
     } else {
       setEditedCurrentHp(String(character.currentHp));
     }
@@ -107,7 +113,7 @@ export function CombatStatsPanel({ character, onUpdate }: CombatStatsPanelProps)
     if (!isNaN(value) && value > 0) {
       const newMaxHp = value;
       const newCurrentHp = Math.min(character.currentHp, newMaxHp);
-      onUpdate({ maxHp: newMaxHp, currentHp: newCurrentHp });
+      update({ maxHp: newMaxHp, currentHp: newCurrentHp });
     } else {
       setEditedMaxHp(String(character.maxHp));
     }
@@ -117,7 +123,7 @@ export function CombatStatsPanel({ character, onUpdate }: CombatStatsPanelProps)
   const handleTempHpSave = () => {
     const value = parseInt(editedTempHp, 10);
     if (!isNaN(value) && value >= 0) {
-      onUpdate({ tempHp: value });
+      update({ tempHp: value });
     } else {
       setEditedTempHp(String(character.tempHp));
     }
@@ -190,7 +196,7 @@ export function CombatStatsPanel({ character, onUpdate }: CombatStatsPanelProps)
 
     if (field === 'initiative') {
       if (!isNaN(numValue)) {
-        onUpdate({ initiative: numValue });
+        update({ initiative: numValue });
       }
     } else {
       const visionField = field as 'darkvision' | 'truesight' | 'blindsight';
@@ -200,7 +206,7 @@ export function CombatStatsPanel({ character, onUpdate }: CombatStatsPanelProps)
       } else {
         delete newVision[visionField];
       }
-      onUpdate({ vision: newVision });
+      update({ vision: newVision });
     }
     setEditingField(null);
     setEditValues({});
@@ -221,7 +227,7 @@ export function CombatStatsPanel({ character, onUpdate }: CombatStatsPanelProps)
   const toggleDeathSave = (type: 'successes' | 'failures', index: number) => {
     const current = character.deathSaves[type];
     const newValue = current === index + 1 ? index : index + 1;
-    onUpdate({
+    update({
       deathSaves: {
         ...character.deathSaves,
         [type]: newValue,
@@ -549,7 +555,7 @@ export function CombatStatsPanel({ character, onUpdate }: CombatStatsPanelProps)
 
         <div className="border-t border-slate-200 mb-2" />
 
-        <StatusEffectsSection character={character} onUpdate={onUpdate} />
+        <StatusEffectsSection />
       </Card>
     </TooltipProvider>
   );

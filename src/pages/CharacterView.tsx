@@ -1,67 +1,52 @@
-import { useLiveQuery } from 'dexie-react-hooks';
-import { useParams } from 'react-router-dom';
 import { AbilityScoresPanel } from '../components/AbilityScoresPanel';
+import { ActionsPanel } from '../components/ActionsPanel';
 import { CharacterHeader } from '../components/CharacterHeader';
 import { CombatStatsPanel } from '../components/CombatStatsPanel';
 import { PassivesPanel } from '../components/PassivesPanel';
 import { SavingThrowsPanel } from '../components/SavingThrowsPanel';
 import { SkillsPanel } from '../components/SkillsPanel';
+import { useCharacter } from '../contexts/CharacterContext';
+import { CharacterProvider } from '../contexts/CharacterContextProvider';
 
-import { getCharacterById, updateCharacter } from '../db/characters';
+function CharacterViewContent() {
+  const { character, isLoading, isNotFound } = useCharacter();
 
-export function CharacterView() {
-  const { characterId } = useParams<{ characterId: string }>();
-  const id = Number(characterId);
-
-  const result = useLiveQuery(
-    async () => {
-      if (isNaN(id)) return null;
-      const character = await getCharacterById(id);
-      return character ?? null;
-    },
-    [id]
-  );
-
-  // useLiveQuery returns undefined while loading, null if not found
-  if (result === undefined) {
+  if (isLoading) {
     return <div className="p-4 text-gray-500">Loading...</div>;
   }
 
-  if (result === null) {
+  if (isNotFound || !character) {
     return <div className="p-4 text-red-500">Character not found</div>;
   }
 
-  const handleUpdate = async (updates: Partial<typeof result>) => {
-    if (result.id) {
-      await updateCharacter(result.id, updates);
-    }
-  };
-
   return (
-    <div className='p-1 h-full'>
+    <div className='p-1 h-screen overflow-hidden'>
       <div className="flex flex-row gap-1 h-full">
         <div className="flex flex-col gap-2 w-2/3">
-          <div className="h-fit">
-            <CharacterHeader character={result} onUpdate={handleUpdate} />
+          <div className="h-fit shrink-0">
+            <CharacterHeader />
           </div>
-          <div className="flex flex-row gap-1 h-[calc(100%-theme(spacing.10))]">
+          <div className="flex flex-row gap-1 flex-1 min-h-0">
             <div className="w-[7%] h-full">
-              <AbilityScoresPanel character={result} />
+              <AbilityScoresPanel />
             </div>
             <div className="w-[14%] h-full flex flex-col gap-1">
               <div className="h-[25%]">
-                <SavingThrowsPanel character={result} />
+                <SavingThrowsPanel />
               </div>
               <div className="h-[62%]">
-                <SkillsPanel character={result} />
+                <SkillsPanel />
               </div>
               <div className="h-[13%]">
-                <PassivesPanel character={result} />
+                <PassivesPanel />
               </div>
             </div>
-            <div className='flex-1 flex flex-col gap-1'>
-              <div className="w-full h-fit">
-                <CombatStatsPanel character={result} onUpdate={handleUpdate} />
+            <div className='flex-1 flex flex-col gap-1 min-h-0'>
+              <div className="w-full h-fit shrink-0">
+                <CombatStatsPanel />
+              </div>
+              <div className="w-full flex-1 min-h-0">
+                <ActionsPanel />
               </div>
             </div>
           </div>
@@ -71,5 +56,13 @@ export function CharacterView() {
         </div>
       </div>
     </div>
+  );
+}
+
+export function CharacterView() {
+  return (
+    <CharacterProvider>
+      <CharacterViewContent />
+    </CharacterProvider>
   );
 }

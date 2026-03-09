@@ -1,7 +1,26 @@
 import { render, screen } from '@testing-library/react';
-import { describe, it, expect } from 'vitest';
+import { describe, it, expect, vi } from 'vitest';
 import { SkillsPanel } from './SkillsPanel';
+import { CharacterContext, type CharacterContextValue } from '../contexts/CharacterContext';
 import type { Character } from '../types';
+
+function renderWithCharacter(
+  ui: React.ReactElement,
+  character: Character
+) {
+  const mockContext: CharacterContextValue = {
+    character,
+    isLoading: false,
+    isNotFound: false,
+    update: vi.fn(),
+  };
+  
+  return render(
+    <CharacterContext.Provider value={mockContext}>
+      {ui}
+    </CharacterContext.Provider>
+  );
+}
 
 function baseCharacter(overrides: Partial<Character> = {}): Character {
   return {
@@ -48,7 +67,7 @@ function baseCharacter(overrides: Partial<Character> = {}): Character {
 describe('SkillsPanel', () => {
   it('renders all 18 skills', () => {
     const character = baseCharacter();
-    render(<SkillsPanel character={character} />);
+    renderWithCharacter(<SkillsPanel />, character);
 
     // Check for all skill names
     expect(screen.getByText('Athletics')).toBeInTheDocument();
@@ -73,7 +92,7 @@ describe('SkillsPanel', () => {
 
   it('groups skills under ability headers', () => {
     const character = baseCharacter();
-    render(<SkillsPanel character={character} />);
+    renderWithCharacter(<SkillsPanel />, character);
 
     // Skills are displayed in a flat list (not grouped by ability)
     // Verify all 18 skills are present
@@ -92,7 +111,7 @@ describe('SkillsPanel', () => {
         charisma: 10,
       },
     });
-    render(<SkillsPanel character={character} />);
+    renderWithCharacter(<SkillsPanel />, character);
 
     // All 18 skills should show "0" (no proficiency, 0 modifier)
     const zeros = screen.getAllByText('0');
@@ -110,7 +129,7 @@ describe('SkillsPanel', () => {
         charisma: 10,
       },
     });
-    render(<SkillsPanel character={character} />);
+    renderWithCharacter(<SkillsPanel />, character);
 
     // Athletics (STR) should show +3
     expect(screen.getByText('Athletics').parentElement?.textContent).toContain('+3');
@@ -138,7 +157,7 @@ describe('SkillsPanel', () => {
       proficiencyBonus: 3,
       skills: [{ skill: 'athletics', ability: 'strength', level: 'proficient' }],
     });
-    render(<SkillsPanel character={character} />);
+    renderWithCharacter(<SkillsPanel />, character);
 
     // Athletics: +2 (ability) + 3 (proficiency) = +5
     expect(screen.getByText('Athletics').parentElement?.textContent).toContain('+5');
@@ -157,7 +176,7 @@ describe('SkillsPanel', () => {
       proficiencyBonus: 3,
       skills: [{ skill: 'stealth', ability: 'dexterity', level: 'expertise' }],
     });
-    render(<SkillsPanel character={character} />);
+    renderWithCharacter(<SkillsPanel />, character);
 
     // Stealth: +3 (ability) + 6 (expertise = 2x proficiency) = +9
     expect(screen.getByText('Stealth').parentElement?.textContent).toContain('+9');
@@ -182,7 +201,7 @@ describe('SkillsPanel', () => {
         },
       ],
     });
-    render(<SkillsPanel character={character} />);
+    renderWithCharacter(<SkillsPanel />, character);
 
     // Stealth: +2 (ability) + 2 (feat) = +4
     expect(screen.getByText('Stealth').parentElement?.textContent).toContain('+4');
@@ -208,7 +227,7 @@ describe('SkillsPanel', () => {
         },
       ],
     });
-    render(<SkillsPanel character={character} />);
+    renderWithCharacter(<SkillsPanel />, character);
 
     // Stealth: +2 (ability) + 5 (equipment) = +7
     expect(screen.getByText('Stealth').parentElement?.textContent).toContain('+7');
@@ -244,7 +263,7 @@ describe('SkillsPanel', () => {
         },
       ],
     });
-    render(<SkillsPanel character={character} />);
+    renderWithCharacter(<SkillsPanel />, character);
 
     // Stealth: +4 (ability) + 8 (expertise) + 2 (feat) + 5 (equipment) = +19
     expect(screen.getByText('Stealth').parentElement?.textContent).toContain('+19');
@@ -258,7 +277,7 @@ describe('SkillsPanel', () => {
         { skill: 'stealth', ability: 'dexterity', level: 'expertise' },
       ],
     });
-    render(<SkillsPanel character={character} />);
+    renderWithCharacter(<SkillsPanel />, character);
 
     // Check for proficiency indicators - 1 proficient (purple circle), 1 expertise (star)
     const purpleCircles = document.querySelectorAll('.rounded-full.bg-purple-700.border-purple-700');
@@ -290,7 +309,7 @@ describe('SkillsPanel', () => {
         { skill: 'arcana', ability: 'intelligence', level: 'proficient' },
       ],
     });
-    render(<SkillsPanel character={character} />);
+    renderWithCharacter(<SkillsPanel />, character);
 
     // Athletics: +2 + 3 = +5
     expect(screen.getByText('Athletics').parentElement?.textContent).toContain('+5');
@@ -316,7 +335,7 @@ describe('SkillsPanel', () => {
         charisma: 10,
       },
     });
-    render(<SkillsPanel character={character} />);
+    renderWithCharacter(<SkillsPanel />, character);
 
     // Athletics (STR): -1
     expect(screen.getByText('Athletics').parentElement?.textContent).toContain('-1');
@@ -341,7 +360,7 @@ describe('SkillsPanel', () => {
       proficiencyBonus: 3,
       skills: [{ skill: 'athletics', ability: 'strength', level: 'proficient' }],
     });
-    render(<SkillsPanel character={character} />);
+    renderWithCharacter(<SkillsPanel />, character);
 
     // Athletics: -1 (ability) + 3 (proficiency) = +2
     expect(screen.getByText('Athletics').parentElement?.textContent).toContain('+2');

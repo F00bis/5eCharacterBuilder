@@ -1,6 +1,6 @@
 import { Card } from '@/components/ui/card';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
-import type { Character } from '../types';
+import { useCharacter } from '../contexts/CharacterContext';
 import { formatModifier } from '../utils/abilityScores';
 import { getAllSkillBreakdowns, SKILL_DISPLAY_NAMES, type SkillBreakdown } from '../utils/skills';
 
@@ -88,8 +88,11 @@ function SkillRow({ breakdown }: { breakdown: SkillBreakdown }) {
   );
 }
 
-export function SkillsPanel({ character }: { character: Character }) {
-  const breakdowns = getAllSkillBreakdowns(character);
+
+export function SkillsPanel() {
+  const { character } = useCharacter();
+  
+  const breakdowns = character ? getAllSkillBreakdowns(character) : [];
 
   return (
     <TooltipProvider delayDuration={200}>

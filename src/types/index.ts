@@ -1,5 +1,9 @@
 export type Ability = 'strength' | 'dexterity' | 'constitution' | 'intelligence' | 'wisdom' | 'charisma';
 
+import type { WeaponCategory, WeaponMastery } from './equipment';
+import type { FeatureAction } from './classes';
+import type { DndSpell } from './spells';
+
 export type Skill =
   | 'athletics'
   | 'acrobatics'
@@ -62,6 +66,11 @@ export interface Equipment {
   savingThrowModifiers?: Partial<Record<Ability, number>>;
   armorCategory?: 'Light' | 'Medium' | 'Heavy' | 'Shield';
   armorClass?: number;
+  equipped?: boolean;
+  weaponCategory?: WeaponCategory;
+  damage?: string;
+  properties?: string[];
+  mastery?: WeaponMastery;
 }
 
 export interface SpellSlot {
@@ -70,16 +79,8 @@ export interface SpellSlot {
   used: number;
 }
 
-export interface CharacterSpell {
+export interface CharacterSpell extends DndSpell {
   id?: number;
-  name: string;
-  level: number;
-  school: string;
-  castingTime: string;
-  range: string;
-  components: string;
-  duration: string;
-  description: string;
   prepared: boolean;
 }
 
@@ -90,6 +91,7 @@ export interface Feat {
   statModifiers: Partial<AbilityScores>;
   skillModifiers?: Partial<Record<Skill, number>>;
   savingThrowProficiencies?: Partial<Record<Ability, ProficiencyLevel>>;
+  actions?: FeatureAction[];
 }
 
 export interface ClassEntry {
@@ -140,3 +142,4 @@ export interface Character {
 
 export type { DndSpell, SpellSchool } from './spells';
 export type { SrdEquipment, EquipmentCategory, WeaponCategory, ArmorCategory, WeaponMastery } from './equipment';
+export type { ResourceDefinition, FeatureAction, ActionType } from './classes';

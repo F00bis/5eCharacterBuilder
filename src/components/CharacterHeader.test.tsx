@@ -1,6 +1,27 @@
 import { render, screen, fireEvent } from '@testing-library/react';
+import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { CharacterHeader } from './CharacterHeader';
+import { CharacterContext, type CharacterContextValue } from '../contexts/CharacterContext';
 import type { Character } from '../types';
+
+function renderWithCharacter(
+  ui: React.ReactElement,
+  character: Character,
+  onUpdate: (updates: Partial<Character>) => Promise<void>
+) {
+  const mockContext: CharacterContextValue = {
+    character,
+    isLoading: false,
+    isNotFound: false,
+    update: onUpdate,
+  };
+  
+  return render(
+    <CharacterContext.Provider value={mockContext}>
+      {ui}
+    </CharacterContext.Provider>
+  );
+}
 
 const baseCharacter: Character = {
   id: 1,
@@ -52,7 +73,7 @@ describe('CharacterHeader', () => {
   });
 
   it('renders character data correctly', () => {
-    render(<CharacterHeader character={baseCharacter} onUpdate={mockOnUpdate} />);
+    renderWithCharacter(<CharacterHeader />, baseCharacter, mockOnUpdate);
 
     expect(screen.getByText('Test Hero')).toBeInTheDocument();
     expect(screen.getAllByText('Human').length).toBeGreaterThan(0);
@@ -63,7 +84,7 @@ describe('CharacterHeader', () => {
   });
 
   it('displays default portrait when no portrait is set', () => {
-    render(<CharacterHeader character={baseCharacter} onUpdate={mockOnUpdate} />);
+    renderWithCharacter(<CharacterHeader />, baseCharacter, mockOnUpdate);
 
     const portrait = screen.getByAltText('Character portrait') as HTMLImageElement;
     expect(portrait.src).toContain('data:image/svg+xml');
@@ -74,14 +95,14 @@ describe('CharacterHeader', () => {
       ...baseCharacter,
       portrait: 'data:image/png;base64,test',
     };
-    render(<CharacterHeader character={characterWithPortrait} onUpdate={mockOnUpdate} />);
+    renderWithCharacter(<CharacterHeader />, characterWithPortrait, mockOnUpdate);
 
     const portrait = screen.getByAltText('Character portrait') as HTMLImageElement;
     expect(portrait.src).toBe('data:image/png;base64,test');
   });
 
   it('opens modal when portrait is clicked', () => {
-    render(<CharacterHeader character={baseCharacter} onUpdate={mockOnUpdate} />);
+    renderWithCharacter(<CharacterHeader />, baseCharacter, mockOnUpdate);
 
     const portrait = screen.getByAltText('Character portrait');
     fireEvent.click(portrait);
@@ -92,7 +113,7 @@ describe('CharacterHeader', () => {
   });
 
   it('closes modal when close button is clicked', () => {
-    render(<CharacterHeader character={baseCharacter} onUpdate={mockOnUpdate} />);
+    renderWithCharacter(<CharacterHeader />, baseCharacter, mockOnUpdate);
 
     const portrait = screen.getByAltText('Character portrait');
     fireEvent.click(portrait);
@@ -106,7 +127,7 @@ describe('CharacterHeader', () => {
   });
 
   it('allows name inline editing', () => {
-    render(<CharacterHeader character={baseCharacter} onUpdate={mockOnUpdate} />);
+    renderWithCharacter(<CharacterHeader />, baseCharacter, mockOnUpdate);
 
     const nameElement = screen.getByText('Test Hero');
     fireEvent.click(nameElement);
@@ -121,7 +142,7 @@ describe('CharacterHeader', () => {
   });
 
   it('cancels name editing on Escape', () => {
-    render(<CharacterHeader character={baseCharacter} onUpdate={mockOnUpdate} />);
+    renderWithCharacter(<CharacterHeader />, baseCharacter, mockOnUpdate);
 
     const nameElement = screen.getByText('Test Hero');
     fireEvent.click(nameElement);
@@ -135,7 +156,7 @@ describe('CharacterHeader', () => {
   });
 
   it('allows XP inline editing', () => {
-    render(<CharacterHeader character={baseCharacter} onUpdate={mockOnUpdate} />);
+    renderWithCharacter(<CharacterHeader />, baseCharacter, mockOnUpdate);
 
     const xpElement = screen.getByText(/3,500/);
     fireEvent.click(xpElement);
@@ -150,7 +171,7 @@ describe('CharacterHeader', () => {
   });
 
   it('cancels XP editing on Escape', () => {
-    render(<CharacterHeader character={baseCharacter} onUpdate={mockOnUpdate} />);
+    renderWithCharacter(<CharacterHeader />, baseCharacter, mockOnUpdate);
 
     const xpElement = screen.getByText(/3,500/);
     fireEvent.click(xpElement);
@@ -164,7 +185,7 @@ describe('CharacterHeader', () => {
   });
 
   it('displays XP progress bar with correct percentage', () => {
-    render(<CharacterHeader character={baseCharacter} onUpdate={mockOnUpdate} />);
+    renderWithCharacter(<CharacterHeader />, baseCharacter, mockOnUpdate);
 
     const progressBar = screen.getByRole('progressbar');
     expect(progressBar).toBeInTheDocument();
@@ -174,7 +195,7 @@ describe('CharacterHeader', () => {
   });
 
   it('shows classes tooltip on level field', () => {
-    render(<CharacterHeader character={baseCharacter} onUpdate={mockOnUpdate} />);
+    renderWithCharacter(<CharacterHeader />, baseCharacter, mockOnUpdate);
 
     const levelElement = screen.getByText(/Level 7 Fighter/);
     expect(levelElement).toBeInTheDocument();
@@ -191,14 +212,14 @@ describe('CharacterHeader', () => {
       ],
       level: 7,
     };
-    render(<CharacterHeader character={multiClassCharacter} onUpdate={mockOnUpdate} />);
+    renderWithCharacter(<CharacterHeader />, multiClassCharacter, mockOnUpdate);
 
     expect(screen.getByText('+3')).toBeInTheDocument();
     expect(screen.getByText(/Level 7 Fighter/)).toBeInTheDocument();
   });
 
   it('shows tooltip for XP to next level', () => {
-    render(<CharacterHeader character={baseCharacter} onUpdate={mockOnUpdate} />);
+    renderWithCharacter(<CharacterHeader />, baseCharacter, mockOnUpdate);
 
     const xpElement = screen.getByText(/3,500/);
     expect(xpElement).toBeInTheDocument();

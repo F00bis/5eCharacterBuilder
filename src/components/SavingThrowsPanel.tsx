@@ -1,8 +1,9 @@
 import { Card } from '@/components/ui/card';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
-import type { Character, Ability } from '../types';
+import { useCharacter } from '../contexts/CharacterContext';
+import type { Ability } from '../types';
 import { formatModifier } from '../utils/abilityScores';
-import { getAllSavingThrowBreakdowns, ABILITY_DISPLAY_NAMES, type SavingThrowBreakdown } from '../utils/savingThrows';
+import { ABILITY_DISPLAY_NAMES, getAllSavingThrowBreakdowns, type SavingThrowBreakdown } from '../utils/savingThrows';
 
 const abilityOrder: Ability[] = ['strength', 'dexterity', 'constitution', 'intelligence', 'wisdom', 'charisma'];
 
@@ -86,15 +87,17 @@ function SavingThrowRow({ breakdown }: { breakdown: SavingThrowBreakdown }) {
   );
 }
 
-export function SavingThrowsPanel({ character }: { character: Character }) {
-  const breakdowns = getAllSavingThrowBreakdowns(character);
+export function SavingThrowsPanel() {
+  const { character } = useCharacter();
+  
+  const breakdowns = character ? getAllSavingThrowBreakdowns(character) : null;
 
   return (
     <TooltipProvider delayDuration={200}>
       <Card className="w-full h-full p-1">
         <h3 className="text-xs font-bold uppercase tracking-wide text-slate-500 mb-1">Saving Throws</h3>
         <div className="flex flex-col gap-0.5">
-          {abilityOrder.map((ability) => {
+          {breakdowns && abilityOrder.map((ability) => {
             const breakdown = breakdowns[ability];
             return <SavingThrowRow key={ability} breakdown={breakdown} />;
           })}

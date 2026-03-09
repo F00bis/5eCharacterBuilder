@@ -1,6 +1,6 @@
 import type { DndSpell } from '../types/spells';
 
-export const srdSpells: DndSpell[] = [
+const baseSrdSpells: DndSpell[] = [
   {
     name: 'Acid Splash',
     level: 0,
@@ -10,6 +10,7 @@ export const srdSpells: DndSpell[] = [
     components: 'V, S',
     duration: 'Instantaneous',
     description: 'You hurl a bubble of acid. Choose one creature within range, or choose two creatures within range that are within 5 feet of each other. A target must succeed on a Dexterity saving throw or take 1d6 acid damage.  This spell\'s damage increases by 1d6 when you reach 5th level (2d6), 11th level (3d6), and 17th level (4d6).',
+    savingThrowAbility: 'dexterity',
     classes: ['Sorcerer', 'Wizard'],
     isSRD: true
   },
@@ -35,6 +36,7 @@ export const srdSpells: DndSpell[] = [
     components: 'V, S, M (a morsel of food)',
     duration: '24 hours',
     description: 'This spell lets you convince a beast that you mean it no harm. Choose a beast that you can see within range. It must see and hear you. If the beast\'s Intelligence is 4 or higher, the spell fails. Otherwise, the beast must succeed on a Wisdom saving throw or be charmed by you for the spell\'s duration. If you or one of your companions harms the target, the spell ends.',
+    savingThrowAbility: 'wisdom',
     higherLevel: 'When you cast this spell using a spell slot of 2nd level or higher, you can affect one additional beast for each slot level above 1st.',
     classes: ['Bard', 'Druid', 'Ranger'],
     isSRD: true
@@ -48,6 +50,7 @@ export const srdSpells: DndSpell[] = [
     components: 'V, S, M (a drop of blood)',
     duration: 'Concentration, up to 1 minute',
     description: 'Up to three creatures of your choice that you can see within range must make Charisma saving throws. Whenever a target that fails this saving throw makes an attack roll or a saving throw before the spell ends, the target must roll a d4 and subtract the number rolled from the attack roll or saving throw.',
+    savingThrowAbility: 'charisma',
     higherLevel: 'When you cast this spell using a spell slot of 2nd level or higher, you can target one additional creature for each slot level above 1st.',
     classes: ['Bard', 'Cleric'],
     isSRD: true
@@ -86,6 +89,7 @@ export const srdSpells: DndSpell[] = [
     components: 'V, S',
     duration: 'Instantaneous',
     description: 'As you hold your hands with thumbs touching and fingers spread, a thin sheet of flames shoots forth from your outstretched fingertips. Each creature in a 15-foot cone must make a Dexterity saving throw. A creature takes 3d6 fire damage on a failed save, or half as much damage on a successful one.  The fire ignites any flammable objects in the area that aren’t being worn or carried.',
+    savingThrowAbility: 'dexterity',
     higherLevel: 'When you cast this spell using a spell slot of 2nd level or higher, the damage increases by 1d6 for each slot level above 1st.',
     classes: ['Sorcerer', 'Wizard'],
     isSRD: true
@@ -99,6 +103,7 @@ export const srdSpells: DndSpell[] = [
     components: 'V, S',
     duration: '1 hour',
     description: 'You attempt to charm a humanoid you can see within range. It must make a Wisdom saving throw, and does so with advantage if you or your companions are fighting it. If it fails the saving throw, it is charmed by you until the spell ends or until you or your companions do anything harmful to it. The charmed creature regards you as a friendly acquaintance. When the spell ends, the creature knows it was charmed by you.',
+    savingThrowAbility: 'wisdom',
     higherLevel: 'When you cast this spell using a spell slot of 2nd level or higher, you can target one additional creature for each slot level above 1st. The creatures must be within 30 feet of each other when you target them.',
     classes: ['Bard', 'Druid', 'Sorcerer', 'Warlock', 'Wizard'],
     isSRD: true
@@ -112,6 +117,7 @@ export const srdSpells: DndSpell[] = [
     components: 'V, S',
     duration: '1 round',
     description: 'You create a ghostly, skeletal hand in the space of a creature within range. Make a ranged spell attack against the creature to assail it with the chill of the grave. On a hit, the target takes 1d8 necrotic damage, and it can\'t regain hit points until the start of your next turn. Until then, the hand clings to the target.  If you hit an undead target, it also has disadvantage on attack rolls against you until the end of your next turn.  This spell\'s damage increases by 1d8 when you reach 5th level (2d8), 11th level (3d8), and 17th level (4d8).',
+    requiresAttackRoll: true,
     classes: ['Sorcerer', 'Warlock', 'Wizard'],
     isSRD: true
   },
@@ -124,6 +130,7 @@ export const srdSpells: DndSpell[] = [
     components: 'V, S, M (a diamond worth at least 50gp)',
     duration: 'Instantaneous',
     description: 'You hurl a 4-inch-diameter sphere of energy at a creature that you can see within range. You choose acid, cold, fire, lightning, poison, or thunder for the type of orb you create, and then make a ranged spell attack against the target. If the attack hits, the creature takes 3d8 of the type you chose.',
+    requiresAttackRoll: true,
     higherLevel: 'When you cast this spell using a spell slot of 2nd level or higher, the damage increases by 1d8 for each slot level above 1st.',
     classes: ['Sorcerer', 'Wizard'],
     isSRD: true
@@ -150,6 +157,7 @@ export const srdSpells: DndSpell[] = [
     components: 'V',
     duration: '1 round',
     description: 'You speak a one-word command to a creature you can see within range. The target must succeed on a Wisdom saving throw or follow the command on its next turn. The spell has no effect if the target is undead, if it doesn’t understand your language, or if your command is directly harmful to it.  Some typical commands and their effects follow. You might issue a command other than one described here. If you do so, the DM determines how the target behaves. If the target can’t follow your command, the spell ends.  Approach: The target moves toward you by the shortest and most direct route, Ending its turn if it moves within 5 feet of you. Drop: The target drops whatever it is holding and then ends its turn. Flee: The target spends its turn moving away from you by the fastest available means. Grovel: The target falls prone and then ends its turn. Halt: The target doesn\'t move and takes no Actions. A flying creature stays aloft, provided that it is able to do so. If it must move to stay aloft, it flies the minimum distance needed to remain in the air.',
+    savingThrowAbility: 'wisdom',
     higherLevel: 'When you cast this spell using a spell slot of 2nd level or higher, you can affect one additional creature for each slot level above 1st. The creatures must be within 30 feet of each other when you target them.',
     classes: ['Cleric', 'Paladin'],
     isSRD: true
@@ -163,6 +171,7 @@ export const srdSpells: DndSpell[] = [
     components: 'V',
     duration: 'Concentration, up to 1 minute',
     description: 'You attempt to compel a creature into a duel. One creature that you can see within range must make a Wisdom saving throw. On a failed save, the creature is drawn to you, compelled by your divine demand. For the duration, it has disadvantage on attack rolls against creatures other than you, and must make a Wisdom saving throw each time it attempts to move into a space that is more than 30 feet away from you; if it succeeds on this saving throw, the spell doesn\'t restrict the target\'s movement for that turn.  The spell ends if you attack any other creature, if you cast a spell that targets a hostile creature other than the target, if a creature friendly to you damages the target or casts a harmful spell on it, or if you end your turn more than 30 feet away from the target.',
+    savingThrowAbility: 'wisdom',
     classes: ['Paladin'],
     isSRD: true
   },
@@ -288,6 +297,7 @@ export const srdSpells: DndSpell[] = [
     components: 'V',
     duration: 'Instantaneous',
     description: 'You whisper a discordant melody that only one creature of your choice within range can hear, wracking it with terrible pain. The target must make a Wisdom saving throw. On a failed save, it takes 3d6 psychic damage and must immediately use its reaction, if available, to move as far as its speed allows away from you. The creature doesn\'t move into obviously dangerous ground, such as a fire or a pit. On a successful save, the target takes half as much damage and doesn\'t have to move away. A deafened creature automatically succeeds on the save.',
+    savingThrowAbility: 'wisdom',
     higherLevel: 'When you cast this spell using a spell slot of 2nd level or higher, the damage increases by 1d6 for each slot level above 1st.',
     classes: ['Bard'],
     isSRD: true
@@ -313,6 +323,7 @@ export const srdSpells: DndSpell[] = [
     components: 'V, S',
     duration: 'Instantaneous',
     description: 'A beam of crackling energy streaks toward a creature within range. Make a ranged spell attack against the target. On a hit, the target takes 1d10 force damage. The spell creates more than one beam when you reach higher levels: two beams at 5th level, three beams at 11th level, and four beams at 17th level. You can direct the beams at the same target or at different ones. Make a separate attack roll for each beam.',
+    requiresAttackRoll: true,
     classes: ['Warlock'],
     isSRD: true
   },
@@ -325,6 +336,7 @@ export const srdSpells: DndSpell[] = [
     components: 'V',
     duration: 'Concentration, up to 1 minute',
     description: 'The next time you hit a creature with a weapon attack before this spell ends, a writhing mass of thorny vines appears at the point of impact, and the target must succeed on a Strength saving throw or be restrained by the magical vines until the spell ends. A Large or larger creature has advantage on this saving throw. If the target succeeds on the save, the vines shrivel away.  While restrained by this spell, the target takes 1d6 piercing damage at the start of each of its turns. A creature restrained by the vines or one that can touch a creature can use its action to make a Strength check against your spell save DC. On a success, the target is freed.',
+    savingThrowAbility: 'strength',
     higherLevel: 'If you cast this spell using a spell slot of 2nd level or higher, the damage increases by 1d6 for each slot level above 1st.',
     classes: ['Ranger'],
     isSRD: true
@@ -338,6 +350,7 @@ export const srdSpells: DndSpell[] = [
     components: 'V, S',
     duration: 'Concentration, up to 1 minute',
     description: 'Grasping weeds and vines sprout from the ground in a 20-foot square starting form a point within range. For the duration, these plants turn the ground in the area into difficult terrain.  A creature in the area when you cast the spell must succeed on a Strength saving throw or be restrained by the entangling plants until the spell ends. A creature restrained by the plants can use its action to make a Strength check against your spell save DC. On a success, it frees itself.  When the spell ends, the conjured plants wilt away.',
+    savingThrowAbility: 'strength',
     classes: ['Druid'],
     isSRD: true
   },
@@ -350,6 +363,7 @@ export const srdSpells: DndSpell[] = [
     components: 'V',
     duration: 'Concentration, up to 1 minute',
     description: 'Each object in a 20-foot cube within range is outlined in blue, green, or violet light (your choice). Any creature in the area when the spell is cast is also outlined in light if it fails a Dexterity saving throw. For the duration, objects and affected creatures shed dim light in a 10-foot radius.  Any attack roll against an affected creature or object has advantage if the attacker can see it, and the affected creature or object can\'t benefit from being invisible.',
+    savingThrowAbility: 'dexterity',
     classes: ['Bard', 'Druid'],
     isSRD: true
   },
@@ -412,6 +426,7 @@ export const srdSpells: DndSpell[] = [
     components: 'V, S',
     duration: 'Instantaneous',
     description: 'You hurl a mote of fire at a creature or object within range. Make a ranged spell attack against the target. On a hit, the target takes 1d10 fire damage. A flammable object hit by this spell ignites if it isn\'t being worn or carried. This spell’s damage increases by 1d10 when you reach 5th level (2d10), 11th level (3d10), and 17th level (4d10).',
+    requiresAttackRoll: true,
     classes: ['Sorcerer', 'Wizard'],
     isSRD: true
   },
@@ -461,6 +476,7 @@ export const srdSpells: DndSpell[] = [
     components: 'V, S, M (a bit of pork rind or butter)',
     duration: '1 minute',
     description: 'Slick grease covers the ground in a 10-foot square centered on a point within range and turns it into difficult terrain for the duration.  When the grease appears, each creature standing in its area must succeed on a Dexterity saving throw or fall prone. A creature that enters the area or ends its turn there must also succeed on a Dexterity saving throw or fall prone.',
+    savingThrowAbility: 'dexterity',
     classes: ['Wizard'],
     isSRD: true
   },
@@ -485,6 +501,7 @@ export const srdSpells: DndSpell[] = [
     components: 'V, S',
     duration: '1 round',
     description: 'A flash of light streaks toward a creature of your choice within range. Make a ranged spell attack against the target. On a hit, the target takes 4d6 radiant damage, and the next attack roll made against this target before the end of your next turn has advantage, thanks to the mystical dim light glittering on the target until then.',
+    requiresAttackRoll: true,
     higherLevel: 'When you cast this spell using a spell slot of 2nd level or higher, the damage increases by 1d6 for each slot level above 1st.',
     classes: ['Cleric'],
     isSRD: true
@@ -498,6 +515,7 @@ export const srdSpells: DndSpell[] = [
     components: 'V',
     duration: 'Concentration, up to 1 minute',
     description: 'The next time you hit a creature with a ranged weapon attack before this spell ends, this spell creates a rain of thorns that sprouts from your ranged weapon or ammunition. In addition to the normal effects of the attack, the target of the attack and each creature within 5 feet of it must make a Dexterity saving throw. A creature takes 1d10 piercing damage on a failed save, or half as much damage on a successful one.',
+    savingThrowAbility: 'dexterity',
     higherLevel: 'If you cast this spell using a spell slot of 2nd level or higher, the damage increases by 1d10 for each slot level above 1st (to a maximum of 6d10).',
     classes: ['Ranger'],
     isSRD: true
@@ -524,6 +542,7 @@ export const srdSpells: DndSpell[] = [
     components: 'V, S',
     duration: 'Instantaneous',
     description: 'You point your finger, and the creature that damaged you is momentarily surrounded by hellish flames. The creature must make a Dexterity saving throw. It takes 2d10 fire damage on a failed save, or half as much damage on a successful one.',
+    savingThrowAbility: 'dexterity',
     higherLevel: 'When you cast this spell using a spell slot of 2nd level or higher, the damage increases by 1d10 for each slot level above 1st.',
     classes: ['Warlock'],
     isSRD: true
@@ -627,6 +646,7 @@ export const srdSpells: DndSpell[] = [
     components: 'V, M (a firefly or phosphorescent moss)',
     duration: '1 hour',
     description: 'You touch one object that is no larger than 10 feet in any dimension. Until the spell ends, the object sheds bright light in a 20-foot radius and dim light for an additional 20 feet. The light can be colored as you like. Completely covering the object with something opaque blocks the light. The spell ends if you cast it again or dismiss it as an action.  If you target an object held or worn by a hostile creature, that creature must succeed on a Dexterity saving throw to avoid the spell.',
+    savingThrowAbility: 'dexterity',
     classes: ['Bard', 'Cleric', 'Sorcerer', 'Wizard'],
     isSRD: true
   },
@@ -725,6 +745,7 @@ export const srdSpells: DndSpell[] = [
     components: 'V, S',
     duration: 'Instantaneous',
     description: 'You extend your hand toward a creature you can see within range and project a puff of noxious gas from your palm. The creature must succeed on a Constitution saving throw or take 1d12 poison damage.  This spell\'s damage increases by 1d12 when you reach 5th level (2d12), 11th level (3d12), and 17th level (4d12).',
+    savingThrowAbility: 'constitution',
     classes: ['Druid', 'Sorcerer', 'Warlock', 'Wizard'],
     isSRD: true
   },
@@ -749,6 +770,7 @@ export const srdSpells: DndSpell[] = [
     components: 'V, S',
     duration: '10 minutes',
     description: 'A flickering flame appears in your hand. The flame remains there for the duration and harms neither you nor your equipment. The flame sheds bright light in a 10-foot radius and dim light for an additional 10 feet. The spell ends if you dismiss it as an action or if you cast it again.  You can also attack with the flame, although doing so ends the spell. When you cast this spell, or as an action on a later turn, you can hurl the flame at a creature within 30 feet of you. Make a ranged spell attack. On a hit, the target takes 1d8 fire damage.  This spell\'s damage increases by 1d8 when you reach 5th level (2d8), 11th level (3d8), and 17th level (4d8).',
+    requiresAttackRoll: true,
     classes: ['Druid'],
     isSRD: true
   },
@@ -785,6 +807,7 @@ export const srdSpells: DndSpell[] = [
     components: 'V, S',
     duration: 'Instantaneous',
     description: 'A frigid beam of blue-white light streaks toward a creature within range. Make a ranged spell attack against the target. On a hit, it takes 1d8 cold damage, and its speed is reduced by 10 feet until the start of your next turn.  The spell’s damage increases by 1d8 when you reach 5th level (2d8), 11th level (3d8), and 17th level (4d8).',
+    requiresAttackRoll: true,
     classes: ['Sorcerer', 'Wizard'],
     isSRD: true
   },
@@ -797,6 +820,8 @@ export const srdSpells: DndSpell[] = [
     components: 'V, S',
     duration: 'Instantaneous',
     description: 'A ray of sickening greenish energy lashes out toward a creature within range. Make a ranged spell attack against the target. On a hit, the target takes 2d8 poison damage and must make a Constitution saving throw. On a failed save, it is also poisoned until the end of your next turn.',
+    requiresAttackRoll: true,
+    savingThrowAbility: 'constitution',
     higherLevel: 'When you cast this spell using a spell slot of 2nd level or higher, the damage increases by 1d8 for each slot level above 1st.',
     classes: ['Sorcerer', 'Wizard'],
     isSRD: true
@@ -834,6 +859,7 @@ export const srdSpells: DndSpell[] = [
     components: 'V, S',
     duration: 'Instantaneous',
     description: 'Flame-like radiance descends on a creature that you can see within range. The target must succeed on a Dexterity saving throw or take 1d8 radiant damage. The target gains no benefit from cover for this saving throw.  The spell’s damage increases by 1d8 when you reach 5th level (2d8), 11th level (3d8), and 17th level (4d8).',
+    savingThrowAbility: 'dexterity',
     classes: ['Cleric'],
     isSRD: true
   },
@@ -846,6 +872,7 @@ export const srdSpells: DndSpell[] = [
     components: 'V, S, M (a small silver mirror)',
     duration: '1 minute',
     description: 'You ward a creature within range against attack. Until the spell ends, any creature who targets the warded creature with an attack or a harmful spell must first make a Wisdom saving throw. On a failed save, the creature must choose a new target or lose the attack or spell. This spell doesn’t protect the warded creature from area effects, such as the explosion of a fireball.  If the warded creature makes an attack or casts a spell that affects an enemy creature, this spell ends.',
+    savingThrowAbility: 'wisdom',
     classes: ['Cleric'],
     isSRD: true
   },
@@ -870,6 +897,7 @@ export const srdSpells: DndSpell[] = [
     components: 'V',
     duration: 'Concentration, up to 1 minute',
     description: 'The next time you hit a creature wiht a melee weapon attack during the spell\'s duration, your weapon flares with white-hot intensity, and the attack deals an extra 1d6 fire damage to the target and causes the target to ignite in flames. At the start of each of its turns until the spell ends, the target must make a Constitution saving throw. On a failed save, it takes 1d6 fire damage. On a successful save, the spell ends. If the target or a creature within 5 feet of it uses an action to put out the flames, or if some other effect douses the flames (such as the target being submerged in water), the spell ends.',
+    savingThrowAbility: 'constitution',
     higherLevel: 'When you cast this spell using a spell slot of 2nd level or higher, the initial extra damage dealt by the attack increases by 1d6 for each slot level above 1st.',
     classes: ['Paladin'],
     isSRD: true
@@ -993,6 +1021,7 @@ export const srdSpells: DndSpell[] = [
     components: 'V',
     duration: 'Concentration, up to 1 minute',
     description: 'The first time you hit with a melee weapon attack during this spell\'s duration, your weapon rings with thunder that is audible within 300 feet of you, and the attack deals an extra 2d6 thunder damage to the target. Additionally, if the target is a creature, it must succeed on a Strength saving throw or be pushed 10 feet away from you and knocked prone.',
+    savingThrowAbility: 'strength',
     classes: ['Paladin'],
     isSRD: true
   },
@@ -1005,6 +1034,7 @@ export const srdSpells: DndSpell[] = [
     components: 'V, S',
     duration: 'Instantaneous',
     description: 'A wave of thunderous force sweeps out from you. Each creature in a 15-foot cube originating from you must make a Constitution saving throw. On a failed save, a creature takes 2d8 thunder damage and is pushed 10 feet away from you. On a successful save, the creature takes half as much damage and isn’t pushed. In addition, unsecured objects that are completely within the area of effect are automatically pushed 10 feet away from you by the spell’s effect, and the spell emits a thunderous boom audible out to 300 feet.',
+    savingThrowAbility: 'constitution',
     higherLevel: 'When you cast this spell using a spell slot of 2nd level or higher, the damage increases by 1d8 for each slot level above 1st.',
     classes: ['Bard', 'Druid', 'Sorcerer', 'Wizard'],
     isSRD: true
@@ -1043,6 +1073,7 @@ export const srdSpells: DndSpell[] = [
     components: 'V',
     duration: 'Instantaneous',
     description: 'You unleash a string of insults laced with subtle enchantments at a creature you can see within range. If the target can hear you (though it need not understand you), it must succeed on a Wisdom saving throw or take 1d4 psychic damage and have disadvantage on the next attack roll it makes before the end of its next turn.  This spell\'s damage increases by 1d4 when you reach 5th level (2d4), 11th level (3d4), and 17th level (4d4).',
+    savingThrowAbility: 'wisdom',
     classes: ['Bard'],
     isSRD: true
   },
@@ -1055,6 +1086,7 @@ export const srdSpells: DndSpell[] = [
     components: 'V, S, M (a twig from a tree that has been struck by lightning)',
     duration: 'Concentration, up to 1 minute',
     description: 'A beam of crackling, blue energy lances out toward a creature within range, forming a sustained arc of lightning between you and the target. Make a ranged spell attack against that creature. On a hit, the target takes 1d12 lightning damage, and on each of your turns for the duration, you can use your action to deal 1d12 lightning damage to the target automatically. The spell ends if you use your action to do anything else. The spell also ends if the target is ever outside the spell\'s range or if it has total cover from you.',
+    requiresAttackRoll: true,
     higherLevel: 'When you cast this spell using a spell slot of 2nd level or higher, the damage increases by 1d12 for each slot level above 1st.',
     classes: ['Sorcerer', 'Warlock', 'Wizard'],
     isSRD: true
@@ -1068,6 +1100,7 @@ export const srdSpells: DndSpell[] = [
     components: 'V',
     duration: 'Concentration, up to 1 minute',
     description: 'The next time you hit with a melee weapon attack during this spell\'s duration, your attack deals an extra 1d6 psychic damage. Additionally, if the target is a creature, it must make a Wisdom saving throw or be frightened of you until the spell ends. As an action, the creature can make a Wisdom check against your spell save DC to steel its resolve and end this spell.',
+    savingThrowAbility: 'wisdom',
     classes: ['Paladin'],
     isSRD: true
   },
@@ -1107,6 +1140,7 @@ export const srdSpells: DndSpell[] = [
     components: 'V',
     duration: '1 minute',
     description: 'You can blind or deafen a foe. Choose one creature that you can see within range to make a Constitution saving throw. If it fails, the target is either blinded or deafened (your choice) for the duration. At the end of each of its turns, the target can make a Constitution saving throw. On a success, the spell ends.',
+    savingThrowAbility: 'constitution',
     higherLevel: 'When you cast this spell using a spell slot of 3rd level or higher, you can target one additional creature for each slot level above 2nd.',
     classes: ['Bard', 'Cleric', 'Sorcerer', 'Wizard'],
     isSRD: true
@@ -1133,6 +1167,7 @@ export const srdSpells: DndSpell[] = [
     components: 'V, S',
     duration: 'Concentration, up to 1 minute',
     description: 'You attempt to suppress strong emotions in a group of people. Each humanoid in a 20-foot-radius sphere centered on a point you choose within range must make a Charisma saving throw; a creature can choose to fail this saving throw if it wishes. If a creature fails its saving throw, choose one of the following two effects. You can suppress any effect causing a target to be charmed or frightened. When this spell ends, any suppressed effect resumes, provided that its duration has not expired in the meantime.  Alternatively, you can make a target indifferent about creatures o f your choice that it is hostile toward. This indifference ends if the target is attacked or harmed by a spell or if it witnesses any of its friends being harmed. When the spell ends, the creature becomes hostile again, unless the DM rules otherwise.',
+    savingThrowAbility: 'charisma',
     classes: ['Bard', 'Cleric'],
     isSRD: true
   },
@@ -1145,6 +1180,7 @@ export const srdSpells: DndSpell[] = [
     components: 'V, S, M (a small, straight piece of iron)',
     duration: 'Concentration, up to 1 minute',
     description: 'Choose a humanoid that you can see within range. The target must succeed on a Wisdom saving throw or be paralyzed for the duration. At the end of each of its turns, the target can make another Wisdom saving throw. On a success, the spell ends on the target.',
+    savingThrowAbility: 'wisdom',
     higherLevel: 'When you cast this spell using a spell slot of 3rd level or higher, you can target one additional humanoid for each slot level above 2nd. The humanoids must be within 30 feet of each other when you target them.',
     classes: ['Bard', 'Cleric', 'Druid', 'Sorcerer', 'Warlock', 'Wizard'],
     ritual: true,
@@ -1283,6 +1319,7 @@ export const srdSpells: DndSpell[] = [
     components: 'V, S, M (an item distasteful to the target)',
     duration: 'Concentration, up to 1 minute',
     description: 'You attempt to send one creature that you can see within range to another plane of existence. The target must succeed on a Charisma saving throw or be banished.  If the target is native to the plane of existance you\'re on, you banish the target to a harmless demiplane. While there, the target is incapacitated. The target remains there until the spell ends, at which point the target reappears in the space it left or in the nearest unoccupied space if that space is occupied.  If the target is native to a different plane of existance than the one you\'re on, the target is banished with a faint popping noise, returning to its home plane. If the spell ends before 1 minute has passed, the target reappears in the space it left or in the nearest unoccupied space if that space is occupied. Otherwise, the target doesn\'t return.',
+    savingThrowAbility: 'charisma',
     higherLevel: 'When you cast this spell using a spell slot of 5th level or higher, you can target one additional creature for each slot level above 4th.',
     classes: ['Cleric', 'Paladin', 'Sorcerer', 'Warlock', 'Wizard'],
     isSRD: true
@@ -1296,6 +1333,7 @@ export const srdSpells: DndSpell[] = [
     components: 'V, S',
     duration: 'Concentration, up to 1 minute',
     description: 'This spell bestows hope and vitality. Choose any number of creatures within range. For the duration, each target has advantage on Wisdom saving throws and death saving throws, and regains the maximum number of hit points possible from any healing.',
+    savingThrowAbility: 'wisdom',
     classes: ['Cleric'],
     isSRD: true
   },
@@ -1308,6 +1346,7 @@ export const srdSpells: DndSpell[] = [
     components: 'V, S',
     duration: 'Instantaneous',
     description: 'Necromantic energy washes over a creature of your choice that you can see within range, draining moisture and vitality from it. The target must make a Constitution saving throw. The target takes 8d8 necrotic damage on a failed save, or half as much damage on a successful one. The spell has no effect on undead or constructs.  If you target a plant creature or a magical plant, it makes the saving throw with disadvantage, and the spell deals maximum damage to it.  If you target a nonmagical plant that isn\'t a creature, such as a tree or shrub, it doesn\'t make a saving throw; it simply withers and dies.',
+    savingThrowAbility: 'constitution',
     higherLevel: 'When you cast this spell using a spell slot of 5th level of higher, the damage increases by 1d8 for each slot level above 4th.',
     classes: ['Druid', 'Sorcerer', 'Warlock', 'Wizard'],
     isSRD: true
@@ -1321,6 +1360,7 @@ export const srdSpells: DndSpell[] = [
     components: 'V, S',
     duration: 'Concentration, up to 1 minute',
     description: '* Choose one ability score. While cursed, the target has disadvantage on ability checks and saving throws made with that ability score.  * While cursed, the target has disadvantage on attack rolls against you.  * While cursed, the target must make a Wisdom saving throw at the start of each of its turns. If it fails, it wastes its action that turn doing nothing.  * While the target is cursed, your attacks and spells deal an extra 1d8 necrotic damage to the target.  A *[remove curse](../remove-curse/ "remove curse (lvl 3)")* spell ends this effect. At the DM’s option, you may choose an alternative curse effect, but it should be no more powerful than those described above. The DM has final say on such a curse’s effect.',
+    savingThrowAbility: 'wisdom',
     higherLevel: 'If you cast this spell using a spell slot of 4th level or higher, the duration is concentration, up to 10 minutes. If you use a spell slot of 5th level or higher, the duration is 8 hours. If you use a spell slot of 7th level or higher, the duration is 24 hours. If you use a 9th level spell slot, the spell lasts until it is dispelled. Using a spell slot of 5th level or higher grants a duration that doesn’t require concentration.',
     classes: ['Bard', 'Cleric', 'Wizard'],
     isSRD: true
@@ -1334,6 +1374,7 @@ export const srdSpells: DndSpell[] = [
     components: 'V',
     duration: 'Concentration, up to 1 minute',
     description: 'The next time you hit a creature with a melee weapon attack during this spell’s duration, your weapon flares with bright light, and the attack deals an extra 3d8 radiant damage to the target. Additionally, the target must succeed on a Constitution saving throw or be blinded until the spell ends.  A creature blinded by this spell makes another Constitution saving throw at the end of each of its turns. On a successful save, it is no longer blinded.',
+    savingThrowAbility: 'constitution',
     classes: ['Paladin'],
     isSRD: true
   },
@@ -1358,6 +1399,7 @@ export const srdSpells: DndSpell[] = [
     components: 'V, S',
     duration: 'Concentration, up to 10 minutes',
     description: 'A storm cloud appears in the shape of a cylinder that is 10 feet tall with a 60-foot radius, centered on a point you can see 100 feet directly above you. The spell fails if you can’t see a point in the air where the storm cloud could appear (for example, if you are in a room that can’t accommodate the cloud).  When you cast the spell, choose a point you can see within range. A bolt of lightning flashes down from the cloud to that point. Each creature within 5 feet of that point must make a Dexterity saving throw. A creature takes 3d10 lightning damage on a failed save, or half as much damage on a successful one. On each of your turns until the spell ends, you can use your action to call down lightning in this way again, targeting the same point or a different one.  If you are outdoors in stormy conditions when you cast this spell, the spell gives you control over the existing storm instead of creating a new one. Under such conditions, the spell’s damage increases by 1d10.',
+    savingThrowAbility: 'dexterity',
     higherLevel: 'When you cast this spell using a spell slot of 4th or higher level, the damage increases by 1d10 for each slot level above 3rd.',
     classes: ['Druid'],
     isSRD: true
@@ -1396,6 +1438,7 @@ export const srdSpells: DndSpell[] = [
     components: 'V, S',
     duration: 'Concentration, up to 1 minute',
     description: 'Creatures of your choice that you can see within range and that can hear you must make a Wisdom saving throw. A target automatically succeeds on this saving throw if it can\'t be charmed. On a failed save, a target is affected by this spell. Until the spell ends, you can use a bonus action on each of your turns to designate a direction that is horizontal to you. Each affected target must use as much of its movement as possible to move in that direction on its next turn. It can take any action before it moves. After moving in this way, it can make another Wisdom save to try to end the effect.  A target isn\'t compelled to move into an obviously deadly hazard, such as a fire or a pit, but it will provoke opportunity attacks to move in the designated direction.',
+    savingThrowAbility: 'wisdom',
     classes: ['Bard'],
     isSRD: true
   },
@@ -1421,6 +1464,7 @@ export const srdSpells: DndSpell[] = [
     components: 'V, S, M (one piece of ammunition or a thrown weapon)',
     duration: 'Instantaneous',
     description: 'You throw a nonmagical weapon or fire a piece of nonmagical ammunition into the air to create a cone of identical weapons that shoot forward and then disappear. Each creature in a 60-foot cone must succeed on a Dexterity saving throw. A creature takes 3d8 damage on a failed save, or half as much damage on a successful one. The damage type is the same as that of the weapon or ammunition used as a component.',
+    savingThrowAbility: 'dexterity',
     classes: ['Ranger'],
     isSRD: true
   },
@@ -1508,6 +1552,7 @@ export const srdSpells: DndSpell[] = [
     components: 'V, S, M (a white feather or the heart of a hen)',
     duration: 'Concentration, up to 1 minute',
     description: 'You project a phantasmal image of a creature’s worst fears. Each creature in a 30-foot cone must succeed on a Wisdom saving throw or drop whatever it is holding and become frightened for the duration.  While frightened by this spell, a creature must take the Dash action and move away from you by the safest available route on each of its turns, unless there is nowhere to move. If the creature ends its turn in a location where it doesn’t have line of sight to you, the creature can make a Wisdom saving throw. On a successful save, the spell ends for that creature.',
+    savingThrowAbility: 'wisdom',
     classes: ['Bard', 'Sorcerer', 'Warlock', 'Wizard'],
     isSRD: true
   },
@@ -1533,6 +1578,7 @@ export const srdSpells: DndSpell[] = [
     components: 'V, S, M (a tiny ball of bat guano and sulfur)',
     duration: 'Instantaneous',
     description: 'A bright streak flashes from your pointing finger to a point you choose within range and then blossoms with a low roar into an explosion of flame. Each creature in a 20-foot-radius sphere centered on that point must make a Dexterity saving throw. A target takes 8d6 fire damage on a failed save, or half as much damage on a successful one.  The fire spreads around corners. It ignites flammable objects in the area that aren\'t being worn or carried.',
+    savingThrowAbility: 'dexterity',
     higherLevel: 'When you cast this spell using a spell slot of 4th level or higher, the damage increases by 1d6 for each slot level above 3rd.',
     classes: ['Sorcerer', 'Wizard'],
     isSRD: true
@@ -1559,6 +1605,7 @@ export const srdSpells: DndSpell[] = [
     components: 'V, S, M (a bit of gauze and a wisp of smoke)',
     duration: 'Concentration, up to 1 hour',
     description: 'You transform a willing creature you touch, along with everything it’s wearing and carrying, into a misty cloud for the duration. The spell ends if the creature drops to 0 hit points. An incorporeal creature isn’t affected.  While in this form, the target’s only method of movement is a flying speed of 10 feet. The target can enter and occupy the space of another creature. The target has resistance to nonmagical damage, and it has advantage on Strength, Dexterity, and Constitution saving throws. The target can pass through small holes, narrow openings, and even mere cracks, though it treats liquids as though they were solid surfaces. The target can\'t fall and remains hovering in the air even when stunned or otherwise incapacitated.  While in the form of a misty cloud, the target can’t talk or manipulate objects, and any objects it w as carrying or holding can’t be dropped, used, or otherwise interacted with. The target can’t attack or cast spells.',
+    savingThrowAbility: 'constitution',
     classes: ['Sorcerer', 'Warlock', 'Wizard'],
     isSRD: true
   },
@@ -1571,6 +1618,7 @@ export const srdSpells: DndSpell[] = [
     components: 'V, S, M (a shaving of licorice root)',
     duration: 'Concentration, up to 1 minute',
     description: 'Choose a willing creature that you can see within range. Until the spell ends, the target’s speed is doubled, it gains a +2 bonus to AC, it has advantage on Dexterity saving throws, and it gains an additional action on each of its turns. That action can be used only to take the Attack (one weapon attack only), Dash, Disengage, Hide, or Use an Object action.  When the spell ends, the target can’t move or take actions until after its next turn, as a wave of lethargy sweeps over it.',
+    savingThrowAbility: 'dexterity',
     classes: ['Sorcerer', 'Wizard'],
     isSRD: true
   },
@@ -1583,6 +1631,7 @@ export const srdSpells: DndSpell[] = [
     components: 'S, M (a glowing stick of incense or a crystal vial filled with phosphorescent material)',
     duration: 'Concentration, up to 1 minute',
     description: 'You create a twisting pattern of colors that weaves through the air inside a 30-foot cube within range. The pattern appears for a moment and vanishes. Each creature in the area who sees the pattern must make a Wisdom saving throw. On a failed save, the creature becomes charmed for the duration. While charmed by this spell, the creature is incapacitated and has a speed of 0.  The spell ends for an affected creature if it takes any damage or if someone else uses an action to shake the creature out of its stupor.',
+    savingThrowAbility: 'wisdom',
     classes: ['Bard', 'Sorcerer', 'Warlock', 'Wizard'],
     isSRD: true
   },
@@ -1595,6 +1644,7 @@ export const srdSpells: DndSpell[] = [
     components: 'V, S',
     duration: 'Concentration, up to 1 minute',
     description: 'The next time you make a ranged w eapon attack during the spell’s duration, the weapon’s ammunition, or the weapon itself if it’s a thrown weapon, transforms into a bolt of lightning. Make the attack roll as normal. The target takes 4d8 lightning damage on a hit, or half as much damage on a miss, instead of the weapon’s normal damage.  Whether you hit or miss, each creature within 10 feet of the target must make a Dexterity saving throw. Each of these creatures takes 2d8 lightning damage on a failed save, or half as much damage on a successful one.  The piece of ammunition or weapon then returns to its normal form.',
+    savingThrowAbility: 'dexterity',
     higherLevel: 'When you cast this spell using a spell slot of 4th level or higher, the damage for both effects of the spell increases by 1d8 for each slot level above 3rd.',
     classes: ['Ranger'],
     isSRD: true
@@ -1608,6 +1658,7 @@ export const srdSpells: DndSpell[] = [
     components: 'V, S, M (holy water or powdered silver and iron worth at least 100 gp, which the spell consumes)',
     duration: '1 hour',
     description: 'You create a 10-foot-radius, 20-foot-tall cylinder of magical energy centered on a point on the ground that you can see within range. Glowing runes appear wherever the cylinder intersects with the floor or other surface.  Choose one or more of the following types of creatures: celestials, elementals, fey, fiends, or undead. The circle affects a creature of the chosen type in the following ways:  * The creature can\'t willingly enter the cylinder by nonmagical means. If the creature tries to use teleportation or interplanar travel to do so, it must first succeed on a Charisma saving throw.  * The creature has disadvantage on attack rolls against targets within the cylinder.  * Targets within the cylinder can\'t be charmed, frightened, or possessed by the creature.  When you cast this spell, you can elect to cause its magic to operate in the reverse direction, preventing a creature of the specified type from leaving the cylinder and protecting targets outside it.',
+    savingThrowAbility: 'charisma',
     higherLevel: 'When you cast this spell using a spell slot of 4th level or higher, the duration increases by 1 hour for each slot level above 3rd.',
     classes: ['Cleric', 'Paladin', 'Warlock', 'Wizard'],
     isSRD: true
@@ -1769,6 +1820,7 @@ export const srdSpells: DndSpell[] = [
     components: 'V, S, M (a pinch of dust and a few drops of water)',
     duration: 'Concentration, up to 1 minute',
     description: 'Until the spell ends, freezing rain and sleet fall in a 20-foot-tall cylinder with a 40-foot radius centered on a point you choose within range. The area is heavily obscured, and exposed flames in the area are doused.  The ground in the area is covered with slick ice, making it difficult terrain. When a creature enters the spell’s area for the first time on a turn or starts its turn there, it must make a Dexterity saving throw. On a failed save, it falls prone.  If a creature is concentrating in the spell’s area, the creature must make a successful Constitution saving throw against your spell save DC or lose concentration.',
+    savingThrowAbility: 'dexterity',
     classes: ['Druid', 'Sorcerer', 'Wizard'],
     isSRD: true
   },
@@ -1781,6 +1833,7 @@ export const srdSpells: DndSpell[] = [
     components: 'V, S, M (a drop of molasses)',
     duration: 'Concentration, up to 1 minute',
     description: 'You alter time around up to six creatures of your choice in a 40-foot cube within range. Each target must succeed on a wisdom saving throwor be affected by this spell for the duration.  An affected target’s speed is halved, it takes a -2 penalty to AC and Dexterity saving throws, and it can’t use reactions. On its turn, it can use either an action or a bonus action, not both. Regardless of the creature’s abilities or magic items, it can’t make more than one melee or ranged attack during its turn.  If the creature attempts to cast a spell with a casting time of 1 action, roll a d20. On an 11 or higher, the spell doesn’t take effect until the creature’s next turn, and the creature must use its action on that turn to complete the spell. If it can’t, the spell is wasted.  A creature affected by this spell makes another Wisdom saving throwat the end of its turn. On a successful save, the effect ends for it.',
+    savingThrowAbility: 'wisdom',
     classes: ['Sorcerer', 'Wizard'],
     isSRD: true
   },
@@ -1817,6 +1870,7 @@ export const srdSpells: DndSpell[] = [
     components: 'V, S, M (a holy symbol)',
     duration: 'Concentration, up to 10 minutes',
     description: 'You call forth spirits to protect you. They flit around you to a distance of 15 feet for the duration. If you are good or neutral, their spectral form appears angelic or fey (your choice). If you are evil, they appear fiendish.  When you cast this spell, you can designate any number of creatures you can see to be unaffected by it. An affected creature’s speed is halved in the area, and when the creature enters the area for the first time on a turn or starts its turn there, it must make a Wisdom saving throw. On a failed save, the creature takes 3d8 radiant damage (if you are good or neutral) or 3d8 necrotic damage (if you are evil). On a successful save, the creature takes half as much damage.',
+    savingThrowAbility: 'wisdom',
     higherLevel: 'When you cast this spell using a spell slot of 4th level or higher, the damage increases by 1d8 for each slot level above 3rd.',
     classes: ['Cleric'],
     isSRD: true
@@ -1830,6 +1884,7 @@ export const srdSpells: DndSpell[] = [
     components: 'V, S, M (a rotten egg or several skunk cabbage leaves)',
     duration: 'Concentration, up to 1 minute',
     description: 'You create a 20-foot-radius sphere of yellow, nauseating gas centered on a point within range. The cloud spreads around corners, and its area is heavily obscured. The cloud lingers in the air for the duration.  Each creature that is completely within the cloud at the start of its turn must make a Constitution saving throw against poison. On a failed save, the creature spends its action that turn retching and reeling. Creatures that don’t need to breathe or are immune to poison automatically succeed on this saving throw.  A moderate wind (at least 10 miles per hour) disperses the cloud after 4 rounds. A strong wind (at least 20 miles per hour) disperses it after 1 round.',
+    savingThrowAbility: 'constitution',
     classes: ['Bard', 'Sorcerer', 'Wizard'],
     isSRD: true
   },
@@ -1842,6 +1897,7 @@ export const srdSpells: DndSpell[] = [
     components: 'V, S, M (three nut shells)',
     duration: 'Concentration, up to 1 minute',
     description: 'This spell assaults and twists creatures\' minds, spawning delusions and provoking uncontrolled action. Each creature in a 10-foot radius sphere centered on a point you choose within range must succeed on a Wisdom saving throw when you cast this spell or by affected by it.  An affected target can\'t take reactions and must roll a d10 at the start of each of its turns to determine its behaviour for that turn.  1: The creature uses all its Movement to move in a random direction. To determine the direction, roll a d8 and assign a direction to each die face. The creature doesn\'t take an action this turn. 2-6: The creature doesn\'t move or take Actions this turn. 7-8: The creature uses its action to make a melee Attack against a randomly determined creature within its reach. If there is no creature within its reach, the creature does nothing this turn. 9-10: The creature can act and move normally.  At the end of each of its turns, an affected target can make a Wisdom saving throw. If it succeeds, this effect ends for that target',
+    savingThrowAbility: 'wisdom',
     higherLevel: 'When you cast this spell using a spell slot of 5th level or higher, the radius of the sphere increases by 5 feet for each spell slot above 4th.',
     classes: ['Bard', 'Druid', 'Sorcerer', 'Wizard'],
     isSRD: true
@@ -1868,6 +1924,7 @@ export const srdSpells: DndSpell[] = [
     components: 'V, S, M (a drop of water and a pinch of dust)',
     duration: 'Concentration, up to 10 minutes',
     description: 'Until the spell ends, you control any freestanding water inside an area you choose that is a cube up to 100 feet on a side. You can choose from any of the following effects when you cast this spell. As an action on your turn, you can repeat the same effect or choose a different one.  Flood: You cause the water level of all standing water in the area to rise by as much as 20 feet. If the area includes a shore, the flooding water spills over onto dry land. If you choose an area in a large body of water, you instead create a 20-foot tall wave that travels from one side of the area to the other and then crashes down. Any Huge or smaller vehicles in the wave\'s path are carried with it to the other side. Any Huge or smaller vehicles struck by the wave have a 25 percent chance of capsizing. The water level remains elevated until the spell ends or you choose a different Effect. If this Effect produced a wave, the wave repeats on the start of your next turn while the flood Effect lasts.  Part Water: You cause water in the area to move apart and create a Trench. The Trench extends across the spell\'s area, and the separated water forms a wall to either side. The Trench remains until the spell ends or you choose a different Effect. The water then slowly fills in the Trench over the course of the next round until the normal water level is restored.  Redirect Flow: You cause flowing water in the area to move in a direction you choose, even if the water has to flow over Obstacles, up walls, or in other unlikely Directions. The water in the area moves as you direct it, but once it moves beyond the spell\'s area, it resumes its flow based on the terrain Conditions. The water continues to move in the direction you chose until the spell ends or you choose a different Effect.  Whirlpool: This Effect requires a body of water at least 50 feet square and 25 feet deep. You cause a whirlpool to form in the center of the area. The whirlpool forms a vortex that is 5 feet wide at the base, up to 50 feet wide at the top, and 25 feet tall. Any creature or object in the water and within 25 feet of the vortex is pulled 10 feet toward it. A creature can swim away from the vortex by making a Strength (Athletics) check against your spell save DC. When a creature enters the vortex for the first time on a turn or starts its turn there, it must make a Strength saving throw. On a failed save, the creature takes 2d8 bludgeoning damage and is caught in the vortex until the spell ends. On a successful save, the creature takes half damage, and isn\'t caught in the vortex. A creature caught in the vortex can use its action to try to swim away from the vortex as described above, but has disadvantage on the Strength (Athletics) check to do so. The first time each turn that an object enters the vortex, the object takes 2d8 bludgeoning damage, this damage occurs each round it remains in the vortex.',
+    savingThrowAbility: 'strength',
     classes: ['Cleric', 'Druid', 'Wizard'],
     isSRD: true
   },
@@ -1955,6 +2012,7 @@ export const srdSpells: DndSpell[] = [
     components: 'V, S, M (four or more arrows or bolts)',
     duration: '8 hours',
     description: 'You plant four pieces of nonmagical ammunition—arrows or crossbow bolts—in the ground within range and lay magic upon them to protect an area. Until the spell ends, whenever a creature other than you comes within 30 feet of the ammunition for the first time on a turn or ends its turn there, one piece of ammunition flies up to strike it. The creature must succeed on a Dexterity saving throw or take 1d6 piercing damage. The piece of ammunition is then destroyed. The spell ends when no ammunition remains.  When you cast this spell, you can designate any creatures you choose, and the spell ignores them.',
+    savingThrowAbility: 'dexterity',
     higherLevel: 'When you cast this spell using a spell slot of 3rd level or higher, the amount of ammunition that can be affected increases by two for each slot level above 2nd.',
     classes: ['Ranger'],
     isSRD: true
@@ -1968,6 +2026,7 @@ export const srdSpells: DndSpell[] = [
     components: 'V, S',
     duration: 'Concentration, up to 1 minute',
     description: 'One humanoid of your choice that you can see within range must succeed on a Wisdom saving throw or become charmed by you for the duration. While the target is charmed in this way, a twisted crown of jagged iron appears on its head, and a madness glows in its eyes. The charmed target must use its action before moving on each of its turns to make a melee attack against a creature other than itself that you mentally choose. The target can act normally on its turn if you choose no creature or if none are within its reach. On your subsequent turns, you must use your action to maintain control over the target, or the spell ends. Also, the target can make a Wisdom saving throw at the end of each of its turns. On a success, the spell ends.',
+    savingThrowAbility: 'wisdom',
     classes: ['Bard', 'Sorcerer', 'Warlock', 'Wizard'],
     isSRD: true
   },
@@ -2004,6 +2063,7 @@ export const srdSpells: DndSpell[] = [
     components: 'V, S, M (a copper piece)',
     duration: 'Concentration, up to 1 minute',
     description: 'For the duration, you can read the thoughts of certain creatures. When you cast the spell and as your action on each turn until the spell ends, you can focus your mind on any one creature that you can see within 30 feet of you. If the creature you choose has an Intelligence of 3 or lower or doesn’t speak any language, the creature is unaffected.  You initially learn the surface thoughts of the creature—what is most on its mind in that moment. As an action, you can either shift your attention to another creature’s thoughts or attempt to probe deeper into the same creature’s mind. If you probe deeper, the target must make a Wisdom saving throw. If it fails, you gain insight into its reasoning (if any), its emotional state, and something that looms large in its mind (such as something it worries over, loves, or hates). If it succeeds, the spell ends. Either way, the target knows that you are probing into its mind, and unless you shift your attention to another creature’s thoughts, the creature can use its action on its turn to make an Intelligence check contested by your Intelligence check; if it succeeds, the spell ends.  Questions verbally directed at the target creature naturally shape the course of its thoughts, so this spell is particularly effective as part of an interrogation. You can also use this spell to detect the presence of thinking creatures you can’t see. When you cast the spell or as your action during the duration, you can search for thoughts within 30 feet of you. The spell can penetrate barriers, but 2 feet of rock, 2 inches of any metal other than lead, or a thin sheet of lead blocks you. You can’t detect a creature with an Intelligence of 3 or lower or one that doesn’t speak any language.  Once you detect the presence of a creature in this way, you can read its thoughts for the rest of the duration as described above, even if you can’t see it, but it must still be within range.',
+    savingThrowAbility: 'wisdom',
     classes: ['Bard', 'Sorcerer', 'Wizard'],
     isSRD: true
   },
@@ -2040,6 +2100,7 @@ export const srdSpells: DndSpell[] = [
     components: 'V, S, M (either a hump of alum soaked in vinegar for the _antipathy_ effect or a drop of honey for the _sympathy_ effect)',
     duration: '10 days',
     description: 'This spell attracts or repels creatures of your choice. You target something within range, either a Huge or smaller object or creature or an area that is no larger than a 200-foot cube. Then specify a kind of intelligent creature, such as Red Dragons, Goblins, or vampires. You invest the target with an aura that either attracts or repels the specified creatures for the Duration. Choose antipathy or sympathy as the aura\'s Effect.  * Antipathy. The Enchantment causes creatures of the kind you designated to feel an intense urge to leave the area and avoid the target. When such a creature can see the target or comes within 60 feet of it, the creature must succeed on a Wisdom saving throw or become Frightened. The creature remains frightened while it can see the target or is within 60 feet of it. While frightened by the target, the creature must use its Movement to move to the nearest safe spot from which it can\'t see the target. If the creature moves more than 60 feet from the target and can\'t see it, the creature is no longer frightened, but the creature becomes frightened again if it regains sight of the target or moves within 60 feet of it.  * Sympathy. The Enchantment causes the specified creatures to feel an intense urge to approach the target while within 60 feet of it or able to see it. When such a creature can see the target or comes within 60 feet of it, the creature must succeed on a Wisdom saving throw or use its Movement on each of its turns to enter the area or move within reach of the target. When the creature has done so, it can\'t willingly move away from the target. If the target damages or otherwise harms an affected creature, the affected creature can make a Wisdom saving throw to end the Effect, as described below.  * Ending the Effect. If an affected creature ends its turn while not within 60 feet of the target or able to see it, the creature makes a Wisdom saving throw. ON a successful save, the creature is no longer affected by the target and recognizes the feeling of repugnance or attraction as magical. In addition, a creature affected by the Spells is allowed another Wisdom saving throw every 24 hours while the spell persists.  A creature that successfully saves against this Effect is immune to it for 1 minute, after which time it can be affected again.',
+    savingThrowAbility: 'wisdom',
     classes: ['Druid', 'Wizard'],
     isSRD: true
   },
@@ -2100,6 +2161,7 @@ export const srdSpells: DndSpell[] = [
     components: 'V, S',
     duration: 'Concentration, up to 1 hour',
     description: 'You attempt to beguile a creature that you can see within range. It must succeed on a Wisdom saving throw or be charmed by you for the duration. If you or creatures that are friendly to you are fighting it, it has advantage on the saving throw.  While the creature is charmed, you have a telepathic link with it as long as the two of you are on the same plane of existence. You can use this telepathic link to issue commands to the creature while you are conscious (no action required), which it does its best to obey. You can specify a simple and general course of action, such as "Attack that creature," "Run over there," or "Fetch that object." If the creature completes the order and doesn\'t receive further direction from you, it defends and preserves itself to the best of its ability.  You can use your action to take total and precise control of the target. Until the end of your next turn, the creature takes only the actions you choose, and doesn\'t do anything that you don\'t allow it to do. During this time, you can also cause the creature to use a reaction, but this requires you to use your own reaction as well.  Each time the target takes damage, it makes a new Wisdom saving throw against the spell. If the saving throw succeeds, the spell ends.',
+    savingThrowAbility: 'wisdom',
     higherLevel: 'When you cast this spell with a 9th-level spell slot, the duration is concentration, up to 8 hours.',
     classes: ['Bard', 'Sorcerer', 'Warlock', 'Wizard'],
     isSRD: true
@@ -2113,6 +2175,7 @@ export const srdSpells: DndSpell[] = [
     components: 'V, S, M (a pinch of dirt, a piece of rock, and a lump of clay)',
     duration: 'Concentration, up to 1 minute',
     description: 'You create a seismic disturbance at a point on the ground that you can see within range. For the duration, an intense tremor rips through the ground in a 100-foot-radius circle centered on that point and shakes creatures and structures in contact with the ground in that area.  The ground in the area becomes difficult terrain. Each creature on the ground that is concentrating must make a Constitution saving throw. On a failed save, the creature\'s concentration is broken.  When you cast this spell and at the end of each turn you spend concentrating on it, each creature on the ground in the area must make a Dexterity saving throw. On a failed save, the creature is knocked prone.  This spell can have additional effects depending on the terrain in the area, as determined by the DM.  Fissures. Fissures open throughout the spell\'s area at the start of your next turn after you cast the spell. A total of 1d6 such fissures open in locations chosen by the DM. Each is 1d10 x 10 feet deep, 10 feet wide, and extends from one edge of the spell\'s area to the opposite side. A creature standing on a spot where a fissure opens must succeed on a Dexterity saving throw or fall in. A creature that successfully saves moves with the fissure\'s edge as it opens. A fissure that opens beneath a structure causes it to automatically collapse (see below).  Structures. The tremor deals 50 bludgeoning damage to any structure in contact with the ground in the area when you cast the spell and at the start of each of your turns until the spell ends. If a structure drops to 0 hit points, it collapses and potentially damages nearby creatures. A creature within half the distance of a structure\'s height must make a Dexterity saving throw. On a failed save, the creature takes 5d6 bludgeoning damage, is knocked prone, and is buried in the rubble, requiring a DC 20 Strength (Athletics) check as an action to escape. The DM can adjust the DC higher or lower, depending on the nature of the rubble. On a successful save, the creature takes half as much damage and doesn\'t fall prone or become buried.',
+    savingThrowAbility: 'constitution',
     classes: ['Cleric', 'Druid', 'Sorcerer'],
     isSRD: true
   },
@@ -2125,6 +2188,7 @@ export const srdSpells: DndSpell[] = [
     components: 'V, S, M (a handful fo clay, crystal, glass, or mineral spheres)',
     duration: 'Instantaneous',
     description: 'You blast the mind of a creature that you can see within range, attempting to shatter its intellect and personality. The target takes 4d6 psychic damage and must amke an Intelligence saving throw.  On a failed save, the creature\'s Intelligence and Charisma scores become 1. The creature can\'t cast spells, activate magic items, understand language, or communicate in any intelligible way. The creature can, however, identify its friends, follow them, and even protect them.  At the end of every 30 days, the creature can repeat its saving throw against this spell. If it succeeds on its saving throw, the spell ends.  The spell can also be ended by _[greater restoration](../greater-restoration/ "greater restoration (lvl 5)")_, _[heal](../heal/ "heal (lvl 6)")_, or _[wish](../wish/ "wish (lvl 9)")_.',
+    savingThrowAbility: 'intelligence',
     classes: ['Bard', 'Druid', 'Warlock', 'Wizard'],
     isSRD: true
   },
@@ -2173,6 +2237,7 @@ export const srdSpells: DndSpell[] = [
     components: 'V, S, M (a tiny reliquary worth at least 1,000 gp containing a sacred relic, such as a scrap of cloth from a saint\'s robe or a piece of parchment from a religious text)',
     duration: 'Concentration, up to 1 minute',
     description: 'Divine light washes out from you and coalesces in a soft radiance in a 30-foot radius around you. Creatures of your choice in that radius when you cast this spell shed dim light in a 5-foot radius and have advantage on all saving throws, and other creatures have disadvantage on attack rolls against them until the spell ends. In addition, when a fiend or an undead hits an affected creature with a melee attack, the aura flashes with brilliant light. The attacker must succeed on a Constitution saving throw or be blinded until the spell ends.',
+    savingThrowAbility: 'constitution',
     classes: ['Cleric'],
     isSRD: true
   },
@@ -2185,6 +2250,7 @@ export const srdSpells: DndSpell[] = [
     components: 'V, S, M (a vellum depiction or a carved statuette in the likeness of the target, and a special component that varies according to the version of the spell you choose, worth at least 500 gb per Hit Die of the target)',
     duration: 'Until dispelled',
     description: 'You create a magical restraint to hold a creature that you can see within range. The target must succeed on a Wisdom saving throw or be bound by the spell; if it succeeds, it is immune to this spell if you cast it again. While affected by this spell, the creature doesn\'t need to breathe, eat, or drink, and it doesn\'t age. Divination spells can\'t locate or perceive the target.  When you cast the spell, you choose one of the following forms of imprisonment.  Burial: The target is entombed far beneath the earth in a Sphere of magical force that is just large enough to contain the target. Nothing can pass through the Sphere, nor can any creature Teleport or use Planar Travel to get into or out of it. The special component for this version of the spell is a small mithral orb.  Chaining: Heavy chains, firmly rooted in the ground, hold the target in place. The target is Restrained until the spell ends, and it can\'t move or be moved by any means until then. The special component for this version of the spell is a fine chain of precious metal.  Hedged Prison: The spell transports the target into a tiny Demiplane that is warded against teleportation and Planar Travel. The Demiplane can be a labyrinth, a cage, a tower, or any similar confined structure or area of your choice. The special component for this version of the spell is a miniature representation of the prison made from jade.  Minimus Containment: The target shrinks to a height of 1 inch and is imprisoned inside a gemstone or similar object. Light can pass through the gemstone normally (allowing the target to see out and other creatures to see in), but nothing else can pass through, even by means of teleportation or Planar Travel. The gemstone can\'t be cut or broken while the spell remains in Effect. The special component for this version of the spell is a large, transparent gemstone, such as a corundum, diamond, or ruby.  Slumber: The target falls asleep and can\'t be awoken. The Special component for this version of the spell consists of rare soporific herbs.  Ending the Spell: During the casting of the spell, in any of its versions, you can specify a condition that will cause the spell to end and release the target. The condition can be as specific or as elaborate as you choose, but the DM must agree that the condition is reasonable and has a likelihood of coming to pass. The Conditions can be based on a creature\'s name, identity, or deity but otherwise must be based on observable Actions or qualities and not based on intangibles such as level, class, or Hit Points.  A _dispel magic_ spell can end the spell only if it is cast as a 9th-level spell, targeting either the prison or the special component used to create it.  You can use a particular special component to create only one prison at a time. If you cast the spell again using the same component, the target of the first casting is immediately freed from its binding.',
+    savingThrowAbility: 'wisdom',
     classes: ['Warlock', 'Wizard'],
     isSRD: true
   },
@@ -2197,6 +2263,7 @@ export const srdSpells: DndSpell[] = [
     components: 'V, S',
     duration: 'Concentration, up to 1 minute',
     description: 'A swirling cloud of smoke shot through with white-hot embers appears in a 20-foot-range. The cloud spreads around corners and is heavily obscured. It lasts for the duration or until a wind of moderate or greater speed (at least 10 miles per hour) disperses it.  When the cloud appears, each creature in it must make a Dexterity saving throw. A creature takes 10d8 fire damage on a failed save, or half as much damage on a successful one. A creature must also make this saving throw when it enters the spell\'s area for the first time on a turn or ends its turn there.  The cloud moves 10 feet directly away from you in a direction that you choose at the start of each of your turns.',
+    savingThrowAbility: 'dexterity',
     classes: ['Sorcerer', 'Wizard'],
     isSRD: true
   },
@@ -2233,6 +2300,7 @@ export const srdSpells: DndSpell[] = [
     components: 'V, S',
     duration: 'Instantaneous',
     description: 'Blazing orbs of fire plummet to the ground at four different points you can see within range. Each creature in a 40-foot-radius sphere centered on each point you choose must make a Dexterity saving throw. The sphere spreads around corners. A creature takes 20d6 fire damage and 20d6 bludgeoning damage on a failed save, or half as much damage on a successful one. A creature in the area of more than one fiery burst is affected only once.  The spell damages objects in the area and ignites flammable objects that aren\'t being worn or carried.',
+    savingThrowAbility: 'dexterity',
     classes: ['Sorcerer', 'Wizard'],
     isSRD: true
   },
@@ -2281,6 +2349,7 @@ export const srdSpells: DndSpell[] = [
     components: 'V',
     duration: 'Instantaneous',
     description: 'You speak a word of power that can overwhelm the mind of one creature you can see within range, leaving it dumbfounded. If the target has 150 hit points or fewer, it is stunned. Otherwise, the spell has no effect.  The stunned target must make a Constitution saving throw at the end of each of its turns.  On a successful save, this stunning effect ends.',
+    savingThrowAbility: 'constitution',
     classes: ['Bard', 'Sorcerer', 'Warlock', 'Wizard'],
     isSRD: true
   },
@@ -2293,6 +2362,7 @@ export const srdSpells: DndSpell[] = [
     components: 'V, S',
     duration: '10 minutes',
     description: 'A shimmering, multicolored plane of light forms a vertical opaque wall--up to 90 feet long, 30 feet high, and 1 inch thick--centered on a point you can see within range. Alternatively, you can shape the wall into a sphere up to 30 feet in diameter centered on a point you choose within range. The wall remains in place for the duration. If you position the wall so that it passes through a space occupied by a creature, the spell fails, and your action and the spell slot are wasted.  The wall sheds bright light out to a range of 100 feet and dim light for an additional 100 feet. You and creatures you designate at the time you cast the spell can pass through and remain near the wall without harm. If another creature that can see the wall moves to within 20 feet of it or starts its turn there, the creature must succeed on a Constitution saving throw or become blinded for 1 minute.  The wall consists of seven layers, each with a different color. When a creature attempts to reach into or pass through the wall, it does so one layer at a time through all thew wall\'s layers. As it passes or reaches through each layer, the creature must make a Dexterity saving throw or be affected by that layer\'s properties as described below.  The wall can be destroyed, also one layer at a time, in order from red to violet, by means specific to each layer. Once a layer is destroyed, it remains so for the Duration of the spell. A rod of cancellation destroys a prismatic wall, but an Antimagic Field has no Effect on it.  Red: The creature takes 10d6 fire damage on a failed save, or half as much damage on a successful one. While this layer is in place, nonmagical Ranged Attacks can\'t pass through the wall. The layer can be destroyed by dealing at least 25 cold damage to it.  Orange: The creature takes 10d6 acid damage on a failed save, or half as much damage on a successful one. While this layer is in place, magical Ranged Attacks can\'t pass through the wall. The layer is destroyed by a Strong Wind.  Yellow: The creature takes 10d6 lightning damage on a failed save, or half as much damage on a successful one. This layer can be destroyed by dealing at least 60 force damage to it.  Green: The creature takes 10d6 poison damage on a failed save, or half as much damage on a successful one. A Passwall spell, or another spell of equal or greater level that can open a portal on a solid surface, destroys this layer.  Blue: The creature takes 10d6 cold damage on a failed save, or half as much damage on a successful one. This layer can be destroyed by dealing at least 25 fire damage to it.  Indigo: On a failed save, the creature is Restrained. It must then make a Constitution saving throw at the end of each of its turns. If it successfully saves three times, the spell ends. If it fails its save three times, it permanently turns to stone and is subjected to the Petrified condition. The successes and failures don\'t need to be consecutive, keep track of both until the creature collects three of a kind. While this layer is in place, Spells can\'t be cast through the wall. The layer is destroyed by bright light shed by a Daylight spell or a similar spell of equal or higher level.  Violet: On a failed save, the creature is Blinded. It must then make a Wisdom saving throw at the start of your next turn. A successful save ends the blindness. If it fails that save, the creature is transported to another plane of the DM\'s choosing and is no longer Blinded. (Typically, a creature that is on a plane that isn\'t its home plane is banished home, while other creatures are usually cast into the Astral or Ethereal planes.) This layer is destroyed by a Dispel Magic spell or a similar spell of equal or higher level that can end Spells and magical Effects.',
+    savingThrowAbility: 'constitution',
     classes: ['Wizard'],
     isSRD: true
   },
@@ -2317,6 +2387,7 @@ export const srdSpells: DndSpell[] = [
     components: 'V, S',
     duration: 'Concentration, up to 1 minute',
     description: 'A churning storm cloud forms, centered on a point you can see and spreading to a radius of 360 feet. Lightning flashes in the area, thunder booms, and strong winds roar. Each creature under the cloud (no more than 5,000 feet beneath the cloud) when it appears must make a Constitution saving throw. On a failed save, a creature takes 2d6 thunder damage and becomes deafened for 5 minutes.  Each round you maintain concentration on this spell, the storm produces additional effects on your turn.  Round 2: Acidic rain falls from the cloud. Each creature and object under the cloud takes 1d6 acid damage.  Round 3: You call six bolts of lightning from the cloud to strike six creatures or Objects of your choice beneath the cloud. A given creature or object can\'t be struck by more than one bolt. A struck creature must make a Dexterity saving throw. The creature takes 10d6 lightning damage on a failed save, or half as much damage on a successful one.  Round 4: Hailstones rain down from the cloud. Each creature under the cloud takes 2d6 bludgeoning damage.  Round 5-10: Gusts and freezing rain assail the area under the cloud. the area becomes Difficult Terrain and is heavily obscured. Each creature there takes 1d6 cold damage. Ranged weapon attacks in the area are impossible. The wind and rain count as a severe distraction for the purposes of maintaining Concentration on Spells. Finally, gusts of Strong Wind (ranging from 20 to 50 miles per hour) automatically disperse fog, mists, and similar phenomena in the area whether mundane or magical.',
+    savingThrowAbility: 'constitution',
     classes: ['Druid'],
     isSRD: true
   },
@@ -2341,6 +2412,7 @@ export const srdSpells: DndSpell[] = [
     components: 'V, S, M (fire and a piece of sunstone)',
     duration: 'Instantaneous',
     description: 'Brilliant sunlight flashes in a 60-foot radius centered on a point you choose within range. Each creature in that light must make a Constitution saving throw. On a failed save, a creature takes 12d6 radiant damage and is blinded for 1 minute. On a successful save, it takes half as much damage and isn\'t blinded by this spell. Undead and oozes have disadvantage on this saving throw.  A creature blinded by this spell makes another Constitution saving throw at the end of each of its turns. On a successful save, it is no longer blinded.  This spell dispels any darkness in its area that was created by a spell.',
+    savingThrowAbility: 'constitution',
     classes: ['Druid', 'Sorcerer', 'Wizard'],
     isSRD: true
   },
@@ -2365,6 +2437,7 @@ export const srdSpells: DndSpell[] = [
     components: 'V, S, M (a drop of mercury, a dollop of gum arabic, and a wisp of smoke)',
     duration: 'Concentration, up to 1 hour',
     description: 'Choose one creature or nonmagical object that you can see within range. You transform the creature into a different creature, the creature into an object or the object into a creature (the object must be neither worn nor carried by another creature). The transformation lasts for the duration, or until the target drops to 0 hit points or dies. If you concentrate on this spell for the full duration, the transformation lasts until it is dispelled.  Shapechangers aren\'t affected by this spell. An unwilling creature can make a Wisdom saving throw, and if it succeeds, it isn\'t affected by this spell.  Creature into Creature: If you turn a creature into another kind of creature, the new form can be any kind you choose whose Challenge Rating is equal to or less than the target\'s (or its level, if the target doesn\'t have a Challenge rating). The target\'s game Statistics, including mental Ability Scores, are replaced by the Statistics of the new form. It retains its Alignment and Personality. The target assumes the Hit Points of its new form, and when it reverts to its normal form, the creature returns to the number of Hit Points it had before it transformed. If it reverts as a result of Dropping to 0 Hit Points, any excess damage carries over to its normal form. As long as the excess damage doesn\'t reduce the creature\'s normal form to 0 Hit Points, it isn\'t knocked Unconscious. The creature is limited in the Actions it can perform by the Nature of its new form, and it can\'t speak, cast Spells, or take any other action that requires hands or Speech unless its new form is capable of such Actions. The target\'s gear melds into the new form. The creature can\'t activate, use, wield, or otherwise benefit from any of its Equipment.  Object into Creature: You can turn an object into any kind of creature, as long as the creature\'s size is no larger than the object\'s size and the creature\'s Challenge Rating is 9 or lower. The creature is friendly to you and your companions. It acts on each of your turns. You decide what action it takes and how it moves. The DM has the creature\'s Statistics and resolves all of its Actions and Movement. If the spell becomes permanent, you no longer control the creature. It might remain friendly to you, depending on how you have treated it.  Creature into Object: If you turn a creature into an object, it transforms along with whatever it is wearing and carrying into that form. The creature\'s Statistics become those of the object, and the creature has no memory of time spent in this form, after the spell ends and it returns to its normal form.',
+    savingThrowAbility: 'wisdom',
     classes: ['Bard', 'Warlock', 'Wizard'],
     isSRD: true
   },
@@ -2377,6 +2450,7 @@ export const srdSpells: DndSpell[] = [
     components: 'V, S',
     duration: 'Concentration, up to 6 rounds',
     description: 'A wall of water springs into existence at a point you choose within range. You can make the wall up to 300 feet long, 300 feet high, and 50 feet thick. The wall lasts for the duration.  When the wall appears, each creature within its area must make a Strength saving throw. On a failed save, a creature takes 6d10 bludgeoning damage, or half as much damage on a successful save.  At the start of each of your turns after the wall appears, the wall, along with any creatures in it, moves 50 feet away from you. Any Huge or smaller creature inside the wall or whose space the wall enters when it moves must succeed on a Strength saving throw or take 5d10 bludgeoning damage. A creature can take theis damage only once per round. At the end of the turn, the wall\'s height is reduced by 50 feet, and the damage creatures take from the the spell on subsequent rounds is reduced by 1d10. When the wall reaches 0 feet in height, the spell ends.  A creature caught in the wall can move by swimming. Because of the force of the wave, though, the creature must make a successful Strength (Athletics) check against your spell save DC in order to move at all. If it fails the check, it can\'t move. A creature that moves out of the area falls to the ground.',
+    savingThrowAbility: 'strength',
     classes: ['Druid'],
     isSRD: true
   },
@@ -2401,6 +2475,7 @@ export const srdSpells: DndSpell[] = [
     components: 'V, S',
     duration: 'Concentration, up to 1 minute',
     description: 'Drawing on the deepest fears of a group of creatures, you create illusory creatures in their minds, visible only to them. Each creature in a 30-foot-radius sphere centered on a point of your choice within range must make a Wisdom saving throw. On a failed save, a creature becomes frightened for the duration. The illusion calls on the creature\'s deepest fears, manifesting its worst nightmares as an implacable threat. At the start of each of the frightened creature\'s turns, it must succeed on a Wisdom saving throw or take 4d10 psychic damage. On a successful save, the spell ends for that creature.',
+    savingThrowAbility: 'wisdom',
     classes: ['Wizard'],
     isSRD: true
   },
@@ -2438,6 +2513,7 @@ export const srdSpells: DndSpell[] = [
     components: 'V, S, M (a tiny ball of bat guano and sulfur)',
     duration: 'Concentration, up to 1 minute',
     description: 'A beam of yellow light flashes from your pointing finger, then condenses to linger at a chose point within range as a glowing bead for the duration. When the spell ends, either because your concentration is broken or because you decide to end it, the bead blossoms with a low roar into an explosion of flame that spreads around corners. Each creature in a 20-foot-radius sphere centered on that point must make a Dexterity saving throw. A creature takes fire damage equal to the total accumulated damage on a failed save, or half as much damage on a successful one.  The spell\'s base damage is 12d6. If at the end of your turn the bead has not yet detonated, the damage increases by 1d6.  If the glowing bead is touched before the interval has expired, the creature touching it must make a Dexterity saving throw. On a failed save, the spell ends immediately, causing the bead to erupt in flame. On a successful save, the creature can throw the bead up to 40 feet. When it strikes a creature or a solid object, the spell ends, and the bead explodes.  The fire damages objects in the area dn ignites flammable objects that aren\'t being worn or carried.',
+    savingThrowAbility: 'dexterity',
     higherLevel: 'When you cast theis spell using a spell slot of 8th level or higher, the base damage increases by 1d6 for each slot level above 7th.',
     classes: ['Sorcerer', 'Wizard'],
     isSRD: true
@@ -2463,6 +2539,7 @@ export const srdSpells: DndSpell[] = [
     components: 'V',
     duration: 'Instantaneous',
     description: 'You utter a divine word, imbued with the power that shaped the world at the dawn of creation. Choose any number of creatures you can see within range. Each creature that can hear you must make a Charisma saving throw. On a failed save, a creature suffers an effect based on its current hit points:  * 50 hit points or fewer: deafened for 1 minute * 40 hit points or fewer: deafened and blinded for 10 minutes * 30 hit points or fewer: blinded, deafened, and stunned for 1 hour * 20 hit points or fewer: killed instantly  Regardless of its current hit points, a celestial, an element, a fey or a fiend that fails its save is forced back to its plane of origin (if it isn\'t there already) and can\'t return to your current plane for 24 hours by any means short of a wish spell.',
+    savingThrowAbility: 'charisma',
     classes: ['Cleric'],
     isSRD: true
   },
@@ -2488,6 +2565,7 @@ export const srdSpells: DndSpell[] = [
     components: 'V, S',
     duration: 'Instantaneous',
     description: 'You send negative engery coursing through a creature that you can see within range, causing it searing pain. The target must make a Constitution saving throw. It takes 7d8 + 30 necrotic damage on a failed save, or half as much damage on a successful one.  A humanoid killed by this spell rises at the start of your next turn as a zombie that is permanently under your command, following your verbal orders to the best of its ability.',
+    savingThrowAbility: 'constitution',
     classes: ['Sorcerer', 'Warlock', 'Wizard'],
     isSRD: true
   },
@@ -2500,6 +2578,7 @@ export const srdSpells: DndSpell[] = [
     components: 'V, S',
     duration: 'Instantaneous',
     description: 'A storm made up of sheets of roaring flame appears in a location you choose within range. The area of the storm consists of up to ten 10-foot-cubes, which you can arrange as you wish. Each cube must have at least one face adjacent to the face of another cube. Each creature in the area must make a Dexterity saving throw. It takes 7d10 fire damage on a failed save, or half as much damage on a successful one.  The fire damages objects in the area and ignites flammable objects that aren\'t being worn or carried. If you choose, plant life in the area is unaffected by this spell.',
+    savingThrowAbility: 'dexterity',
     classes: ['Cleric', 'Druid', 'Sorcerer'],
     isSRD: true
   },
@@ -2512,6 +2591,7 @@ export const srdSpells: DndSpell[] = [
     components: 'V, S, M (ruby dust worth 1,500 gp)',
     duration: '1 hour',
     description: 'An immobile, invisible, cube-shaped prison composed of magical force springs into existence around an area you choose within range. The prison can be a cage or a solid box, as you choose.  A prison in the shape of a cage can be up to 20 feet on a side and is made from 1/2-inch diameter bars spaced 1/2-inch apart.  A prison in the shape of a box can be up to 10 feet on a size, creating a solid barrier that prevents any matter from passing through it and blocking any spells cast into or out from the area.  When you cast the spell, any creature that is completely inside the cage\'s area is trapped. Creatures only partially within the area, or those too large to fit inside the area, are pushed away from the center of the area until they are completely outside the area.  A creature inside the cage can\'t leave it by nonmagical means. If the creature tries to use teleportation or interplanar travel to leave the cage, it must first make a Charisma saving throw. On a success, the creature can use that magic to exit the cage. On a failure, the creature can\'t exit the cage and wastes the use of the spell or effect. The cage also extends into the Ethereal Plane, blocking ethereal travel.  This spell can\'t be dispelled by _[dispel magic](../dispel-magic/ "dispel magic (lvl 3)")_.',
+    savingThrowAbility: 'charisma',
     classes: ['Bard', 'Warlock', 'Wizard'],
     isSRD: true
   },
@@ -2536,6 +2616,7 @@ export const srdSpells: DndSpell[] = [
     components: 'V, S',
     duration: 'Instantaneous',
     description: 'Eight multicolored rays of light flash from your hand. Each ray is a different color and has a different power and purpose. Each creature in a 60-foot code must make a Dexterity saving throw. For each target, roll a d8 to determine which color ray affects it.  1-Red: The target takes 10d6 fire damage on a failed save, or half as much damage on a successful one.  2-Orange: The target takes 10d6 acid damage on a failed save, or half as much damage on a successful one.  3-Yellow: The target takes 10d6 lightning damage on a failed save, or half as much damage on a successful one.  4-Green: The target takes 10d6 poison damage on a failed save, or half as much damage on a successful one.  5-Blue: The target takes 10d6 cold damage on a failed save, or half as much damage on a successful one.  6-Indigo: On a failed save, the target is Restrained. It must then make a Constitution saving throw at the end of each of its turns. If it successfully saves three times, the spell ends. If it fails its save three times, it permanently turns to stone and is subjected to the Petrified condition. The successes and failures don\'t need to be consecutive, keep track of both until the target collects three of a kind.  7-Violet: On a failed save, the target is Blinded. It must then make a Wisdom saving throw at the start of your next turn. A successful save ends the blindness. If it fails that save, the creature is transported to another plane of existence of the DM\'s choosing and is no longer Blinded. (Typically, a creature that is on a plane that isn\'t its home plane is banished home, while other creatures are usually cast into the Astral or Ethereal planes.)  8-Special: The target is struck by two rays. Roll twice more, rerolling any 8.',
+    savingThrowAbility: 'dexterity',
     classes: ['Sorcerer', 'Wizard'],
     isSRD: true
   },
@@ -2560,6 +2641,7 @@ export const srdSpells: DndSpell[] = [
     components: 'V, S, M (a forked, metal rod worth at least 250 gp, attuned to a particular plane of existence)',
     duration: 'Instantaneous',
     description: 'You and up to eight willing creatures who link hands in a circle are transported to a different plane of existence. You can specify a target destination in general terms, such as the City of Brass on the Elemental Plane of Fire or the palace of Dispater on the second level of the Nine Hells, and you appear in or near that destination. If you are trying to reach the City of Brass, for example, you might arrive in is Street of Steel, before its Gate of Ashes, or looking at the city from across the Sea of Fire, at the DM\'s discretion.  Alternatively, if you know the sigil sequence of a teleportation circle on another plane of existence, this spell can take you to that circle. If the teleportation circle is too small to hold all the creatures you transported, they appear in the closest unoccupied spaces next to the circle.  You can use this spell to banish an unwilling creature to another plane.  Chose a creature within your reach and make a melee spell attack against it. On a hit, the creature must make a Charisma saving throw. If the creature fails this save, it is transported to a random location on the plane of existence you specify. A creature so transported must find its own way back to your current plane of existence.',
+    savingThrowAbility: 'charisma',
     classes: ['Cleric', 'Druid', 'Sorcerer', 'Warlock', 'Wizard'],
     isSRD: true
   },
@@ -2596,6 +2678,7 @@ export const srdSpells: DndSpell[] = [
     components: 'V, S, M (a lodestone and iron filings)',
     duration: 'Concentration, up to 1 minute',
     description: 'This spell reverses gravity in a 50-foot-radius, 100-foot high cylinder centered on a point within range. All creatures and objects that aren\'t somehow anchored to the ground in the area fall upward and reach the top of the area when you cast this spell. A creature can make a Dexterity saving throw to grab onto a fixed object it can reach, thus avoiding the fall.  If some solid object (such as a ceiling) is encountered in this fall, falling objects and creature strike it just as they would during a normal downward fall. If an object or creature reaches the top of the area without striking anything, it remains there, oscillating slightly, for the duration.  At the end of the duration, affected objects and creatures fall back down.',
+    savingThrowAbility: 'dexterity',
     classes: ['Druid', 'Sorcerer', 'Wizard'],
     isSRD: true
   },
@@ -2632,6 +2715,7 @@ export const srdSpells: DndSpell[] = [
     components: 'V, S, M (mercury, phosphorus, and powdered diamond and opal with a total value of at least 1,000 gp, which the spell consumes)',
     duration: 'Until dispelled or triggered',
     description: 'When you cast this spell, you inscribe a harmful glyph either on a surface (such as a section of floor, a wall, or a table) or within an object that can be closed to conceal the glyph (such as a book, a scroll, or a treasure chest). If you choose a surface, the glyph can cover an area of the surface no larger than 10 feet in diameter. If you choose an object, that object must remain in its place; if the object is moved more than 10 feet from where you cast this spell, the glyph is broken, and the spell ends without being triggered.  The glyph is nearly invisible, requiring an Intelligence (Investigation) check against your spell save DC to find it.  You decide what triggers the glyph when you cast the spell. For glyphs inscribed on a surface, the most typical triggers include touching or stepping on the glyph, removing another object covering it, approaching within a certain distance of it, or manipulating the object that holds it. For glyphs inscribed within an object, the most common triggers are opening the object, approaching within a certain distance of it, or seeing or reading the glyph.  You can further refine the trigger so the spell is activated only under certain circumstances or according to a creature\'s physical characteristics (such as height or weight), or physical kind (for example, the ward could be set to affect hags or shapechangers). You can also specify creatures that don\'t trigger the glyph, such as those who say a certain password.  When you inscribe the glyph, choose one of the options below for its effect. Once triggered, the glyph glows, filling a 60-foot-radius sphere with dim light for 10 minutes, after which time the spell ends. Each creature in the sphere when the glyph activate is targeted by its effect, as is a creature that enters the sphere for the first time on a turn or ends its turn there.  Death: Each target must make a Constitution saving throw, taking 10d10 necrotic damage on a failed save, or half as much damage on a successful save.  Discord: Each target must make a Constitution saving throw. On a failed save, a target bickers and argues with other creatures for 1 minute. During this time, it is incapable of meaningful Communication and has disadvantage on Attack Rolls and Ability Checks.  Fear: Each target must make a Wisdom saving throw and becomes Frightened for 1 minute on a failed save. While Frightened, the target drops whatever it is holding and must move at least 30 feet away from the glyph on each of its turns, if able.  Hopelessness: Each target must make a Charisma saving throw. On a failed save, the target is overwhelmed with despair for 1 minute. During this time, it can\'t Attack or target any creature with harmful Abilities, Spells, or other magical Effects.  Insanity: Each target must make an Intelligence saving throw. On a failed save, the target is driven insane for 1 minute. An insane creature can\'t take Actions, can\'t understand what other creatures say, can\'t read, and speaks only in gibberish. The DM controls its Movement, which is erratic.  Pain: Each target must make a Constitution saving throw and becomes Incapacitated with excruciating pain for 1 minute on a failed save.  Sleep: Each target must make a Wisdom saving throw and falls Unconscious for 10 minutes on a failed save. A creature awakens if it takes damage or if someone uses an action to shake or slap it awake.  Stunning: Each target must make a Wisdom saving throw and becomes Stunned for 1 minute on a failed save.',
+    savingThrowAbility: 'constitution',
     classes: ['Bard', 'Cleric', 'Wizard'],
     isSRD: true
   },
@@ -2656,6 +2740,7 @@ export const srdSpells: DndSpell[] = [
     components: 'V, M (a snake\'s tongue and either a bit of honeycomb or a drop of sweet oil)',
     duration: 'Concentration, up to 8 hours',
     description: 'You suggest a course of activity (limited to a sentence or two) and magically influence a creature you can see within range that can hear and understand you. Creatures that can\'t be charmed are immune to this effect. The suggestion must be worded in such a manner as to make the course of action sound reasonable. Asking the creature to stab itself, throw itself onto a spear, immolate itself, or do some other obviously harmful act ends the spell.  The target must make a Wisdom saving throw. On a failed save, it pursues the course of action you described to the best of its ability. The suggested course of action can continue for the entire duration. If the suggested activity can be completed in a shorter time, the spell ends when the subject finishes what it was asked to do.  You can also specify conditions that will trigger a special activity during the duration. For example, you might suggest that a knight give her warhorse to the first beggar she meets. If the condition isn\'t met before the spell expires, the activity isn\'t performed.  If you or any of your companions damage the target, the spell ends.',
+    savingThrowAbility: 'wisdom',
     classes: ['Bard', 'Sorcerer', 'Warlock', 'Wizard'],
     isSRD: true
   },
@@ -2742,6 +2827,7 @@ export const srdSpells: DndSpell[] = [
     components: 'V, S, M (a bit of fur; a piece of amber, glass or a crystal rod; and three silver pins)',
     duration: 'Instantaneous',
     description: 'You create a bolt of lightning that arcs toward a target of your choice that you can see within range. Three bolts then leap from that target to as many as three other targets, each of which must be within 30 feet of the first target. A target can be a creature or an object and can be targeted by only one of the bolts.  A target must make a Dexterity saving throw. The target takes 10d8 lightning damage on a failed save, or half as much damage on a successful one.',
+    savingThrowAbility: 'dexterity',
     higherLevel: 'When you cast this spell using a spell slot of 7th level or higher, one additional bolt leaps from the first target to another target for each slot level above 6th.',
     classes: ['Sorcerer', 'Wizard'],
     isSRD: true
@@ -2755,6 +2841,7 @@ export const srdSpells: DndSpell[] = [
     components: 'V, S',
     duration: 'Concentration, up to 10 minutes',
     description: 'You create a vertical wall of whirling, razor-sharp blades made of magical energy. The wall appears within range and lasts for the duration. You can make a straight wall up to 100 feet long, 20 feet high, and 5 feet thick, or a ringed wall up to 60 feet in diameter, 20 feet high, and 5 feet thick. The wall provides three-quarters cover to creatures behind it, and its space is difficult terrain.  When a creature enters the wall\'s area for the first time on a turn or starts its turn there, the creature must make a Dexterity saving throw. On a failed save, the creature takes 6d10 slashing damage. On a successful save, the creature takes half as much damage.',
+    savingThrowAbility: 'dexterity',
     classes: ['Cleric'],
     isSRD: true
   },
@@ -2767,6 +2854,7 @@ export const srdSpells: DndSpell[] = [
     components: 'V, S, M (the powder of a crushed black pearl worth at least 500 gp)',
     duration: 'Instantaneous',
     description: 'A sphere of negative energy ripples out in a 60-foot- radius sphere from a point within range. Each creature in that area must make a Constitution saving throw. A target takes 8d6 necrotic damage on a failed save, or half as much damage on a successful one.',
+    savingThrowAbility: 'constitution',
     higherLevel: 'When you cast this spell using a spell slot of 7th level or higher, the damage increases by 2d6 for each slot level above 6th.',
     classes: ['Sorcerer', 'Warlock', 'Wizard'],
     isSRD: true
@@ -2792,6 +2880,7 @@ export const srdSpells: DndSpell[] = [
     components: 'V, S',
     duration: 'Concentration, up to 10 minutes',
     description: 'You create a 20-foot-radius sphere of poisonous, yellow-green fog centered on a point you choose within range. The fog spreads around corners. It lasts for the duration or until strong wind disperses the fog, ending the spell. Its area is heavily obscured.  When a creature enters the spell\'s area for the first time on a turn or starts its turn there, that creature must make a Constitution saving throw. The creature takes 5d8 poison damage on a failed save, or half as much damage on a successful one. Creatures are affected even if they hold their breath or don\'t need to breathe.  The fog moves 10 feet away from you at the start of each of your turns, rolling along the surface of the ground. The vapors, being heavier than air, sink to the lowest level of the land, even pouring down openings.',
+    savingThrowAbility: 'constitution',
     higherLevel: 'When you cast this spell using a spell slot of 6th level or higher, the damage increases by 1d8 for each slot level above 5th.',
     classes: ['Sorcerer', 'Wizard'],
     isSRD: true
@@ -2831,6 +2920,7 @@ export const srdSpells: DndSpell[] = [
     components: 'V, S, M (a small crystal or a glass cone)',
     duration: 'Instantaneous',
     description: 'A blast of cold air erupts from your hands. Each creature in a 60-foot cone must make a Constitution saving throw. A creature takes 8d8 cold damage on a failed save, or half as much damage on a successful one.  A creature killed by this spell becomes a frozen statue until it thaws.',
+    savingThrowAbility: 'constitution',
     higherLevel: 'When you cast this spell using a spell slot of 6th level or higher, the damage increases by 1d8 for each slot level above 5th.',
     classes: ['Sorcerer', 'Wizard'],
     isSRD: true
@@ -2870,6 +2960,7 @@ export const srdSpells: DndSpell[] = [
     components: 'V, S, M (one piece of ammunition or one throwing weapon)',
     duration: 'Instantaneous',
     description: 'You fire a piece of nonmagical ammunition from a ranged weapon or throw a nonmagical weapon into the air and choose a point within range. Hundreds of duplicates of the ammunition or weapon fall in a volley from above and then disappear. Each creature in a 40-foot-radius, 20-foot-high cylinder centered on that point must make a Dexterity saving throw. A creature takes 8d8 damage on a failed save, or half as much damage on a successful one. The damage type is the same as that of the ammunition or weapon.',
+    savingThrowAbility: 'dexterity',
     classes: ['Ranger'],
     isSRD: true
   },
@@ -2882,6 +2973,7 @@ export const srdSpells: DndSpell[] = [
     components: 'V',
     duration: '1 minute',
     description: 'You mentally contact a demigod, the spirit of a long-dead sage, or some other mysterious entity from another plane. Contacting this extraplanar intelligence can strain or even break your mind. When you cast this spell, make a DC 15 Intelligence saving throw. On a failure, you take 6d6 psychic damage and are insane until you finish a long rest. While insane, you can\'t take actions, can\'t understand what other creatures say, can\'t read, and speak only in gibberish. A *[greater restoration](../greater-restoration "greater restoration (lvl 5)")* spell cast on you ends this effect.  On a successful save, you can ask the entity up to five questions. You must ask your questions before the spell ends. The DM answers each question with one word, such as "yes," "no," "maybe," "never," "irrelevant," or "unclear" (if the entity doesn\'t know the answer to the question). If a one-word answer would be misleading, the DM might instead offer a short phrase as an answer.',
+    savingThrowAbility: 'intelligence',
     classes: ['Warlock', 'Wizard'],
     ritual: true,
     isSRD: true
@@ -2895,6 +2987,7 @@ export const srdSpells: DndSpell[] = [
     components: 'V, S',
     duration: '7 days',
     description: 'Your touch inflicts disease. Make a melee spell attack against a creature within your reach. On a hit, you afflict the creature with a disease of your choice from any of the ones described below.  At the end of each of the target\'s turns, it must make a Constitution saving throw. After failing three of these saving throws, the disease\'s effects last for the duration, and the creature stops making these saves. After succeeding on three of these saving throws, the creature recovers from the disease, and the spell ends.  Since this spell induces a natural disease in its target, any effect that removes a disease or otherwise ameliorates a disease\'s effects apply to it.  * Blinding Sickness: Pain grips the creature\'s mind, and its eyes turn milky white. The creature has disadvantage on Wisdom Checks and Wisdom Saving Throws and is Blinded. * Filth Fever: A raging fever sweeps through the creature\'s body. The creature has disadvantage on Strength Checks, Strength Saving Throws, and Attack Rolls that use Strength. * Flesh Rot: The creature\'s flesh decays. The creature has disadvantage on Charisma Checks and vulnerability to all damage. * Mindfire: The creature\'s mind becomes feverish. The creature has disadvantage on Intelligence Checks and Intelligence Saving Throws, and the creature behaves as if under the Effects of the Confusion spell during Combat. * Seizure: The creature is overcome with shaking. The creature has disadvantage on Dexterity Checks, Dexterity Saving Throws, and Attack Rolls that use Dexterity. * Slimy Doom: The creature begins to bleed uncontrollably. The creature has disadvantage on Constitution Checks and Constitution Saving Throws. In addition, whenever the creature takes damage, it is Stunned until the end of its next turn.',
+    savingThrowAbility: 'constitution',
     classes: ['Cleric', 'Druid'],
     isSRD: true
   },
@@ -2957,6 +3050,7 @@ export const srdSpells: DndSpell[] = [
     components: 'V',
     duration: 'Instantaneous',
     description: 'You strike the ground, creating a burst of divine energy that ripples outward from you. Each creature you choose within 30 feet of you must succeed on a Constitution saving throw or take 5d6 thunder damage, as well as 5d6 radiant or necrotic damage (your choice), and be knocked prone. A creature that succeeds on its saving throw takes half as much damage and isn\'t knocked prone.',
+    savingThrowAbility: 'constitution',
     classes: ['Paladin'],
     isSRD: true
   },
@@ -2969,6 +3063,7 @@ export const srdSpells: DndSpell[] = [
     components: 'V, S, M (a lodestone and a pinch of dust)',
     duration: 'Instantaneous',
     description: 'A thin green ray springs from your pointing finger to a target that you can see within range. The target can be a creature, an object, or a creation of magical force, such as the wall created by *[wall of force](../wall-of-force/ "wall of force (lvl 5)")*.  A creature targeted by this spell must make a Dexterity saving throw. On a failed save, the target takes 10d6 + 40 force damage. If this damage reduces the target to 0 hit points, it is disintegrated.  A disintegrated creature and everything it is wearing and carrying, except magic items, are reduced to a pile of fine gray dust. The creature can be restored to life only by means of a *[true resurrection](../true-resurrection/ "true resurrection (lvl 9)")* or a *[wish](../wish/ "wish (lvl 9)")* spell.  This spell automatically disintegrates a Large or smaller nonmagical object or a creation of magical force. If the target is a Huge or larger object or creation of force, this spell disintegrates a 10-foot-cube portion of it. A magic item is unaffected by this spell.',
+    savingThrowAbility: 'dexterity',
     higherLevel: 'When you cast this spell using a spell slot of 7th level or higher, the damage increases by 3d6 for each slot level above 6th.',
     classes: ['Sorcerer', 'Wizard'],
     isSRD: true
@@ -2995,6 +3090,7 @@ export const srdSpells: DndSpell[] = [
     components: 'V, S, M (holy water or powdered silver and iron)',
     duration: 'Concentration, up to 1 minute',
     description: 'Shimmering energy surrounds and protects you from fey, undead, and creatures originating from beyond the Material Plane. For the duration, celestials, elementals, fey, fiends, and undead have disadvantage on attack rolls against you.  You can end the spell early by using either of the following special functions.  * Break Enchantment. As your action, you touch a creature you can reach that is charmed, frightened, or possessed by a celestial, an elemental, a fey, a fiend, or an undead. The creature you touch is no longer charmed, frightened, or possessed by such creatures. * Dismissal. As your action, make a melee spell attack against a celestial, an elemental, a fey, a fiend, or an undead you can reach. On a hit, you attempt to drive the creature back to its home plane. The creature must succeed on a Charisma saving throw or be sent back to its home plane (if it isn\'t there already). If they are already on their home plane, undead are sent to the Shadowfell, and fey are sent to the Feywild.',
+    savingThrowAbility: 'charisma',
     classes: ['Cleric', 'Paladin'],
     isSRD: true
   },
@@ -3007,6 +3103,7 @@ export const srdSpells: DndSpell[] = [
     components: 'V, S',
     duration: 'Concentration, up to 1 minute',
     description: 'You attempt to beguile a beast that you can see within range. It must succeed on a Wisdom saving throw or be charmed by you for the duration. If you or creatures that are friendly to you are fighting it, it has advantage on the saving throw.  While the beast is charmed, you have a telepathic link with it as long as the two of you are on the same plane of existence. You can use this telepathic link to issue commands to the creature while you are conscious (no action required), which it does its best to obey. You can specify a simple and general course of action, such as "Attack that creature", "Run over there", or "Fetch that object". If the creature completes the order and doesn\'t receive further direction from you, it defends and preserves itself to the best of its ability.  You can use your action to take total and precise control of the target. Until the end of your next turn, the creature takes only the actions you choose, and doesn\'t do anything that you don\'t allow it to do. During this time, you can also cause the creature to use a reaction, but this requires you to use your own reaction as well. Each time the target takes damage, it makes a new Wisdom saving throw against the spell. If the saving throw succeeds, the spell ends.',
+    savingThrowAbility: 'wisdom',
     higherLevel: 'When you cast this spell with a 5th-level spell slot, the duration is concentration, up to 10 minutes. When you use a 6th-level spell slot, the duration is concentration, up to 1 hour. When you use a spell slot of 7th level or higher, the duration is concentration, up to 8 hours.',
     classes: ['Druid', 'Sorcerer'],
     isSRD: true
@@ -3020,6 +3117,7 @@ export const srdSpells: DndSpell[] = [
     components: 'V, S',
     duration: 'Concentration, up to 1 minute',
     description: 'You attempt to beguile a humanoid that you can see within range. It must succeed on a Wisdom saving throw or be charmed by you for the duration. If you or creatures that are friendly to you are fighting it, it has advantage on the saving throw.  While the target is charmed, you have a telepathic link with it as long as the two of you are on the same plane of existence. You can use this telepathic link to issue commands to the creature while you are conscious (no action required), which it does its best to obey. You can specify a simple and general course of action, such as "Attack that creature", "Run over there", or "Fetch that object". If the creature completes the order and doesn\'t receive further direction from you, it defends and preserves itself to the best of its ability.  You can use your action to take total and precise control of the target. Until the end of your next turn, the creature takes only the actions you choose, and doesn\'t do anything that you don\'t allow it to do. During this time you can also cause the creature to use a reaction, but this requires you to use your own reaction as well. Each time the target takes damage, it makes a new Wisdom saving throw against the spell. If the saving throw succeeds, the spell ends.',
+    savingThrowAbility: 'wisdom',
     higherLevel: 'When you cast this spell using a 6th-level spell slot, the duration is concentration, up to 10 minutes. When you use a 7th-level spell slot, the duration is concentration, up to 1 hour. When you use a spell slot of 8th level or higher, the duration is concentration, up to 8 hours.',
     classes: ['Bard', 'Sorcerer', 'Wizard'],
     isSRD: true
@@ -3033,6 +3131,7 @@ export const srdSpells: DndSpell[] = [
     components: 'V, S, M (a handful of sand, a dab of ink, and a writing quill plucked from a sleeping bird)',
     duration: '8 hours',
     description: 'This spell shapes a creature\'s dreams. Choose a creature known to you as the target of this spell. The target must be on the same plane of existence as you. Creatures that don\'t sleep, such as elves, can\'t be contacted by this spell. You, or a willing creature you touch, enters a trance state, acting as a messenger. While in the trance, the messenger is aware of his or her surroundings, but can\'t take actions or move.  If the target is asleep, the messenger appears in the target\'s dreams and can converse with the target as long as it remains asleep, through the duration of the spell. The messenger can also shape the environment of the dream, creating landscapes, objects, and other images. The messenger can emerge from the trance at any time, ending the effect of the spell early. The target recalls the dream perfectly upon waking. If the target is awake when you cast the spell, the messenger knows it, and can either end the trance (and the spell) or wait for the target to fall asleep, at which point the messenger appears in the target\'s dreams.  You can make the messenger appear monstrous and terrifying to the target. If you do, the messenger can deliver a message of no more than ten words and then the target must make a Wisdom saving throw. On a failed save, echoes of the phantasmal monstrosity spawn a nightmare that lasts the duration of the target\'s sleep and prevents the target from gaining any benefit from that rest. In addition, when the target wakes up, it takes 3d6 psychic damage.  If you have a body part, lock of hair, clipping from a nail, or similar portion of the target\'s body, the target makes its saving throw with disadvantage.',
+    savingThrowAbility: 'wisdom',
     classes: ['Bard', 'Warlock', 'Wizard'],
     isSRD: true
   },
@@ -3058,6 +3157,7 @@ export const srdSpells: DndSpell[] = [
     components: 'V, S, M (a pinch of powdered iron)',
     duration: 'Concentration, up to 1 minute',
     description: 'You cause a creature or an object you can see within range to grow larger or smaller for the duration. Choose either a creature or an object that is neither worn nor carried. If the target is unwilling, it can make a Constitution saving throw. On a success, the spell has no effect. If the target is a creature, everything it is wearing and carrying changes size with it. Any item dropped by an affected creature returns to normal size at once.  Enlarge. The target\'s size doubles in all dimensions, and its weight is multiplied by eight. This growth increases its size by one category – from Medium to Large, for example. If there isn\'t enough room for the target to double its size, the creature or object attains the maximum possible size in the space available. Until the spell ends, the target also has advantage on Strength checks and Strength saving throws. The target\'s weapons also grow to match its new size. While these weapons are enlarged, the target\'s attack with them deal 1d4 extra damage.  Reduce. The target\'s size is halved in all dimensions, and its weight is reduced to one-eighth of normal. This reduction decreases its size by one category – from Medium to Small, for example. Until the spell ends, the target also has disadvantage on Strength checks and Strength saving throws. The target\'s weapons also shrink to match its new size. While these weapons are reduced, the target\'s attacks with them deal 1d4 less damage (this can\'t reduce the damage below 1).',
+    savingThrowAbility: 'constitution',
     classes: ['Sorcerer', 'Wizard'],
     isSRD: true
   },
@@ -3070,6 +3170,7 @@ export const srdSpells: DndSpell[] = [
     components: 'V, S',
     duration: '1 minute',
     description: 'You weave a distracting string of words, causing creatures of your choice that you can see within range and that can hear you to make a Wisdom saving throw. Any creature that can\'t be charmed succeeds on this saving throw automatically, and if you or your companions are fighting a creature, it has advantage on the save. On a failed save, the target has disadvantage on Wisdom (Perception) checks made to perceive any creature other than you until the spell ends or until the target can no longer hear you. The spell ends if you are incapacitated or can no longer speak.',
+    savingThrowAbility: 'wisdom',
     classes: ['Bard', 'Warlock'],
     isSRD: true
   },
@@ -3094,6 +3195,7 @@ export const srdSpells: DndSpell[] = [
     components: 'V, S',
     duration: 'Concentration, up to 1 minute',
     description: 'For the spell\'s duration, your eyes become an inky void imbued with dread power. One creature of your choice within 60 feet of you that you can see must succeed on a Wisdom saving throw or be affected by one of the following effects of your choice for the duration. On each of your turns until the spell ends, you can use your action to target another creature but can\'t target a creature again if it has succeeded on a saving throw against this casting of *eyebite*.  * Asleep: The target falls Unconscious. It wakes up if it takes any damage or if another creature uses its action to shake the sleeper awake. * Panicked: The target is Frightened of you. On each of its turns, the Frightened creature must take the Dash action and move away from you by the safest and shortest available route, unless there is nowhere to move. If the target moves to a place at least 60 feet away from you where it can no longer see you, this Effect ends. * Sickened: The target has disadvantage on Attack Rolls and Ability Checks. At the end of each of its turns, it can make another Wisdom saving throw. If it succeeds, the Effect ends.',
+    savingThrowAbility: 'wisdom',
     classes: ['Bard', 'Sorcerer', 'Warlock', 'Wizard'],
     isSRD: true
   },
@@ -3167,6 +3269,7 @@ export const srdSpells: DndSpell[] = [
     components: 'V, S, M (pinch of sulfur)',
     duration: 'Instantaneous',
     description: 'A vertical column of divine fire roars down from the heavens in a location you specify. Each creature in a 10-foot radius, 40-foot-high cylinder centered on a point within range must make a Dexterity saving throw. A creature takes 4d6 fire damage and 4d6 radiant damage on a failed save, or half as much damage on a successful one.',
+    savingThrowAbility: 'dexterity',
     higherLevel: 'When you cast this spell using a spell slot of 6th level or higher, the fire damage or the radiant damage (your choice) inceases by 1d6 for each slot level above 5th.',
     classes: ['Cleric'],
     isSRD: true
@@ -3180,6 +3283,7 @@ export const srdSpells: DndSpell[] = [
     components: 'V, S, M (a bit of tallow, a pinch of brimstone, and a dusting of powdered iron)',
     duration: 'Concentration, up to 1 minute',
     description: 'A 5-foot-diameter sphere of fire appears in an unoccupied space of your choice within range and lasts for the duration. Any creature that ends its turn within 5 feet of the sphere must make a Dexterity saving throw. The creature takes 2d6 fire damage on a failed save, or half as much damage on a successful one.  As a bonus action, you can move the sphere up to 30 feet. If you ram the sphere into a creature, that creature must make the saving throw against the sphere\'s damage, and the sphere stops moving this turn.  When you move the sphere, you can direct it over barriers up to 5 feet tall and jump it across pits up to 10 feet wide. The sphere ignites flammable objects not being worn or carried, and it sheds bright light in a 20-foot radius and dim light for an additional 20 feet.',
+    savingThrowAbility: 'dexterity',
     higherLevel: 'When you cast this spell using a spell slot of 3rd level or higher, the damage increases by 1d6 for each slot level above 2nd.',
     classes: ['Druid', 'Wizard'],
     isSRD: true
@@ -3193,6 +3297,7 @@ export const srdSpells: DndSpell[] = [
     components: 'V, S, M (a pinch of lime, water, and earth)',
     duration: 'Concentration, up to 1 minute',
     description: 'You attempt to turn one creature that you can see within range into stone. If the target\'s body is made of flesh, the creature must make a Constitution saving throw. On a failed save, it is restrained as its flesh begins to harden. On a successful save, the creature isn\'t affected.  A creature restrained by this spell must make another Consititution saving throw at the end of each of its turns. If it successfully saves against this spell three times, the spell ends. If it fails saves three times, it is turned to stone and subjected to the petrified condition for the duration. The successes and failures don\'t need to be consecutive; keep track of both until the target collects three of a kind.  If the creature is physically broken while petrified, it suffers from similar deformities if it reverts to its original state.  If you maintain your concentration on this spell for the entire possible duration, the creature is turned to stone until the effect is removed.',
+    savingThrowAbility: 'constitution',
     classes: ['Warlock', 'Wizard'],
     isSRD: true
   },
@@ -3230,6 +3335,7 @@ export const srdSpells: DndSpell[] = [
     components: 'V',
     duration: '30 days',
     description: 'You place a magical command on a creature that you can see within range, forcing it to carry out some service or refrain from some action or course of activity as you decide. If the creature can understand you, it must succeed on a Wisdom saving throw or become charmed by you for the duration. While the creature is charmed by you, it takes 5d10 psychic damage each time it acts in a manner directly counter to your instructions, but no more than once each day. A creature that can\'t understand you is unaffected by the spell.  You can issue any command you choose, short of an activity that would result in certain death. Should you issue a suicidal command, the spell ends.  You can end the spell early by using an action to dismiss it. A *[remove curse](../remove-curse/ "remove curse (lvl 3)")*, *[greater restoration](../greater-restoration/ "greater restoration (lvl 5)")*, or *[wish](../wish/ "wish (lvl 9)")* spell also ends it.',
+    savingThrowAbility: 'wisdom',
     higherLevel: 'When you cast this spell using a spell slot of 7th or 8th level, the duration is 1 year. When you cast this spell using a spell slot of 9th level, the spell lasts until it is ended by one of the spells mentioned above.',
     classes: ['Cleric', 'Wizard', 'Paladin', 'Druid', 'Bard'],
     isSRD: true
@@ -3281,6 +3387,7 @@ export const srdSpells: DndSpell[] = [
     components: 'V, S, M, (incense and powdered diamond worth at least 200 gp, which the spell consumes)',
     duration: 'Until dispelled or triggered',
     description: 'When you cast this spell, you inscribe a glyph that harms other creatures, either upon a surface (such as a table or a section of floor or wall) or within an object that can be closed (such as a book, a scroll, or a treasure chest) to conceal the glyph. If you choose a surface, the glyph can cover an area of the surface no larger than 10 feet in diameter. If you choose an object, that object must remain in its place; if the object is moved more than 10 feet from where you cast this spell, the glyph is broken, and the spell ends without being triggered.  The glyph is nearly invisible and requires a successful Intelligence (Investigation) check against your spell save DC to be found.  You decide what triggers the glyph when you cast the spell. For glyphs inscribed on a surface, the most typical triggers include touching or standing on the glyph, removing another object covering the glyph, approaching within a certain distance of the glyph, or manipulating the object on which the glyph is inscribed. For glyphs inscribed within an object, the most common triggers include opening that object, approaching within a certain distance of the object, or seeing or reading the glyph. Once a glyph is triggered, this spell ends.  You can further refine the trigger so the spell activates only under certain circumstances or according to physical characteristics (such as height or weight), creature kind (for example, the ward could be set to affect aberrations or drow), or alignment. You can also set conditions for creatures that don\'t trigger the glyph, such as those who say a certain password.  When you inscribe the glyph, choose *explosive runes* or a *spell glyph*.  * Explosive Runes: When triggered, the glyph erupts with magical energy in a 20-foot-radius Sphere centered on the glyph. The Sphere spreads around corners. Each creature in the aura must make a Dexterity saving throw. A creature takes 5d8 acid, cold, fire, lightning, or thunder damage on a failed saving throw (your choice when you create the glyph), or half as much damage on a successful one. * Spell Glyph: You can store a prepared spell of 3rd Level or lower in the glyph by casting it as part of creating the glyph. The spell must target a single creature or an area. The spell being stored has no immediate Effect when cast in this way. When the glyph is triggered, the stored spell is cast. If the spell has a target, it Targets the creature that triggered the glyph. If the spell affects an area, the area is centered on that creature. If the spell summons Hostile creatures or creates harmful Objects or traps, they appear as close as possible to the intruder and Attack it. If the spell requires Concentration, it lasts until the end of its full Duration.',
+    savingThrowAbility: 'dexterity',
     higherLevel: 'When you cast this spell using a spell slot of 4th level or higher, the damage of an *explosive runes* glyph increases by 1d8 for each slot level above 3rd. If you create a *spell glyph*, you can store any spell of up to the same level as the slot you use for the *glyph of warding*.',
     classes: ['Cleric', 'Wizard', 'Bard'],
     isSRD: true
@@ -3294,6 +3401,7 @@ export const srdSpells: DndSpell[] = [
     components: 'V, S',
     duration: 'Concentration, up to 1 minute',
     description: 'You conjure a vine that sprouts from the ground in an unoccupied space of your choice that you can see within range. When you cast this spell, you can direct the vine to lash out at a creature within 30 feet of it that you can see. That creature must succeed on a Dexterity saving throw or be pulled 20 feet directly toward the vine.  Until the spell ends, you can direct the vine to lash out at the same creature or another one as a bonus action on each of your turns.',
+    savingThrowAbility: 'dexterity',
     classes: ['Ranger', 'Druid'],
     isSRD: true
   },
@@ -3330,6 +3438,7 @@ export const srdSpells: DndSpell[] = [
     components: 'V',
     duration: '8 hours',
     description: 'A Large spectral guardian appears and hovers for the duration in an unoccupied space of your choice that you can see within range. The guardian occupies that space and is indistinct except for a gleaming sword and shield emblazoned with the symbol of your deity.  Any creature hostile to you that moves to a space within 10 feet of the guardian for the first time on a turn must succeed on a Dexterity saving throw. The creature takes 20 radiant damage on a failed save, or half as much damage on a successful one. The guardian vanishes when it has dealt a total of 60 damage.',
+    savingThrowAbility: 'dexterity',
     classes: ['Cleric'],
     isSRD: true
   },
@@ -3354,6 +3463,7 @@ export const srdSpells: DndSpell[] = [
     components: 'V, S, M (a legume seed)',
     duration: 'Concentration, up to 1 minute',
     description: 'A line of strong wind 60 feet long and 10 feet wide blasts from you in a direction you choose for the spell\'s duration. Each creature that starts its turn in the line must succeed on a Strength saving throw or be pushed 15 feet away from you in a direction following the line.  Any creature in the line must spend 2 feet of movement for every 1 foot it moves when moving closer to you.  The gust disperses gas or vapor, and it extinguishes candles, torches, and similar unprotected flames in the area. It causes protected fiames, such as those of lanterns, to dance wildly and has a 50 percent chance to extinguish them.  As a bonus action on each of your turns before the spell ends, you can change the direction in which the line blasts from you.',
+    savingThrowAbility: 'strength',
     classes: ['Sorcerer', 'Wizard', 'Druid'],
     isSRD: true
   },
@@ -3378,6 +3488,7 @@ export const srdSpells: DndSpell[] = [
     components: 'V, S, M (herbs, oils, and incense worth at least 1,000 gp, which the spell consumes)',
     duration: 'Until dispelled',
     description: 'You touch a point and infuse an area around it with holy (or unholy) power. The area can have a radius up to 60 feet, and the spell fails if the radius includes an area already under the effect a *hallow* spell. The affected area is subject to the following effects.  First, celestials, elementals, fey, fiends, and undead can\'t enter the area, nor can such creatures charm, frighten, or possess creatures within it. Any creature charmed, frightened, or possessed by such a creature is no longer charmed, frightened, or possessed upon entering the area. You can exclude one or more of those types of creatures from this effect.  Second, you can bind an extra effect to the area. Choose the effect from the following list, or choose an effect offered by the DM. Some of these effects apply to creatures in the area; you can designate whether the effect applies to all creatures, creatures that follow a specific deity or leader, or creatures of a specific sort, such as orcs or trolls. When a creature that would be affected enters the spell\'s area for the first time on a turn or starts its turn there, it can make a Charisma saving throw. On a success, the creature ignores the extra effect until it leaves the area.  Courage: Affected creatures can\'t be Frightened while in the area.  Darkness: Darkness fills the area. Normal light, as well as magical light created by Spells of a lower level than the slot you used to cast this spell, can\'t illuminate the area.  Daylight: Bright light fills the area. Magical Darkness created by Spells of a lower level than the slot you used to cast this spell can\'t extinguish the light.  Energy Protection: Affected creatures in the area have Resistance to one damage type of your choice, except for bludgeoning, piercing, or slashing.  Energy Vulnerability: Affected creatures in the area have vulnerability to one damage type of your choice, except for bludgeoning, piercing, or slashing.  Everlasting Rest: Dead bodies interred in the area can\'t be turned into Undead.  Extradimensional Interference: Affected creatures can\'t move or Travel using teleportation or by extradimensional or interplanar means.  Fear: Affected creatures are Frightened while in the area.  Silence: No sound can emanate from within the area, and no sound can reach into it.  Tongues: Affected creatures can communicate with any other creature in the area, even if they don\'t share a Common language.',
+    savingThrowAbility: 'charisma',
     classes: ['Cleric'],
     isSRD: true
   },
@@ -3390,6 +3501,7 @@ export const srdSpells: DndSpell[] = [
     components: 'V, S',
     duration: 'Instantaneous',
     description: 'You unleash a virulent disease on a creature that you can see within range. The target must make a Constitution saving throw. On a failed save, it takes 14d6 necrotic damage, or half as much damage on a successful save. The damage can’t reduce the target’s hit points below 1. If the target fails the saving throw, its hit point maximum is reduced for 1 hour by an amount equal to the necrotic damage it took. Any effect that removes a disease allows a creature’s hit point maximum to return to normal before that time passes.',
+    savingThrowAbility: 'constitution',
     classes: ['Cleric'],
     isSRD: true
   },
@@ -3402,6 +3514,7 @@ export const srdSpells: DndSpell[] = [
     components: 'V, S, M (a piece of iron and a flame)',
     duration: 'Concentration, up to 1 minute',
     description: 'Choose a manufactured metal object, such as a metal weapon or a suit of heavy or medium metal armor, that you can see within range. You cause the object to glow red-hot. Any creature in physical contact with the object takes 2d8 fire damage when you cast the spell. Until the spell ends, you can use a bonus action on each of your subsequent turns to cause this damage again.  If a creature is holding or wearing the object and takes the damage from it, the creature must succeed on a Constitution saving throw or drop the object if it can. If it doesn’t drop the object, it has disadvantage on attack rolls and ability checks until the start of your next turn.',
+    savingThrowAbility: 'constitution',
     higherLevel: 'When you cast this spell using a spell slot of 3rd level or higher, the damage increases by 1d8 for each slot level above 2nd.',
     classes: ['Druid', 'Bard'],
     isSRD: true
@@ -3428,6 +3541,7 @@ export const srdSpells: DndSpell[] = [
     components: 'V, S, M (a gem-encrusted bowl worth at least 1,000 gp, which the spell consumes)',
     duration: 'Instantaneous',
     description: 'You bring forth a great feast, including magnificent food and drink. The feast takes 1 hour to consume and disappears at the end of that time, and the beneficial effects don’t set in until this hour is over. Up to twelve other creatures can partake of the feast.  A creature that partakes of the feast gains several benefits. The creature is cured of all diseases and poison, becomes immune to poison and being frightened, and makes all Wisdom saving throws with advantage. Its hit point maximum also increases by 2d10, and it gains the same number of hit points. These benefits last for 24 hours',
+    savingThrowAbility: 'wisdom',
     classes: ['Cleric', 'Druid'],
     isSRD: true
   },
@@ -3440,6 +3554,7 @@ export const srdSpells: DndSpell[] = [
     components: 'V, S, M (a small, straight piece of iron)',
     duration: 'Concentration, up to 1 minute',
     description: 'Choose a creature that you can see within range. The target must succeed on a Wisdom saving throw or be paralyzed for the duration. This spell has no effect on undead. At the end of each of its turns, the target can make another Wisdom saving throw. On a success, the spell ends on the target.',
+    savingThrowAbility: 'wisdom',
     higherLevel: 'When you cast this spell using a spell slot of 6th level or higher, you can target one additional creature for each slot level above 5th. The creatures must be within 30 feet of each other when you target them.',
     classes: ['Bard', 'Sorcerer', 'Warlock', 'Wizard'],
     isSRD: true
@@ -3453,6 +3568,7 @@ export const srdSpells: DndSpell[] = [
     components: 'V, S, M (a pinch of dust and a few drops of water)',
     duration: 'Instantaneous',
     description: 'A hail of rock-hard ice pounds to the ground in a 20-foot-radius, 40-foot-high cylinder centered on a point within range. Each creature in the cylinder must make a Dexterity saving throw. A creature takes 2d8 bludgeoning damage and 4d6 cold damage on a failed save, or half as much damage on a successful one.  Hailstones turn the storm’s area of effect into difficult terrain until the end of your next turn.',
+    savingThrowAbility: 'dexterity',
     higherLevel: 'When you cast this spell using a spell slot of 5th level or higher, the bludgeoning damage increases by 1d8 for each slot level above 4th.',
     classes: ['Druid', 'Sorcerer', 'Wizard'],
     isSRD: true
@@ -3466,6 +3582,7 @@ export const srdSpells: DndSpell[] = [
     components: 'V, S, M (a few grains of sugar, some kernels of grain, and a smear of fat)',
     duration: 'Concentration, up to 10 minutes',
     description: 'Swarming, biting locusts fill a 20-foot-radius sphere centered on a point you choose within range, The sphere spreads around corners. The sphere remains for the duration, and its area is lightly obscured. The sphere\'s area is difficult terrain.  When the area appears, each creature in it must make a Constitution saving throw. A creature takes 4d10 piercing damage on a failed save, or half as much damage on a successful one. A creature must also make this saving throw when it enters the spell\'s area for the first time on a turn or ends its turn there.',
+    savingThrowAbility: 'constitution',
     higherLevel: 'When you cast this spell using a spell slot of 6th levei or higher, the damage increases by 1d10 for each slot level above 5th.',
     classes: ['Cleric', 'Druid', 'Sorcerer'],
     isSRD: true
@@ -3503,6 +3620,7 @@ export const srdSpells: DndSpell[] = [
     components: 'V, S, M (either a small leather loop or a pieee of golden wire bent into a cup shape with a long shank on one end)',
     duration: 'Concentration, up to 10 minutes',
     description: 'One creature or object of your choice that you can see within range rises vertically, up to 20 feet, and remains suspended there for the duration. The spell can levitate a target that weighs up to 500 pounds. An unwilling creature that succeeds on a Constitution saving throw is unaffected.  The target can move only by pushing or pulling against a fixed object or surface within reach (such as a wall or a ceiling), which allows it to move as if it were climbing. You can change the target\'s altitude by up to 20 feet in either direction on your turn. If you are the target, you can move up or down as part of your move. Otherwise, you can use your action to move the target, which must remain within the spell\'s range.  When the spell ends, the target floats gently to the ground if it is still aloft.',
+    savingThrowAbility: 'constitution',
     classes: ['Sorcerer', 'Wizard'],
     isSRD: true
   },
@@ -3528,6 +3646,7 @@ export const srdSpells: DndSpell[] = [
     components: 'V, S, M (a bit of fur and a rod of amber, crystal, or glass)',
     duration: 'Instantaneous',
     description: 'A stroke of lightning forming a line 100 feet long and 5 feet wide blasts out from you in a direction you choose. Each creature in the line must make a Dexterity saving throw. A creature takes 8d6 lightning damage on a failed save, or half as much damage on a successful one.  The lightning ignites flammable objects in the area that aren\'t being worn or carried.',
+    savingThrowAbility: 'dexterity',
     higherLevel: 'When you cast this spell using a spell slot of 4th level or higher, the damage increases by 1d6 for each slot level above 3rd.',
     classes: ['Sorcerer', 'Wizard'],
     isSRD: true
@@ -3565,6 +3684,7 @@ export const srdSpells: DndSpell[] = [
     components: 'V, S, M (a gem, crystal, reliquary, or some other ornamental container worth at least 500 gp)',
     duration: 'Until dispelled',
     description: 'Your body falls into a catatonic state as your soul leaves it and enters the container you used for the spell\'s material component. While your soul inhabits the container, you are aware of your surroundings as if you were in the container\'s space. You can\'t move or use reactions. The only action you can take is to project your soul up to 100 feet out of the container, either returning to your living body (and ending the spell) or attempting to possess a humanoid\'s body.  You can attempt to possess any humanoid within 100 feet of you that you can see (creatures warded by a *[protection from evil and good](../protection-from-evil-and-good "protection from evil and good (lvl 1)")* or *[magic circle](../magic-circle "magic circle (lvl 3)")* spell can\'t be possessed). The target must make a Charisma saving throw. On a failure, your soul moves into the target\'s body, and the target\'s soul becomes trapped in the container. On a success, the target resists your efforts to possess it, and you can\'t attempt to possess it again for 24 hours.  Once you possess a creature\'s body, you control it. Your game statistics are replaced by the statistics of the creature, though you retain your alignment and your Intelligence, Wisdom, and Charisma scores. You retain the benefit of your own class features. If the target has any class levels, you can\'t use any of its class features.  Meanwhile, the possessed creature\'s soul can perceive from the container using its own senses, but it can\'t move or take actions at all.  While possessing a body, you can use your action to return from the host body to the container if it is within 100 feet of you, returning the host creature\'s soul to its body. If the host body dies while you\'re in it, the creature dies, and you must make a Charisma saving throw against your own spellcasting DC. On a success, you return to the container if it is within 100 feet of you. Otherwise, you die.  If the container is destroyed or the spell ends, your soul immediately returns to your body. If your body is more than 100 feet away from you or if your body is dead when you attempt to return to it, you die. If another creature\'s soul is in the container when it is destroyed, the creature\'s soul returns to its body if the body is alive and within 100 feet. Otherwise, that creature dies.  When the spell ends, the container is destroyed.',
+    savingThrowAbility: 'charisma',
     classes: ['Wizard'],
     isSRD: true
   },
@@ -3616,6 +3736,7 @@ export const srdSpells: DndSpell[] = [
     components: 'V, M (a snake\'s tongue and either a bit of honeycomb or a drop of sweet oil)',
     duration: '24 hours',
     description: 'You suggest a course of activity (limited to a sentence or two) and magically influence up to twelve creatures of your choice that you can see within range and that can hear and understand you. Creatures that can\'t be charmed are immune to this effect. The suggestion must be worded in such a manner as to make the course of action sound reasonable. Asking the creature to stab itself, throw itself onto a spear, immolate itself, or do some other obviously harmful act automatically negates the effect of the spell.  Each target must make a Wisdom saving throw. On a failed save, it pursues the course of action you described to the best of its ability. The suggested course of action can continue for the entire duration. If the suggested activity can be completed in a shorter time, the spell ends when the subject finishes what it was asked to do.  You can also specify conditions that will trigger a special activity during the duration. For example, you might suggest that a group of soldiers give all their money to the first beggar they meet. If the condition isn\'t met before the spell ends, the activity isn’t performed.  If you or any of your companions damage a creature affected by this spell, the spell ends for that creature.',
+    savingThrowAbility: 'wisdom',
     higherLevel: 'When you cast this spell using a 7th-level spell slot, the duration is 10 days. When you use an 8th-level spell slot, the duration is 30 days. When you use a 9th-level spell slot, the duration is a year and a day.',
     classes: ['Bard', 'Sorcerer', 'Warlock', 'Wizard'],
     isSRD: true
@@ -3665,6 +3786,7 @@ export const srdSpells: DndSpell[] = [
     components: 'V, S',
     duration: 'Concentration, up to 1 minute',
     description: 'You attempt to reshape another creature\'s memories. One creature that you can see must make a Wisdom saving throw. If you are fighting the creature, it has advantage on the saving throw. On a failed save, the target becomes charmed by you for the duration. The charmed target is incapacitated and unaware of its surroundings, though it can still hear you. If it takes any damage or is targeted by another spell, this spell ends, and none of the target\'s memories are modified.  While this charm lasts, you can affect the target\'s memory of an event that it experienced within the last 24 hours and that lasted no more than 10 minutes. You can permanently eliminate all memory of the event, allow the target to recall the event with perfect clarity and exacting detail, change its memory of the details of the event, or create a memory of some other event.  You must speak to the target to describe how its memories are affected, and it must be able to understand your language for the modified memories to take root. Its mind fills in any gaps in the details of your description. If the spell ends before you have finished describing the modified memories, the creature\'s memory isn’t altered. Otherwise, the modified memories take hold when the spell ends.  A modified memory doesn’t necessarily affect how a creature behaves, particularly if the memory contradicts the creature\'s natural inclinations, alignment, or beliefs. An illogical modified memory, such as implanting a memory of how much the creature enjoyed dousing itself in acid, is dismissed, perhaps as a bad dream. The DM might deem a modified memory too nonsensical to affect a creature in a significant manner.  A *[remove curse](../remove-curse/ "remove curse (lvl 3)")* or *[greater restoration](../greater-restoration/ "greater restoration (lvl 5)")* spell cast on the target restores the creature\'s true memory.',
+    savingThrowAbility: 'wisdom',
     higherLevel: 'If you cast this spell using a spell slot of 6th level or higher, you can alter the target’s memories of an event that took place up to 7 days ago (6th level), 30 days ago (7th level), 1 year ago (8th level), or any time in the creature’s past (9th level).',
     classes: ['Bard', 'Wizard'],
     isSRD: true
@@ -3678,6 +3800,7 @@ export const srdSpells: DndSpell[] = [
     components: 'V, S, M (several seeds of any moonseed plant and a pieee of opalescent feldspar)',
     duration: 'Concentration, up to 1 minute',
     description: 'A silvery beam of pale light shines down in a 5-foot-radius, 40-foot-high cylinder centered on a point within range. Until the spell ends, dim light fills the cylinder.  When a creature enters the spell\'s area for the first time on a turn or starts its turn there, it is engulfed in ghostly flames that cause searing pain, and it must make a Constitution saving throw. It takes 2d10 radiant damage on a failed save, or half as much on a successful one.  A shapechanger makes its saving throw with disadvantage. If it fails, it also instantly reverts to its original form and can\'t assume a different form until it leaves the spells light.  On each of your turns after you cast this spell use can use an action to move the beam 60 feet in any direction.',
+    savingThrowAbility: 'constitution',
     higherLevel: 'When you cast this spell using a spell slot of 3rd level or higher, the damage increases by 1d10 for each slot level above 2nd.',
     classes: ['Druid'],
     isSRD: true
@@ -3727,6 +3850,7 @@ export const srdSpells: DndSpell[] = [
     components: 'V, S',
     duration: 'Concentration, up to 1 minute',
     description: 'You tap into the nightmares of a creature you can see within range and create an illusory manifestation of its deepest fears, visible only to that creature. The target must make a Wisdom saving throw. On a failed save, the target becomes frightened for the duration. At the start of each of the target\'s turns before the spell ends, the target must succeed on a Wisdom saving throw or take 4d10 psychic damage. On a successful save, the spell ends.',
+    savingThrowAbility: 'wisdom',
     higherLevel: 'When you cast this spell using a spell slot of 5th level or higher, the damage increases by 1d10 for each slot level above 4th.',
     classes: ['Wizard'],
     isSRD: true
@@ -3740,6 +3864,7 @@ export const srdSpells: DndSpell[] = [
     components: 'V, S, M (a bit of fleece)',
     duration: 'Concentration, up to 1 minute',
     description: 'You craft an illusion that takes root in the mind of a creature that you can see within range. The target must make an Intelligence saving throw. On a failed save, you create a phantasmal object, creature, or other visible phenomenon of your choice that is no larger than a 1O-foot cube and that is perceivable only to the target for the duration. This spell has no effect on undead or constructs.  The phantasm includes sound, temperature, and other stimuli, also evident only to the creature.  The target can use its action to examine the phantasm with an Intelligence (Investigation) check against your spell save DC. If the check succeeds, the target realizes that the phantasm is an illusion, and the spell ends.  While a target is affected by the spell, the target treats the phantasm as if it were real. The target rationalizes any illogical outcomes from interacting with the phantasm. For example, a target attempting to walk across a phantasmal bridge that spans a chasm falls once it steps onto the bridge. If the target survives the fall, it still believes that the bridge exists and comes up with some other explanation for its fall--it was pushed, it slipped, or a strong wind might have knocked it off.  An affected target is so convinced of the phantasm\'s reality that it can even take damage from the illusion. A phantasm created to appear as a creature can attack the target. Similarly. a phantasm created to appear as fire, a pool of acid, or lava can burn the target. Each round on your turn, the phantasm can deal 1d6 psychic damage to the target if it is in the phantasm\'s area or within 5 feet of the phantasm, provided that the illusion is of a creature ar hazard that could logically deal damage, such as by attacking. The target perceives the damage as a type appropriate to the illusion.',
+    savingThrowAbility: 'intelligence',
     classes: ['Bard', 'Sorcerer', 'Wizard'],
     isSRD: true
   },
@@ -3764,6 +3889,7 @@ export const srdSpells: DndSpell[] = [
     components: 'V, S, M (a jewel worth at least 1,000 gp, which the spell consumes)',
     duration: '24 hours',
     description: 'With this spell, you attempt to bind a celestial, an elemental, a fey, or a fiend to your service. The creature must be within range for the entire casting of the spell. (Typically, the creature is first summoned into the center of an inverted magic circle in order to keep it trapped while this spell is cast.) At the completion of the casting, the target must make a Charisma saving throw. On a failed save, it is bound to serve you for the duration. If the creature was summoned or created by another spell, that spell\'s duration is extended to match the duration of this spell.  A bound creature must follow your instructions to the best of its ability. You might command the creature to accompany you on an adventure, to guard a location, or to deliver a message. The creature obeys the letter of your instructions, but if the creature is hostile to you, it strives to twist your words to achieve its own objectives. If the creature carries out your instructions completely before the spell ends, it travels to you to report this fact if you are on the same plane of existence. If you are on a different plane of existence, it returns to the place where you bound it and remains there until the spell ends.',
+    savingThrowAbility: 'charisma',
     higherLevel: 'When you cast this spell using a spell slot of a higher level, the duration increases to 10 days with a 6th-level slot, to 30 days with a 7th-level slot, to 180 days with an 8th-level slot, and to a year and a day with a 9th-level spell slot.',
     classes: ['Bard', 'Cleric', 'Druid', 'Wizard'],
     isSRD: true
@@ -3777,6 +3903,7 @@ export const srdSpells: DndSpell[] = [
     components: 'V, S, M (a caterpillar cocoon)',
     duration: 'Concentration, up to 1 hour',
     description: 'This spell transforms a creature that you can see within range into a new form. An unwilling creature must make a Wisdom saving throw to avoid the effect. A shapechanger automatically succeeds on this saving throw.  The transformation lasts for the duration, or until the target drops to 0 hit points or dies. The new form can be any beast whose challenge rating is equal to or less than the target\'s (or the target\'s level, if it doesn’t have a challenge rating). The target\'s game statistics, including mental ability scores, are replaced by the statistics of the chosen beast. It retains its alignment and personality.  The target assumes the hit points of its new form. When it reverts to its normal form, the creature returns to the number of hit points it had before it transformed. If it reverts as a result of dropping to 0 hit points, any excess damage carries over to its normal form.  As long as the excess damage doesn\'t reduce the creature\'s normal form to 0 hit points, it isn\'t knocked unconscious.  The creature is limited in the actions it can perform by the nature of its new form, and it can\'t speak, cast spells, or take any other action that requires hands or speech.  The target\'s gear melds into the new form. The creature can\'t activate, use, wield, or otherwise benefit from any of its equipment.',
+    savingThrowAbility: 'wisdom',
     classes: ['Bard', 'Druid', 'Sorcerer', 'Wizard'],
     isSRD: true
   },
@@ -3825,6 +3952,8 @@ export const srdSpells: DndSpell[] = [
     components: 'V, S',
     duration: 'Concentration, up to 1 minute',
     description: 'A black beam of enervating energy springs from your finger toward a creature within range. Make a ranged spell attack against the target. On a hit, the target deals only half damage with weapon attacks that use Strength until the spell ends.  At the end of each of the target\'s turns, it can make a Constitution saving throw against the spell. On a success, the spell ends.',
+    requiresAttackRoll: true,
+    savingThrowAbility: 'constitution',
     classes: ['Warlock', 'Wizard'],
     isSRD: true
   },
@@ -3861,6 +3990,7 @@ export const srdSpells: DndSpell[] = [
     components: 'V, S',
     duration: 'Instantaneous',
     description: 'You create three rays of fire and hurl them at targets within range. You can hurl them at one target or several.  Make a ranged spell attack for each ray. On a hit, the target takes 2d6 fire damage.',
+    requiresAttackRoll: true,
     higherLevel: 'When you cast this spell using a spell slot of 3rd level or higher, you create one additional ray for each slot level above 2nd.',
     classes: ['Sorcerer', 'Wizard'],
     isSRD: true
@@ -3874,6 +4004,7 @@ export const srdSpells: DndSpell[] = [
     components: 'V, S, M (a focus worth at least 1,000 gp, such as a crystal ball, a silver mirror, or a font filled with holy water)',
     duration: 'Concentration, up to 10 minutes',
     description: 'You can see and hear a particular creature you choose that is on the same plane of existence as you. The target must make a Wisdom saving throw, which is modified by how well you know the target and the sort of physical connection you have to it. If a target knows you\'re casting this spell, it can fail the saving throw voluntarily if it wants to be observed.  |Knowledge|Save Modifier| |---|---| |Secondhand (you have heard of the target)| +5| |Firsthand (you have met the target)| 0| |Familiar (you know the target well)| -5| |Connection|Save Modifier| |Likeness or picture| -2| |Possession or garment| -4| |Body part, lock of hair, bit of nail, or the like| -10|  On a successful save, the target isn\'t affected, and you can\'t use this spell against it again for 24 hours. On a failed save, the spell creates an invisible sensor within 10 feet of the target. You can see and hear through the sensor as if you were there. The sensor moves with the target, remaining within 10 feet of it for the duration. A creature that can see invisible objects sees the sensor as a luminous orb about the size of your fist.  Instead of targeting a creature, you can choose a location you have seen before as the target of this spell. When you do, the sensor appears at that location and doesn’t move.',
+    savingThrowAbility: 'wisdom',
     classes: ['Bard', 'Cleric', 'Druid', 'Warlock', 'Wizard'],
     isSRD: true
   },
@@ -3886,6 +4017,7 @@ export const srdSpells: DndSpell[] = [
     components: 'V, S',
     duration: '8 hours',
     description: 'This spell allows you to change the appearance of any number of creatures that you can see within range. You give each target you choose a new, illusory appearance. An unwilling target can make a Charisma saving throw, and if it succeeds, it is unaffected by this spell.  The spell disguises physical appearance as well as clothing, armor, weapons, and equipment. You can make each creature seem 1 foot shorter or taller and appear thin, fat, or in between. You can\'t change a target\'s body type, so you must choose a form that has the same basic arrangement of limbs. Otherwise, the extent of the illusion is up to you. The spell lasts for the duration, unless you use your action to dismiss it sooner.  The changes wrought by this spell fail to hold up to physical inspection. For example, if you use this spell to add a hat to a creature\'s outfit, objects pass through the hat, and anyone who touches it would feel nothing or would feel the creature\'s head and hair. If you use this spell to appear thinner than you are, the hand of someone who reaches out to touch you would bump into you while it was seemingly still in midair.  A creature can use its action to inspect a target and make an Intelligence (Investigation) check against your spell save DC. If it succeeds, it becomes aware that the target is disguised.',
+    savingThrowAbility: 'charisma',
     classes: ['Bard', 'Sorcerer', 'Wizard'],
     isSRD: true
   },
@@ -3910,6 +4042,7 @@ export const srdSpells: DndSpell[] = [
     components: 'V, S, M (a chip of mica)',
     duration: 'Instantaneous',
     description: 'A sudden loud ringing noise, painfully intense, erupts from a point of your choice within range. Each creature in a lO-foot-radius sphere centered on that point must make a Constitution saving throw. A creature takes 3d8 thunder damage on a failed save, or half as much damage on a successful one. A creature made of inorganic material such as stone, crystal, or metal has disadvantage on this saving throw.  A nonmagical object that isn\'t being worn or carried also takes the damage if it\'s in the spell\'s area.',
+    savingThrowAbility: 'constitution',
     higherLevel: 'When you cast this spell using a spell slot of 3rd levei or higher, the damage increases by ld8 for each slot level above 2nd.',
     classes: ['Bard', 'Sorcerer', 'Warlock', 'Wizard'],
     isSRD: true
@@ -3947,6 +4080,7 @@ export const srdSpells: DndSpell[] = [
     components: 'V',
     duration: 'Concentration, up to 1 minute',
     description: 'The next time you hit a creature with a melee weapon attack during this spell\'s duration, your weapon pierces both body and mind, and the attack deals an extra 4d6 psychic damage to the target. The target must make a Wisdom saving throw. On a failed save, it has disadvantage on attack rolls and ability checks, and can\'t take reactions, until the end of its next turn.',
+    savingThrowAbility: 'wisdom',
     classes: ['Paladin'],
     isSRD: true
   },
@@ -3971,6 +4105,7 @@ export const srdSpells: DndSpell[] = [
     components: 'V, S, M (a magnifying glass)',
     duration: 'Concentration, up to 1 minute',
     description: 'A beam of brilliant light flashes out from your hand in a 5-foot-wide, 60-foot-long line. Each creature in the line must make a Constitution saving throw. On a failed save, a creature takes 6d8 radiant damage and is blinded until your next turn. On a successful save, it takes half as much damage and isn\'t blinded by this spell. Undead and oozes have disadvantage on this saving throw.  You can create a new line of radiance as your action on any turn until the spell ends.  For the duration, a mote of brilliant radiance shines in your hand. It sheds bright light in a 30-foot radius and dim light for an additional 30 feet. This light is sunlight.',
+    savingThrowAbility: 'constitution',
     classes: ['Druid', 'Sorcerer', 'Wizard'],
     isSRD: true
   },
@@ -4080,6 +4215,7 @@ export const srdSpells: DndSpell[] = [
     components: 'V, S, M (a small piece of phosphorus)',
     duration: 'Concentration, up to 1 minute',
     description: 'You create a wall of fire on a solid surface within range. You can make the wall up to 60 feet long, 20 feet high, and 1 foot thick, or a ringed wall up to 20 feet in diameter, 20 feet high, and 1 foot thick. The wall is opaque and lasts for the duration.  When the wall appears, each creature within its area must make a Dexterity saving throw. On a failed save, a creature takes 5d8 fire damage, or half as much damage on a successful save.  One side of the wall, selected by you when you cast this spell, deals 5d8 fire damage to each creature that ends its turn within 10 feet of that side or inside the wall. A creature takes the same damage when it enters the wall for the first time on a turn or ends its turn there. The other side of the wall deals no damage.',
+    savingThrowAbility: 'dexterity',
     higherLevel: 'When you cast this spell using a spell slot of 5th level or higher, the damage increases by 1d8 for each slot level above 4th.',
     classes: ['Druid', 'Sorcerer', 'Wizard'],
     isSRD: true
@@ -4093,6 +4229,7 @@ export const srdSpells: DndSpell[] = [
     components: 'V, S, M (a small piece of quartz)',
     duration: 'Concentration, up to 10 minutes',
     description: 'You create a wall of ice on a solid surface within range. You can form it into a hemispherical dome or a sphere with a radius of up to 10 feet, or you can shape a flat surface made up of ten 10-foot-square panels. Each panel must be contiguous with another panel. In any form, the wall is 1 foot thick and lasts for the duration.  If the wall cuts through a creature’s space when it appears, the creature within its area is pushed to one side of the wall and must make a Dexterity saving throw. On a failed save, the creature takes 10d6 cold damage, or half as much damage on a successful save.  The wall is an object that can be damaged and thus breached. It has AC 12 and 30 hit points per 10-foot section, and it is vulnerable to fire damage. Reducing a 10-foot section of wall to 0 hit points destroys it and leaves behind a sheet of frigid air in the space the wall occupied. A creature moving through the sheet of frigid air for the first time on a turn must make a Constitution saving throw. That creature takes 5d6 cold damage on a failed save, or half as much damage on a successful one.',
+    savingThrowAbility: 'dexterity',
     higherLevel: 'When you cast this spells using a spells slot of 7th level or higher, the damage the wall deals when it appears increases by 2d6, and the damage from passing through the sheet of frigid air increases by 1d6, for each slot level above 6th.',
     classes: ['Wizard'],
     isSRD: true
@@ -4118,6 +4255,7 @@ export const srdSpells: DndSpell[] = [
     components: 'V, S, M (a small block of granite)',
     duration: 'Concentration, up to 10 minutes',
     description: 'A nonmagical wall of solid stone springs into existence at a point you choose within range. The wall is 6 inches thick and is composed of ten 10-foot-by-10-foot panels. Each panel must be contiguous with at least one other panel. Alternatively, you can create 10-foot-by-20-foot panels that are only 3 inches thick.  If the wall cuts through a creature\'s space when it appears, the creature is pushed to one side of the wall (your choice). If a creature would be surrounded on all sides by the wall (or the wall and another solid surface), that creature can make a Dexterity saving throw. On a success, it can use its reaction to move up to its speed so that it is no longer enclosed by the wall.  The wall can have any shape you desire, though it can\'t occupy the same space as a creature or object. The wall doesn\'t need to be vertical or rest on any firm foundation. It must, however, merge with and be solidly supported by existing stone. Thus, you can use this spell to bridge a chasm or create a ramp.  If you create a span greater than 20 feet in length, you must halve the size of each panel to create supports. You can crudely shape the wall to create crenellations, battlements, and so on.  The wall is an object made of stone that can be damaged and thus breached. Each panel has AC 15 and 30 hit points per inch of thickness. Reducing a panel to 0 hit points destroys it and might cause connected panels to collapse at the DM’s discretion.  If you maintain your concentration on this spell for its whole duration, the wall becomes permanent and can\'t be dispelled. Otherwise, the wall disappears when the spell ends.',
+    savingThrowAbility: 'dexterity',
     classes: ['Druid', 'Sorcerer', 'Wizard'],
     isSRD: true
   },
@@ -4130,6 +4268,7 @@ export const srdSpells: DndSpell[] = [
     components: 'V, S, M (a handful of thorns)',
     duration: 'Concentration, up to 10 minutes',
     description: 'You create a wall of tough, pliable, tangled brush bristling with needle-sharp thorns. The wall appears within range on a solid surface and lasts for the duration. You choose to make the wall up to 60 feet long, 10 feet high, and 5 feet thick or a circle that has a 20-foot diameter and is up to 20 feet high and 5 feet thick. The wall blocks line of sight.  When the wall appears, each creature within its area must make a Dexterity saving throw. On a failed save, a creature takes 7d8 piercing damage, or half as much damage on a successful save.  A creature can move through the wall, albeit slowly and painfully. For every 1 foot a creature moves through the wall, it must spend 4 feet of movement. Furthermore, the first time a creature enters the wall on a turn or ends its turn there, the creature must make a Dexterity saving throw. It takes 7d8 slashing damage on a failed save, or half as much damage on a successful one.',
+    savingThrowAbility: 'dexterity',
     higherLevel: 'When you cast this spell using a spell slot o f 7th level or higher, both types of damage increase by 1d8 for each slot level above 6th.',
     classes: ['Druid'],
     isSRD: true
@@ -4169,6 +4308,7 @@ export const srdSpells: DndSpell[] = [
     components: 'V, S, M (a bit of spiderweb)',
     duration: 'Concentration, up to 1 hour',
     description: 'You conjure a mass of thick, sticky webbing at a point of your choice within range. The webs fill a 20-foot cube from that point for the duration. The webs are difficult terrain and lightly obscure their area.  If the webs aren\'t anchored between two solid masses (such as walls or trees) or layered across a floor, wall, or ceiling, the conjured web collapses on itself, and the spell ends at the start of your next turn. Webs layered over a flat surface have a depth of 5 feet.  Each creature that starts its turn in the webs or that enters them during its turn must make a Dexterity saving throw. On a failed save, the creature is restrained as long as it remains in the webs or until it breaks free.  A creature restrained by the webs can use its action to make a Strength cheek against your spell save DC. If it suceeeds, it is no longer restrained.  The webs are flammable. Any 5-foot cube of webs exposed to fire burns away in 1 round, dealing 2d4 fire damage to any creature that starts its turn in the fire.',
+    savingThrowAbility: 'dexterity',
     classes: ['Sorcerer', 'Wizard'],
     isSRD: true
   },
@@ -4193,6 +4333,7 @@ export const srdSpells: DndSpell[] = [
     components: 'V, S, M (a tiny fan and a feather of exotic origin)',
     duration: 'Concentration, up to 1 minute',
     description: 'A wall of strong wind rises from the ground at a point you choose within range. You can make the wall up to 50 feet long, 15 feet high, and 1 foot thick. You can shape the wall in any way you choose so long as it makes one continuous path along the ground. The wall lasts for the duration.  When the wall appears, each creature within its area must make a Strength saving throw. A creature takes 3d8 bludgeoning damage on a failed save, or half as much damage on a successful one.  The strong wind keeps fog, smoke, and other gases at bay. Small or smaller flying creatures or objects can\'t pass through the wall. Loose, lightweight materials brought into the wall fly upward. Arrows, bolts, and other ordinary projectiles launched at targets behind the wall are deflected upward and automatically miss. (Boulders hurled by giants or siege engines, and similar projectiles, are unaffected.) Creatures in gaseous form can’t pass through it.',
+    savingThrowAbility: 'strength',
     classes: ['Druid', 'Ranger'],
     isSRD: true
   },
@@ -4217,6 +4358,7 @@ export const srdSpells: DndSpell[] = [
     components: 'V, S',
     duration: '10 minutes',
     description: 'You create a magical zone that guards against deception in a 15-foot-radius sphere centered on a point of your choice within range. Until the spell ends, a creature that enters the spell\'s area for the first time on turn or starts its turn there must make a Charisma saving throw. On a failed save, a creature can\'t speak a deliberate lie while in the radius. you know whether each creature succeeds or fails on its saving throw.  An affected creature is aware of the spell and can thus avoid answering questions to which it would normally respond with a lie. Such a creature can be evasive in its answers as long as it remains within the boundaries of the truth.',
+    savingThrowAbility: 'charisma',
     classes: ['Bard', 'Cleric', 'Paladin'],
     isSRD: true
   },
@@ -4229,6 +4371,7 @@ export const srdSpells: DndSpell[] = [
     components: 'V, S',
     duration: 'Instantaneous',
     description: 'You cause a tremor in the ground in a 10-foot radius. Each creature other than you in that area must make a Dexterity saving throw. On a failed save, a creature takes 1d6 bludgeoning damage and is knocked prone. If the ground in that area is loose earth or stone, it becomes difficult terrain until cleared.',
+    savingThrowAbility: 'dexterity',
     higherLevel: 'When you cast this spell using a spell slot of 2nd level or higher, the damage increases by 1d6 for each slot level above 1st.',
     classes: ['Bard', 'Druid', 'Sorcerer', 'Wizard'],
     isSRD: true
@@ -4267,6 +4410,7 @@ export const srdSpells: DndSpell[] = [
     components: 'S',
     duration: 'Instantaneous',
     description: 'You create a burst of thunderous sound, which can be heard 100 feet away. Each creature other than you within 5 feet of you must make a Constitution saving throw. On a failed save, the creature takes 1d6 thunder damage.  The spell’s damage increases by 1d6 when you reach 5th level (2d6), 11th level (3d6), and 17th level (4d6).',
+    savingThrowAbility: 'constitution',
     classes: ['Bard', 'Druid', 'Sorcerer', 'Warlock', 'Wizard'],
     isSRD: true
   },
@@ -4303,6 +4447,7 @@ export const srdSpells: DndSpell[] = [
     components: 'V, S',
     duration: 'Concentration, up to 1 minute',
     description: 'You create a bonfire on ground that you can see within range. Until the spell ends, the bonfire fills a 5-foot cube. Any creature in the bonfire’s space when you cast the spell must succeed on a Dexterity saving throw or take 1d8 fire damage. A creature must also make the saving throw when it enters the bonfire’s space for the first time on a turn or ends its turn there.  The spell’s damage increases by 1d8 when you reach 5th level (2d8), 11th level (3d8), and 17th level (4d8).',
+    savingThrowAbility: 'dexterity',
     classes: ['Druid', 'Sorcerer', 'Warlock', 'Wizard'],
     isSRD: true
   },
@@ -4315,6 +4460,7 @@ export const srdSpells: DndSpell[] = [
     components: 'V, S',
     duration: 'Instantaneous',
     description: 'You cause numbing frost to form on one creature that you can see within range. The target must make a Constitution saving throw. On a failed save, the target takes 1d6 cold damage, and it has disadvantage on the next weapon attack roll it makes before the end of its next turn.  The spell’s damage increases by 1d6 when you reach 5th level (2d6), 11th level (3d6), and 17th level (4d6).',
+    savingThrowAbility: 'constitution',
     classes: ['Druid', 'Sorcerer', 'Warlock', 'Wizard'],
     isSRD: true
   },
@@ -4327,6 +4473,7 @@ export const srdSpells: DndSpell[] = [
     components: 'V, S',
     duration: 'Instantaneous',
     description: '* One Medium or smaller creature that you choose must succeed on a Strength saving throw or be pushed up to 5 feet away from you.  * You create a small blast of air capable of moving one object that is neither held nor carried and that weighs no more than 5 pounds. The object is pushed up to 10 feet away from you. It isn’t pushed with enough force to cause damage.  * You create a harmless sensory affect using air, such as causing leaves to rustle, wind to slam shutters shut, or your clothing to ripple in a breeze.',
+    savingThrowAbility: 'strength',
     classes: ['Druid', 'Sorcerer', 'Wizard'],
     isSRD: true
   },
@@ -4339,6 +4486,7 @@ export const srdSpells: DndSpell[] = [
     components: 'V, S',
     duration: '1 minute',
     description: 'You touch one to three pebbles and imbue them with magic. You or someone else can make a ranged spell attack with one of the pebbles by throwing it or hurling it with a sling. If thrown, it has a range of 60 feet. If someone else attacks with the pebble, that attacker adds your spellcasting ability modifier, not the attacker’s, to the attack roll. On a hit, the target takes bludgeoning damage equal to 1d6 + your spellcasting ability modifier. Hit or miss, the spell then ends on the stone.  If you cast this spell again, the spell ends early on any pebbles still affected by it.',
+    requiresAttackRoll: true,
     classes: ['Druid', 'Warlock'],
     isSRD: true
   },
@@ -4400,6 +4548,8 @@ export const srdSpells: DndSpell[] = [
     components: 'S, M (a drop of water or piece of ice)',
     duration: 'Instantaneous',
     description: 'You create a shard of ice and fling it at one creature within range. Make a ranged spell attack against the target. On a hit, the target takes 1d10 piercing damage. Hit or miss, the shard then explodes. The target and each creature within 5 feet of the point where the ice exploded must succeed on a Dexterity saving throw or take 2d6 cold damage.',
+    requiresAttackRoll: true,
+    savingThrowAbility: 'dexterity',
     higherLevel: 'When you cast this spell using a spell slot of 2nd level or higher, the cold damage increases by 1d6 for each slot level above 1st.',
     classes: ['Druid', 'Sorcerer', 'Wizard'],
     isSRD: true
@@ -4413,6 +4563,7 @@ export const srdSpells: DndSpell[] = [
     components: 'V',
     duration: 'Concentration, up to 1 minute',
     description: 'Choose one creature you can see within range. Yellow strips of magical energy loop around the creature. The target must succeed on a Strength saving throw or its flying speed (if any) is reduced to 0 feet for the spell’s duration. An airborne creature affected by this spell descends at 60 feet per round until it reaches the ground or the spell ends.',
+    savingThrowAbility: 'strength',
     classes: ['Druid', 'Sorcerer', 'Warlock', 'Wizard'],
     isSRD: true
   },
@@ -4425,6 +4576,7 @@ export const srdSpells: DndSpell[] = [
     components: 'V, S, M (a pinch of dust)',
     duration: 'Concentration, up to 1 minute',
     description: 'Choose an unoccupied 5-foot cube of air that you can see within range. An elemental force that resembles a dust devil appears in the cube and lasts for the spell’s duration.  Any creature that ends its turn within 5 feet of the dust devil must make a Strength saving throw. On a failed save, the creature takes 1d8 bludgeoning damage and is pushed 10 feet away. On a successful save, the creature takes half as much damage and isn’t pushed.  As a bonus action, you can move the dust devil up to 30 feet in any direction. If the dust devil moves over sand, dust, loose dirt, or small gravel, it sucks up the material and forms a 10-foot-radius cloud of debris around itself that lasts until the start of your next turn. The cloud heavily obscures its area.',
+    savingThrowAbility: 'strength',
     higherLevel: 'When you cast this spell using a spell slot of 3rd level or higher, the damage increases by 1d8 for each slot level above 2nd.',
     classes: ['Druid', 'Sorcerer', 'Wizard'],
     isSRD: true
@@ -4438,6 +4590,7 @@ export const srdSpells: DndSpell[] = [
     components: 'S',
     duration: 'Instantaneous',
     description: 'Choose one object weighing 1 to 5 pounds within range that isn’t being worn or carried. The object flies in a straight line up to 90 feet in a direction you choose before falling to the ground, stopping early if it impacts against a solid surface. If the object would strike a creature, that creature must make a Dexterity saving throw. On a failed save, the object strikes the target and stops moving. In either case, both the object and the creature or solid surface take 3d8 bludgeoning damage.',
+    savingThrowAbility: 'dexterity',
     higherLevel: 'When you cast this spell using a spell slot of 2nd level or higher, the maximum weight of objects that you can target with this spell increases by 5 pounds, and the damage increases by 1d8, for each slot level above 1st.',
     classes: ['Sorcerer', 'Wizard'],
     isSRD: true
@@ -4463,6 +4616,7 @@ export const srdSpells: DndSpell[] = [
     components: 'V, S',
     duration: 'Instantaneous',
     description: 'You cause up to six pillars of stone to burst from places on the ground that you can see within range. Each pillar is a cylinder that has a diameter of 5 feet and a height of up to 30 feet. The ground where a pillar appears must be wide enough for its diameter, and you can target ground under a creature if that creature is Medium or smaller. Each pillar has AC 5 and 30 hit points. When reduced to 0 hit points, a pillar crumbles into rubble, which creates an area of difficult terrain with a 10-foot radius. The rubble lasts until cleared.  If a pillar is created under a creature, that creature must succeed on a Dexterity saving throw or be lifted by the pillar. A creature can choose to fail the save.  If a pillar is prevented from reaching its full height because of a ceiling or other obstacle, a creature on the pillar takes 6d6 bludgeoning damage and is restrained, pinched between the pillar and the obstacle. The restrained creature can use an action to make a Strength or Dexterity check (the creature’s choice) against the spell’s saving throw DC. On a success, the creature is no longer restrained and must either move off the pillar or fall off it.',
+    savingThrowAbility: 'dexterity',
     higherLevel: 'When you cast this spell using a spell slot of 7th level or higher, you can create two additional pillars for each slot level above 6th.',
     classes: ['Druid'],
     isSRD: true
@@ -4476,6 +4630,7 @@ export const srdSpells: DndSpell[] = [
     components: 'V, S, M (a piece of obsidian)',
     duration: 'Instantaneous',
     description: 'Choose a point you can see on the ground within range. A fountain of churned earth and stone erupts in a 20-foot cube centered on that point. Each creature in that area must make a Dexterity saving throw. A creature takes 3d12 bludgeoning damage on a failed save, or half as much damage on a successful one. Additionally, the ground in that area becomes difficult terrain until cleared away. Each 5-foot-square portion of the area requires at least 1 minute to clear by hand.',
+    savingThrowAbility: 'dexterity',
     higherLevel: 'When you cast this spell using a spell slot of 3rd level or higher, the damage increases by 1d12 for each slot level above 2nd.',
     classes: ['Druid', 'Sorcerer', 'Wizard'],
     isSRD: true
@@ -4489,6 +4644,7 @@ export const srdSpells: DndSpell[] = [
     components: 'V, S',
     duration: 'Concentration, up to 1 minute',
     description: 'Choose one creature you can see within range, and choose one of the following damage types: acid, cold, fire, lightning, or thunder. The target must succeed on a Constitution saving throw or be affected by the spell for its duration. The first time each turn the affected target takes damage of the chosen type, the target takes an extra 2d6 damage of that type. Moreover, the target loses any resistance to that damage type until the spell ends.',
+    savingThrowAbility: 'constitution',
     higherLevel: 'When you cast this spell using a spell slot of 5th level or higher, you can target one additional creature for each slot level above 4th. The creatures must be within 30 feet of each other when you target them.',
     classes: ['Druid', 'Warlock', 'Wizard'],
     isSRD: true
@@ -4515,6 +4671,7 @@ export const srdSpells: DndSpell[] = [
     components: 'V, S',
     duration: 'Concentration, up to 10 minutes',
     description: '* You are immune to fire damage and have resistance to cold damage.  * Any creature that moves within 5 feet of you for the first time on a turn or ends its turn there takes 1d10 fire damage.  * You can use your action to create a line of fire 15 feet long and 5 feet wide extending from you in a direction you choose. Each creature in the line must make a Dexterity saving throw. A creature takes 4d8 fire damage on a failed save, or half as much damage on a successful one.',
+    savingThrowAbility: 'dexterity',
     classes: ['Druid', 'Sorcerer', 'Warlock', 'Wizard'],
     isSRD: true
   },
@@ -4527,6 +4684,7 @@ export const srdSpells: DndSpell[] = [
     components: 'V, S',
     duration: 'Concentration, up to 10 minutes',
     description: '* You are immune to cold damage and have resistance to fire damage.  * You can move across difficult terrain created by ice or snow without spending extra movement.  * The ground in a 10-foot radius around you is icy and is difficult terrain for creatures other than you. The radius moves with you.  * You can use your action to create a 15-foot cone of freezing wind extending from your outstretched hand in a direction you choose. Each creature in the cone must make a Constitution saving throw. A creature takes 4d6 cold damage on a failed save, or half as much damage on a successful one. A creature that fails its save against this effect has its speed halved until the start of your next turn.',
+    savingThrowAbility: 'constitution',
     classes: ['Druid', 'Sorcerer', 'Warlock', 'Wizard'],
     isSRD: true
   },
@@ -4539,6 +4697,7 @@ export const srdSpells: DndSpell[] = [
     components: 'V, S',
     duration: 'Concentration, up to 10 minutes',
     description: '* You have resistance to bludgeoning, piercing, and slashing damage from nonmagical weapons.  * You can use your action to create a small earthquake on the ground in a 15-foot radius centered on you. Other creatures on that ground must succeed on a Dexterity saving throw or be knocked prone.  * You can move across difficult terrain made of earth or stone without spending extra movement. You can move through solid earth or stone as if it was air and without destabilizing it, but you can’t end your movement there. If you do so, you are ejected to the nearest unoccupied space, this spell ends, and you are stunned until the end of your next turn',
+    savingThrowAbility: 'dexterity',
     classes: ['Druid', 'Sorcerer', 'Warlock', 'Wizard'],
     isSRD: true
   },
@@ -4551,6 +4710,7 @@ export const srdSpells: DndSpell[] = [
     components: 'V, S',
     duration: 'Concentration, up to 10 minutes',
     description: '* Ranged weapon attacks made against you have disadvantage on the attack roll.  * You gain a flying speed of 60 feet. If you are still flying when the spell ends, you fall, unless you can somehow prevent it.  * You can use your action to create a 15-foot cube of swirling wind centered on a point you can see within 60 feet of you. Each creature in that area must make a Constitution saving throw. A creature takes 2d10 bludgeoning damage on a failed save, or half as much damage on a successful one. If a Large or smaller creature fails the save, that creature is also pushed up to 10 feet away from the center of the cube.',
+    savingThrowAbility: 'constitution',
     classes: ['Druid', 'Sorcerer', 'Warlock', 'Wizard'],
     isSRD: true
   },
@@ -4563,6 +4723,7 @@ export const srdSpells: DndSpell[] = [
     components: 'V, S, M (paper or leaf in the shape of a funnel)',
     duration: 'Concentration, up to 1 minute',
     description: 'A mass of 5-foot-deep water appears and swirls in a 30-foot radius centered on a point you can see within range. The point must be on ground or in a body of water. Until the spell ends, that area is difficult terrain, and any creature that starts its turn there must succeed on a Strength saving throw or take 6d6 bludgeoning damage and be pulled 10 feet toward the center.',
+    savingThrowAbility: 'strength',
     classes: ['Druid'],
     isSRD: true
   },
@@ -4587,6 +4748,7 @@ export const srdSpells: DndSpell[] = [
     components: 'V, S, M (a drop of water)',
     duration: 'Instantaneous',
     description: 'You conjure up a wave of water that crashes down on an area within range. The area can be up to 30 feet long, up to 10 feet wide, and up to 10 feet tall. Each creature in that area must make a Dexterity saving throw. On a failure, a creature takes 4d8 bludgeoning damage and is knocked prone. On a success, a creature takes half as much damage and isn’t knocked prone. The water then spreads out across the ground in all directions, extinguishing unprotected flames in its area and within 30 feet of it.',
+    savingThrowAbility: 'dexterity',
     classes: ['Druid', 'Wizard'],
     isSRD: true
   },
@@ -4599,6 +4761,7 @@ export const srdSpells: DndSpell[] = [
     components: 'V, S, M (clay and water)',
     duration: 'Instantaneous',
     description: 'You choose an area of stone or mud that you can see that fits within a 40-foot cube and that is within range, and choose one of the following effects.  If you cast the spell on an area of ground, it becomes muddy enough that creatures can sink into it. Each foot that a creature moves through the mud costs 4 feet of movement, and any creature on the ground when you cast the spell must make a Strength saving throw. A creature must also make this save the first time it enters the area on a turn or ends its turn there. On a failed save, a creature sinks into the mud and is restrained, though it can use an action to end the restrained condition on itself by pulling itself free of the mud.  If you cast the spell on a ceiling, the mud falls. Any creature under the mud when it falls must make a Dexterity saving throw. A creature takes 4d8 bludgeoning damage on a failed save, or half as much damage on a successful one.',
+    savingThrowAbility: 'strength',
     classes: ['Druid', 'Wizard'],
     isSRD: true
   },
@@ -4623,6 +4786,7 @@ export const srdSpells: DndSpell[] = [
     components: 'V, S, M (a droplet of water)',
     duration: 'Concentration, up to 1 minute',
     description: 'You conjure up a sphere of water with a 10-foot radius on a point you can see within range. The sphere can hover in the air, but no more than 10 feet off the ground. The sphere remains for the spell’s duration.  Any creature in the sphere’s space must make a Strength saving throw. On a successful save, a creature is ejected from that space to the nearest unoccupied space outside it. A Huge or larger creature succeeds on the saving throw automatically. On a failed save, a creature is restrained by the sphere and is engulfed by the water. At the end of each of its turns, a restrained target can repeat the saving throw.  The sphere can restrain a maximum of four Medium or smaller creatures or one Large creature. If the sphere restrains a creature in excess of these numbers, a random creature that was already restrained by the sphere falls out of it and lands prone in a space within 5 feet of it.  As an action, you can move the sphere up to 30 feet in a straight line. If it moves over a pit, cliff, or other drop, it safely descends until it is hovering 10 feet over ground. Any creature restrained by the sphere moves with it. You can ram the sphere into creatures, forcing them to make the saving throw, but no more than once per turn.  When the spell ends, the sphere falls to the ground and extinguishes all normal flames within 30 feet of it. Any creature restrained by the sphere is knocked prone in the space where it falls.',
+    savingThrowAbility: 'strength',
     classes: ['Druid', 'Sorcerer', 'Wizard'],
     isSRD: true
   },
@@ -4635,6 +4799,7 @@ export const srdSpells: DndSpell[] = [
     components: 'V, M (a piece of straw)',
     duration: 'Concentration, up to 1 minute',
     description: 'A whirlwind howls down to a point on the ground you specify. The whirlwind is a 10-foot-radius, 30-foot-high cylinder centered on that point. Until the spell ends, you can use your action to move the whirlwind up to 30 feet in any direction along the ground. The whirlwind sucks up any Medium or smaller objects that aren’t secured to anything and that aren’t worn or carried by anyone.  A creature must make a Dexterity saving throw the first time on a turn that it enters the whirlwind or that the whirlwind enters its space, including when the whirlwind first appears. A creature takes 10d6 bludgeoning damage on a failed save, or half as much damage on a successful one. In addition, a Large or smaller creature that fails the save must succeed on a Strength saving throw or become restrained in the whirlwind until the spell ends. When a creature starts its turn restrained by the whirlwind, the creature is pulled 5 feet higher inside it, unless the creature is at the top. A restrained creature moves with the whirlwind and falls when the spell ends, unless the creature has some means to stay aloft.  A restrained creature can use an action to make a Strength or Dexterity check against your spell save DC. If successful, the creature is no longer restrained by the whirlwind and is hurled 3d6 × 10 feet away from it in a random direction.',
+    savingThrowAbility: 'dexterity',
     classes: ['Druid', 'Wizard'],
     isSRD: true
   },
@@ -4647,6 +4812,7 @@ export const srdSpells: DndSpell[] = [
     components: 'V',
     duration: 'Concentration, up to 1 minute',
     description: 'Flames wreathe one creature you can see within range. The target must make a Dexterity saving throw. It takes 7d6 fire damage on a failed save, or half as much damage on a successful one. On a failed save, the target also burns for the spell’s duration. The burning target sheds bright light in a 30-foot radius and dim light for an additional 30 feet. At the end of each of its turns, the target repeats the saving throw. It takes 3d6 fire damage on a failed save, and the spell ends on a successful one. These magical flames can’t be extinguished through nonmagical means.  If damage from this spell reduces a target to 0 hit points, the target is turned to ash.',
+    savingThrowAbility: 'dexterity',
     classes: ['Sorcerer', 'Wizard'],
     isSRD: true
   },
@@ -4659,6 +4825,8 @@ export const srdSpells: DndSpell[] = [
     components: 'V, S',
     duration: 'Concentration, up to 1 minute',
     description: 'A 20-foot-radius sphere of whirling air springs into existence centered on a point you choose within range. The sphere remains for the spell’s duration. Each creature in the sphere when it appears or that ends its turn there must succeed on a Strength saving throw or take 2d6 bludgeoning damage. The sphere’s space is difficult terrain.  Until the spell ends, you can use a bonus action on each of your turns to cause a bolt of lightning to leap from the center of the sphere toward one creature you choose within 60 feet of the center. Make a ranged spell attack. You have advantage on the attack roll if the target is in the sphere. On a hit, the target takes 4d6 lightning damage.  Creatures within 30 feet of the sphere have disadvantage on Wisdom (Perception) checks made to listen.',
+    requiresAttackRoll: true,
+    savingThrowAbility: 'strength',
     higherLevel: 'When you cast this spell using a spell slot of 5th level or higher, the damage increases for each of its effects by 1d6 for each slot level above 4th.',
     classes: ['Sorcerer', 'Wizard'],
     isSRD: true
@@ -4672,6 +4840,7 @@ export const srdSpells: DndSpell[] = [
     components: 'V, S, M (a drop of giant slug bile)',
     duration: 'Instantaneous',
     description: 'You point at a place within range, and a glowing 1-foot ball of emerald acid streaks there and explodes in a 20-foot radius. Each creature in that area must make a Dexterity saving throw. On a failed save, a creature takes 10d4 acid damage and 5d4 acid damage at the end of its next turn. On a successful save, a creature takes half the initial damage and no damage at the end of its next turn.',
+    savingThrowAbility: 'dexterity',
     higherLevel: 'When you cast this spell using a spell slot of 5th level or higher, the initial damage increases by 2d4 for each slot level above 4th.',
     classes: ['Sorcerer', 'Wizard'],
     isSRD: true
@@ -4723,6 +4892,7 @@ export const srdSpells: DndSpell[] = [
     components: 'V, S, M (A piece of tentacle from a giant octopus or a giant squid)',
     duration: 'Concentration, up to 1 minute',
     description: 'Squirming, ebony tentacles fill a 20-foot square on ground that you can see within range. For the duration, these tentacles turn the ground in the area into difficult terrain.  When a creature enters the affected area for the first time on a turn or starts its turn there, the creature must succeed on a Dexterity saving throw or take 3d6 bludgeoning damage and be restrained by the tentacles until the spell ends. A creature that starts its turn in the area and is already restrained by the tentacles takes 3d6 bludgeoning damage.  A creature restrained by the tentacles can use its action to make a Strength or Dexterity check (its choice) against your spell save DC. On a success, it frees itself.',
+    savingThrowAbility: 'dexterity',
     classes: ['Wizard'],
     isSRD: true
   },
@@ -4760,6 +4930,7 @@ export const srdSpells: DndSpell[] = [
     components: 'V, S, M (Powdered rhubarb leaf and an adder\'s stomach)',
     duration: 'Instantaneous',
     description: 'A shimmering green arrow streaks toward a target within range and bursts in a spray of acid. Make a ranged spell Attack against the target. On a hit, the target takes 4d4 acid damage immediately and 2d4 acid damage at the end of its next turn. On a miss, the arrow splashes the target with acid for half as much of the initial damage and no damage at the end of its next turn.',
+    requiresAttackRoll: true,
     higherLevel: 'When you cast this spell using a spell slot of 3rd Level or higher, the damage (both initial and later) increases by 1d4 for each slot level above 2nd.',
     classes: ['Wizard'],
     isSRD: true
@@ -4834,6 +5005,7 @@ export const srdSpells: DndSpell[] = [
     components: 'V, S, M (A small crystal sphere)',
     duration: 'Instantaneous',
     description: 'A frigid globe of cold energy streaks from your fingertips to a point of your choice within range, where it explodes in a 60-foot-radius Sphere. Each creature within the area must make a Constitution saving throw. On a failed save, a creature takes 10d6 cold damage. On a successful save, it takes half as much damage.  If the globe strikes a body of water or a liquid that is principally water (not including water-based creatures), it freezes the liquid to a depth of 6 inches over an area 30 feet square. This ice lasts for 1 minute. Creatures that were Swimming on the surface of frozen water are trapped in the ice. A trapped creature can use an Action to make a Strength check against your spell save DC to break free.  You can refrain from firing the globe after completing the spell, if you wish. A small globe about the size of a sling stone, cool to the touch, appears in your hand. At any time, you or a creature you give the globe to can throw the globe (to a range of 40 feet) or hurl it with a sling (to the sling\'s normal range). It shatters on impact, with the same Effect as the normal casting of the spell. You can also set the globe down without shattering it. After 1 minute, if the globe hasn\'t already shattered, it explodes.',
+    savingThrowAbility: 'constitution',
     higherLevel: 'When you cast this spell using a spell slot of 7th level or higher, the damage increases by 1d6 for each slot level above 6th.',
     classes: ['Wizard', 'Sorcerer'],
     isSRD: true
@@ -4847,6 +5019,7 @@ export const srdSpells: DndSpell[] = [
     components: 'V, S, M (A hemispherical piece of clear crystal and a matching hemispherical piece of gum arabic)',
     duration: 'Concentration, up to 1 minute',
     description: 'A sphere of shimmering force encloses a creature or object of Large size or smaller within range. An unwilling creature must make a Dexterity saving throw. On a failed save, the creature is enclosed for the Duration.  Nothing—not physical Objects, energy, or other spell effects—can pass through the barrier, in or out, though a creature in the sphere can breathe there. The sphere is immune to all damage, and a creature or object inside can\'t be damaged by Attacks or Effects originating from outside, nor can a creature inside the sphere damage anything outside it.  The sphere is weightless and just large enough to contain the creature or object inside. An enclosed creature can use its Action to push against the sphere\'s walls and thus roll the sphere at up to half the creature\'s speed. Similarly, the globe can be picked up and moved by other Creatures.  A Disintegrate spell targeting the globe destroys it without harming anything inside it.',
+    savingThrowAbility: 'dexterity',
     classes: ['Wizard'],
     isSRD: true
   },
@@ -4859,6 +5032,7 @@ export const srdSpells: DndSpell[] = [
     components: 'V',
     duration: 'Concentration, up to 1 minute',
     description: 'Choose one creature that you can see within range. The target begins a comic dance in place: shuffling, tapping its feet, and capering for the Duration. Creatures that can\'t be Charmed are immune to this spell.  A Dancing creature must use all its Movement to dance without leaving its space and has disadvantage on Dexterity Saving Throws and Attack rolls. While the target is affected by this spell, other Creatures have advantage on attack rolls against it. As an Action, a Dancing creature makes a Wisdom saving throw to regain control of itself. On a successful save, the spell ends.',
+    savingThrowAbility: 'dexterity',
     classes: ['Wizard', 'Bard'],
     isSRD: true
   },
@@ -4884,6 +5058,7 @@ export const srdSpells: DndSpell[] = [
     components: 'V, S, M (Tiny tarts and a feather that is waved in the air)',
     duration: 'Concentration, up to 1 minute',
     description: 'A creature of your choice that you can see within range perceives everything as hilariously funny and falls into fits of laughter if this spell affects it. The target must succeed on a Wisdom saving throw or fall prone, becoming Incapacitated and unable to stand up for the Duration. A creature with an Intelligence score of 4 or less isn\'t affected.  At the end of each of its turns, and each time it takes damage, the target can make another Wisdom saving throw. The target has advantage on the saving throw if it\'s triggered by damage. On a success, the spell ends.',
+    savingThrowAbility: 'wisdom',
     classes: ['Wizard', 'Bard'],
     isSRD: true
   },
@@ -4896,8 +5071,11 @@ export const srdSpells: DndSpell[] = [
     components: 'V, S, M (A drop of mercury)',
     duration: '1 hour',
     description: 'A creature of your choice that you can see within range perceives everything as hilariously funny and falls into fits of laughter if this spell affects it. The target must succeed on a Wisdom saving throw or fall prone, becoming Incapacitated and unable to stand up for the Duration. A creature with an Intelligence score of 4 or less isn\'t affected.  At the end of each of its turns, and each time it takes damage, the target can make another Wisdom saving throw. The target has advantage on the saving throw if it\'s triggered by damage. On a success, the spell ends.',
+    savingThrowAbility: 'wisdom',
     classes: ['Wizard'],
     ritual: true,
     isSRD: true
   },
 ];
+
+export const srdSpells: DndSpell[] = baseSrdSpells;

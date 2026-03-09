@@ -1,5 +1,6 @@
 import { Card } from '@/components/ui/card';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
+import { useCharacter } from '../contexts/CharacterContext';
 import type { Character } from '../types';
 import { getAbilityBreakdown } from '../utils/abilityScores';
 import { SKILL_ABILITY_MAP } from '../utils/skills';
@@ -119,8 +120,10 @@ function PassiveRow({ breakdown }: { breakdown: PassiveBreakdown }) {
   );
 }
 
-export function PassivesPanel({ character }: { character: Character }) {
-  const breakdowns = PASSIVE_SKILLS.map((skill) => getPassiveBreakdown(skill, character));
+export function PassivesPanel() {
+  const { character } = useCharacter();
+  
+  const breakdowns = character ? PASSIVE_SKILLS.map((skill) => getPassiveBreakdown(skill, character)) : [];
 
   return (
     <TooltipProvider delayDuration={200}>

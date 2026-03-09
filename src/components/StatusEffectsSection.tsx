@@ -4,12 +4,13 @@ import { CustomEffectDialog } from "@/components/ui/custom-effect-dialog"
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip"
 import { srdStatusEffects } from "@/data/statusEffects"
 import { getCustomStatusEffects, saveCustomStatusEffect } from "@/db/statusEffects"
-import type { Character, StatusEffect, StatusEffectCategory } from "@/types"
+import type { StatusEffect, StatusEffectCategory } from "@/types"
 import { useCallback, useEffect, useState } from "react"
+import { useCharacter } from "../contexts/CharacterContext"
 
 interface StatusEffectsSectionProps {
-  character: Character
-  onUpdate: (updates: Partial<Character>) => void
+  character?: import('../types').Character;
+  onUpdate?: (updates: Partial<import('../types').Character>) => void;
 }
 
 function getBadgeVariant(category: StatusEffectCategory): "destructive" | "warning" | "success" {
@@ -23,7 +24,11 @@ function getBadgeVariant(category: StatusEffectCategory): "destructive" | "warni
   }
 }
 
-export function StatusEffectsSection({ character, onUpdate }: StatusEffectsSectionProps) {
+export function StatusEffectsSection(_props: StatusEffectsSectionProps) {
+  const context = useCharacter();
+  const character = _props.character ?? context.character!;
+  const update = _props.onUpdate ?? context.update;
+  
   const [customDialogOpen, setCustomDialogOpen] = useState(false)
   const [savedCustomEffects, setSavedCustomEffects] = useState<StatusEffect[]>([])
   const [availableEffects, setAvailableEffects] = useState<ComboboxOption[]>([])
@@ -61,7 +66,7 @@ export function StatusEffectsSection({ character, onUpdate }: StatusEffectsSecti
   const handleAddEffect = (effectId: string) => {
     const srdEffect = srdStatusEffects.find((e) => e.id === effectId)
     if (srdEffect) {
-      onUpdate({
+      update({
         statusEffects: [...character.statusEffects, srdEffect],
       })
       return
@@ -69,14 +74,14 @@ export function StatusEffectsSection({ character, onUpdate }: StatusEffectsSecti
 
     const customEffect = savedCustomEffects.find((e) => e.id === effectId)
     if (customEffect) {
-      onUpdate({
+      update({
         statusEffects: [...character.statusEffects, customEffect],
       })
     }
   }
 
   const handleRemoveEffect = async (effectId: string) => {
-    onUpdate({
+    update({
       statusEffects: character.statusEffects.filter((e) => e.id !== effectId),
     })
   }
@@ -86,7 +91,7 @@ export function StatusEffectsSection({ character, onUpdate }: StatusEffectsSecti
     const updatedEffects = await getCustomStatusEffects()
     setSavedCustomEffects(updatedEffects)
     updateAvailableEffects(updatedEffects)
-    onUpdate({
+    update({
       statusEffects: [...character.statusEffects, effect],
     })
   }

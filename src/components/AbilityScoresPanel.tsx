@@ -1,5 +1,6 @@
 import { TooltipProvider } from '@/components/ui/tooltip';
-import type { Ability, Character } from '../types';
+import { useCharacter } from '../contexts/CharacterContext';
+import type { Ability } from '../types';
 import { getAbilityBreakdown } from '../utils/abilityScores';
 import { AbilityScoreBox } from './AbilityScoreBox';
 
@@ -12,10 +13,13 @@ const abilityOrder: Ability[] = [
   'charisma',
 ];
 
-export function AbilityScoresPanel({ character }: { character: Character }) {
-  const breakdowns = abilityOrder.map((ability) =>
-    getAbilityBreakdown(ability, character)
-  );
+
+export function AbilityScoresPanel() {
+  const { character } = useCharacter();
+  
+  const breakdowns = character 
+    ? abilityOrder.map((ability) => getAbilityBreakdown(ability, character))
+    : [];
 
   return (
     <TooltipProvider delayDuration={200}>

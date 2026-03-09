@@ -11,13 +11,14 @@ import { Label } from '@/components/ui/label';
 import { Progress } from '@/components/ui/progress';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { useEffect, useRef, useState } from 'react';
-import type { Character } from '../types';
+import { useCharacter } from '../contexts/CharacterContext';
 import { DEFAULT_PORTRAIT, fileToBase64 } from '../utils/imageUtils';
 import { getXpForNextLevel, getXpProgress } from '../utils/xpThresholds';
 
 interface CharacterHeaderProps {
-  character: Character;
-  onUpdate: (updates: Partial<Character>) => void;
+  character?: import('../types').Character;
+  onUpdate?: (updates: Partial<import('../types').Character>) => void;
+  update?: (updates: Partial<import('../types').Character>) => void;
 }
 
 function InfoRow({ label, value }: { label: string; value: string }) {
@@ -30,7 +31,11 @@ function InfoRow({ label, value }: { label: string; value: string }) {
   );
 }
 
-export function CharacterHeader({ character, onUpdate }: CharacterHeaderProps) {
+export function CharacterHeader(_props: CharacterHeaderProps) {
+  const context = useCharacter();
+  const character = _props.character ?? context.character!;
+  const update = _props.onUpdate ?? context.update;
+  
   const [isEditingName, setIsEditingName] = useState(false);
   const [isEditingXp, setIsEditingXp] = useState(false);
   const [editedName, setEditedName] = useState(character.name);
@@ -63,7 +68,7 @@ export function CharacterHeader({ character, onUpdate }: CharacterHeaderProps) {
   const handleNameSave = () => {
     const trimmed = editedName.trim();
     if (trimmed && trimmed !== character.name) {
-      onUpdate({ name: trimmed });
+      update({ name: trimmed });
     } else {
       setEditedName(character.name);
     }
@@ -82,7 +87,7 @@ export function CharacterHeader({ character, onUpdate }: CharacterHeaderProps) {
   const handleXpSave = () => {
     const xpValue = parseInt(editedXp, 10);
     if (!isNaN(xpValue) && xpValue >= 0 && xpValue !== character.xp) {
-      onUpdate({ xp: xpValue });
+      update({ xp: xpValue });
     } else {
       setEditedXp(character.xp.toString());
     }
@@ -103,7 +108,7 @@ export function CharacterHeader({ character, onUpdate }: CharacterHeaderProps) {
     if (file) {
       try {
         const base64 = await fileToBase64(file);
-        onUpdate({ portrait: base64 });
+        update({ portrait: base64 });
         setIsModalOpen(false);
       } catch (error) {
         console.error('Failed to convert file to base64:', error);
@@ -113,7 +118,7 @@ export function CharacterHeader({ character, onUpdate }: CharacterHeaderProps) {
 
   const handleUrlSubmit = () => {
     if (portraitUrl.trim()) {
-      onUpdate({ portrait: portraitUrl.trim() });
+      update({ portrait: portraitUrl.trim() });
       setPortraitUrl('');
       setIsModalOpen(false);
     }

@@ -1,4 +1,5 @@
 import type { Ability } from './index';
+import type { FeatureAction } from './classes';
 
 export interface AbilityScoreIncrease {
   ability: Ability;
@@ -8,6 +9,7 @@ export interface AbilityScoreIncrease {
 export interface RaceFeature {
   name: string;
   description: string;
+  actions?: FeatureAction[];
 }
 
 export interface RaceSavingThrowFeature {
