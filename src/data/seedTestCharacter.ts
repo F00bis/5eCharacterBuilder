@@ -1,6 +1,5 @@
 import { db } from '../db/index';
 import type { Character } from '../types';
-import { inferSpellMechanics } from '../utils/spellMetadata';
 
 const TEST_CHARACTER: Character = {
   id: 1,
@@ -225,6 +224,18 @@ const TEST_CHARACTER: Character = {
       components: 'V, S',
       duration: 'Instantaneous',
       description: 'You hurl a mote of fire at a creature or object within range. Make a ranged spell attack against the target. On a hit, the target takes 1d10 fire damage.',
+      requiresAttackRoll: true,
+      damage: {
+        base: [{ dice: '1d10', type: 'fire' }],
+        scaling: {
+          kind: 'cantrip',
+          tiers: [
+            { level: 5, components: [{ dice: '2d10', type: 'fire' }] },
+            { level: 11, components: [{ dice: '3d10', type: 'fire' }] },
+            { level: 17, components: [{ dice: '4d10', type: 'fire' }] },
+          ],
+        },
+      },
       isSRD: true,
       prepared: true,
     },
@@ -237,6 +248,18 @@ const TEST_CHARACTER: Character = {
       components: 'V, S',
       duration: 'Instantaneous',
       description: 'A frigid beam of blue-white light streaks toward a creature within range. Make a ranged spell attack.',
+      requiresAttackRoll: true,
+      damage: {
+        base: [{ dice: '1d8', type: 'cold' }],
+        scaling: {
+          kind: 'cantrip',
+          tiers: [
+            { level: 5, components: [{ dice: '2d8', type: 'cold' }] },
+            { level: 11, components: [{ dice: '3d8', type: 'cold' }] },
+            { level: 17, components: [{ dice: '4d8', type: 'cold' }] },
+          ],
+        },
+      },
       isSRD: true,
       prepared: true,
     },
@@ -261,6 +284,15 @@ const TEST_CHARACTER: Character = {
       components: 'V, S',
       duration: 'Instantaneous',
       description: 'You create three glowing darts of magical force. Each dart hits a creature of your choice. The darts all strike simultaneously.',
+      damage: {
+        base: [{ dice: '3d4', type: 'force', flat: 3 }],
+        scaling: {
+          kind: 'instance',
+          instanceDamage: [{ dice: '1d4', type: 'force', flat: 1 }],
+          baseCount: 3,
+          countPerSlotLevel: 1,
+        },
+      },
       isSRD: true,
       prepared: true,
     },
@@ -273,6 +305,10 @@ const TEST_CHARACTER: Character = {
       components: 'V, S',
       duration: 'Instantaneous',
       description: 'A creature you touch regains a number of hit points equal to 1d8 + your spellcasting ability modifier.',
+      healing: {
+        base: [{ dice: '1d8', type: 'healing', flat: 'mod' }],
+        scaling: { kind: 'slot', perSlotLevel: [{ dice: '1d8', type: 'healing' }] },
+      },
       isSRD: true,
       prepared: true,
     },
@@ -285,6 +321,11 @@ const TEST_CHARACTER: Character = {
       components: 'V, S',
       duration: 'Instantaneous',
       description: 'As you hold your hands together, a thin sheet of flames springs forth. Each creature in a 15-foot cone must make a Dexterity saving throw.',
+      savingThrowAbility: 'dexterity',
+      damage: {
+        base: [{ dice: '3d6', type: 'fire' }],
+        scaling: { kind: 'slot', perSlotLevel: [{ dice: '1d6', type: 'fire' }] },
+      },
       isSRD: true,
       prepared: false,
     },
@@ -297,6 +338,11 @@ const TEST_CHARACTER: Character = {
       components: 'V, S',
       duration: 'Instantaneous',
       description: 'You create three rays of fire and hurl them at targets within range. You can hurl them at one or more targets.',
+      requiresAttackRoll: true,
+      damage: {
+        base: [{ dice: '6d6', type: 'fire' }],
+        scaling: { kind: 'instance', instanceDamage: [{ dice: '2d6', type: 'fire' }], baseCount: 3, countPerSlotLevel: 1 },
+      },
       isSRD: true,
       prepared: true,
     },
@@ -321,6 +367,11 @@ const TEST_CHARACTER: Character = {
       components: 'V, S, M (a tiny wooden weapon)',
       duration: '1 minute',
       description: 'You create a floating, spectral weapon within range. When you cast the spell, make a melee spell attack against a creature within 5 feet of the weapon.',
+      requiresAttackRoll: true,
+      damage: {
+        base: [{ dice: '1d8', type: 'force', flat: 'mod' }],
+        scaling: { kind: 'slot', perSlotLevel: [{ dice: '1d8', type: 'force' }] },
+      },
       isSRD: true,
       prepared: true,
     },
@@ -333,6 +384,7 @@ const TEST_CHARACTER: Character = {
       components: 'V, S, M (a small, straight piece of iron)',
       duration: 'Concentration, up to 1 minute',
       description: 'Choose a humanoid that you can see within range. The target must succeed on a Wisdom saving throw or be paralyzed for the duration.',
+      savingThrowAbility: 'wisdom',
       isSRD: true,
       prepared: false,
     },
@@ -345,6 +397,11 @@ const TEST_CHARACTER: Character = {
       components: 'V, S, M (a tiny ball of bat guano and sulfur)',
       duration: 'Instantaneous',
       description: 'A bright streak flashes from your pointing finger to a point you choose within range and then blossoms with a low roar into an explosion of flame.',
+      savingThrowAbility: 'dexterity',
+      damage: {
+        base: [{ dice: '8d6', type: 'fire' }],
+        scaling: { kind: 'slot', perSlotLevel: [{ dice: '1d6', type: 'fire' }] },
+      },
       isSRD: true,
       prepared: true,
     },
@@ -381,6 +438,11 @@ const TEST_CHARACTER: Character = {
       components: 'V, S, M (a small piece of phosphorus)',
       duration: 'Concentration, up to 1 minute',
       description: 'You create a wall of fire on a solid surface within range. When the wall appears, each creature in its area must make a Dexterity saving throw.',
+      savingThrowAbility: 'dexterity',
+      damage: {
+        base: [{ dice: '5d8', type: 'fire' }],
+        scaling: { kind: 'slot', perSlotLevel: [{ dice: '1d8', type: 'fire' }] },
+      },
       isSRD: true,
       prepared: true,
     },
@@ -393,6 +455,11 @@ const TEST_CHARACTER: Character = {
       components: 'V, S, M (one piece of ammunition or a thrown weapon)',
       duration: 'Instantaneous',
       description: 'You throw a nonmagical weapon into the air or choose a piece of ammunition. The piece of ammunition flies out in a 60-foot cone.',
+      savingThrowAbility: 'dexterity',
+      damage: {
+        base: [{ dice: '3d8', type: 'piercing' }],
+        scaling: { kind: 'slot', perSlotLevel: [{ dice: '1d8', type: 'piercing' }] },
+      },
       isSRD: true,
       prepared: false,
     },
@@ -405,6 +472,11 @@ const TEST_CHARACTER: Character = {
       components: 'V, S',
       duration: 'Instantaneous',
       description: 'You draw moisture from every creature in a 30-foot cube centered on a point within range. Each creature in that area must make a Constitution saving throw.',
+      savingThrowAbility: 'constitution',
+      damage: {
+        base: [{ dice: '8d8', type: 'necrotic' }],
+        scaling: { kind: 'slot', perSlotLevel: [{ dice: '1d8', type: 'necrotic' }] },
+      },
       isSRD: true,
       prepared: false,
     },
@@ -429,6 +501,11 @@ const TEST_CHARACTER: Character = {
       components: 'V, S, M (holy water or firethorn)',
       duration: 'Instantaneous',
       description: 'A vertical column of divine fire roars down from the heavens. Each creature in a 10-foot-radius, 40-foot-high cylinder centered on a point within range must make a Dexterity saving throw.',
+      savingThrowAbility: 'dexterity',
+      damage: {
+        base: [{ dice: '5d6', type: 'fire' }, { dice: '5d6', type: 'radiant' }],
+        scaling: { kind: 'slot', perSlotLevel: [{ dice: '1d6', type: 'fire' }, { dice: '1d6', type: 'radiant' }] },
+      },
       isSRD: true,
       prepared: false,
     },
@@ -453,6 +530,12 @@ const TEST_CHARACTER: Character = {
       components: 'V, S',
       duration: 'Instantaneous',
       description: 'A ray of sickening greenish energy lashes out toward a creature within range. Make a ranged spell attack against the target. On a hit, the target takes 2d8 poison damage and must make a Constitution saving throw. On a failed save, it is also poisoned until the end of your next turn.',
+      requiresAttackRoll: true,
+      savingThrowAbility: 'constitution',
+      damage: {
+        base: [{ dice: '2d8', type: 'poison' }],
+        scaling: { kind: 'slot', perSlotLevel: [{ dice: '1d8', type: 'poison' }] },
+      },
       isSRD: true,
       prepared: true,
     },
@@ -465,6 +548,11 @@ const TEST_CHARACTER: Character = {
       components: 'V, S, M (a chip of mica)',
       duration: 'Instantaneous',
       description: 'A sudden loud ringing noise, painfully intense, erupts from a point of your choice within range. Each creature in a 10-foot-radius sphere centered on that point must make a Constitution saving throw. A creature takes 3d8 thunder damage on a failed save, or half as much damage on a successful one.',
+      savingThrowAbility: 'constitution',
+      damage: {
+        base: [{ dice: '3d8', type: 'thunder' }],
+        scaling: { kind: 'slot', perSlotLevel: [{ dice: '1d8', type: 'thunder' }] },
+      },
       isSRD: true,
       prepared: true,
     },
@@ -483,7 +571,6 @@ const TEST_CHARACTER: Character = {
   ].map((spell) => ({
     ...spell,
     classes: [],
-    ...inferSpellMechanics(spell),
   })) as Character['spells'],
   statusEffects: [],
   feats: [

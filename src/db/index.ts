@@ -94,6 +94,17 @@ export class CharacterDatabase extends Dexie {
       await tx.table('spells').clear();
       await tx.table('spells').bulkAdd(srdSpells);
     });
+    this.version(7).stores({
+      characters: '++id, name, race, level, xp, createdAt',
+      classes: 'name',
+      races: 'id, name',
+      spells: 'name, level, school, *classes',
+      equipment: 'name, equipmentCategory, weaponCategory, armorCategory',
+      customStatusEffects: 'id, name, category'
+    }).upgrade(async tx => {
+      await tx.table('spells').clear();
+      await tx.table('spells').bulkAdd(srdSpells);
+    });
     this.on('populate', tx => {
       tx.table('classes').bulkAdd(srdClasses);
       

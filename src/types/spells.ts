@@ -10,6 +10,37 @@ export type SpellSchool =
   | 'Necromancy'
   | 'Transmutation';
 
+export interface SpellDamageComponent {
+  dice?: string;
+  type: string;
+  flat?: number | 'mod';
+  formula?: string;
+}
+
+export type SpellDamageScaling =
+  | {
+      kind: 'cantrip';
+      tiers: { level: number; components: SpellDamageComponent[] }[];
+    }
+  | {
+      kind: 'slot';
+      perSlotLevel: SpellDamageComponent[];
+    }
+  | {
+      kind: 'instance';
+      instanceDamage: SpellDamageComponent[];
+      baseCount: number;
+      countPerSlotLevel: number;
+    }
+  | {
+      kind: 'none';
+    };
+
+export interface SpellDamage {
+  base: SpellDamageComponent[];
+  scaling: SpellDamageScaling;
+}
+
 export interface DndSpell {
   name: string;
   level: number;
@@ -25,5 +56,7 @@ export interface DndSpell {
   concentration?: boolean;
   requiresAttackRoll?: boolean;
   savingThrowAbility?: Ability;
+  damage?: SpellDamage;
+  healing?: SpellDamage;
   isSRD: boolean;
 }

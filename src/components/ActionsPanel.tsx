@@ -306,6 +306,19 @@ export function ActionsPanel(_props: ActionsPanelProps) {
                                 </div>
                               </div>
                             )}
+                            {action.healingProgression && action.healingProgression.length > 0 && (
+                              <div className="border-l border-slate-300 pl-3 min-w-[110px]">
+                                <div className="text-[11px] uppercase tracking-wide text-slate-500 mb-1">Healing</div>
+                                <div className="space-y-0.5 text-xs text-slate-700">
+                                  {action.healingProgression.map((entry) => (
+                                    <div key={entry.label} className="flex items-center justify-between gap-2">
+                                      <span>{entry.label}</span>
+                                      <span className="font-medium">{entry.dice}</span>
+                                    </div>
+                                  ))}
+                                </div>
+                              </div>
+                            )}
                           </div>
                         </TooltipContent>
                       </Tooltip>
@@ -370,6 +383,10 @@ export function ActionsPanel(_props: ActionsPanelProps) {
                       )}
                       
                       {action.damageType && <span className="text-slate-400">({action.damageType})</span>}
+
+                      {action.healing && (
+                        <span className="text-emerald-700">heal {action.healing}</span>
+                      )}
                       
                       {action.requirements && (
                         <span className="text-slate-400">• {action.requirements}</span>
