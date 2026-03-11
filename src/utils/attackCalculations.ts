@@ -72,6 +72,7 @@ function getEffectiveAbilityScore(character: Character, ability: Ability): numbe
   let score = character.abilityScores[ability];
   
   for (const item of character.equipment) {
+    if (!item.equipped) continue;
     if (item.abilityOverride?.[ability] && item.abilityOverride[ability]! > score) {
       score = item.abilityOverride[ability]!;
     }

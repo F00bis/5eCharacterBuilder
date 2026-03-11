@@ -3,6 +3,7 @@ import { ActionsPanel } from '../components/ActionsPanel';
 import { CharacterHeader } from '../components/CharacterHeader';
 import { CombatStatsPanel } from '../components/CombatStatsPanel';
 import { FeaturesPanel } from '../components/FeaturesPanel';
+import { InventoryPanel } from '../components/InventoryPanel';
 import { PassivesPanel } from '../components/PassivesPanel';
 import { SavingThrowsPanel } from '../components/SavingThrowsPanel';
 import { SkillsPanel } from '../components/SkillsPanel';
@@ -56,8 +57,8 @@ function CharacterViewContent() {
           <div className="w-full shrink-0 max-h-[50%] overflow-hidden">
             <FeaturesPanel />
           </div>
-          <div className="flex-1 min-h-0 flex items-center justify-center">
-            <span className="text-gray-400 text-sm">Inventory (coming soon)</span>
+          <div className="flex-1 min-h-0">
+            <InventoryPanel />
           </div>
         </div>
       </div>

@@ -20,6 +20,7 @@ export function getArmorClass(character: Character): ArmorClassBreakdown {
   const dexBonusFromMedium = Math.min(dexModifier, 2);
 
   for (const item of character.equipment) {
+    if (!item.equipped) continue;
     if (item.armorCategory === 'Shield') {
       sources.push({
         description: `${item.name} (Shield)`,

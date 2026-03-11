@@ -102,6 +102,7 @@ export function getSkillBreakdown(
   // Sum equipment skill bonuses
   let equipmentBonus = 0;
   for (const item of character.equipment) {
+    if (!item.equipped) continue;
     const bonus = item.skillModifiers?.[skill];
     if (bonus !== undefined && bonus !== 0) {
       equipmentBonus += bonus;
@@ -150,6 +151,7 @@ export function getSkillBreakdown(
 
   // Add equipment bonuses
   for (const item of character.equipment) {
+    if (!item.equipped) continue;
     const bonus = item.skillModifiers?.[skill];
     if (bonus !== undefined && bonus !== 0) {
       sources.push({

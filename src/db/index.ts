@@ -3,7 +3,7 @@ import { srdClasses } from '../data/srdClasses';
 import { srdEquipment } from '../data/srdEquipment';
 import { srdRaces } from '../data/srdRaces';
 import { srdSpells } from '../data/srdSpells';
-import type { Character, StatusEffect } from '../types';
+import type { Character, Equipment, StatusEffect } from '../types';
 import type { DndClass } from '../types/classes';
 import type { DndRace } from '../types/races';
 import type { SrdEquipment } from '../types/equipment';
@@ -104,6 +104,37 @@ export class CharacterDatabase extends Dexie {
     }).upgrade(async tx => {
       await tx.table('spells').clear();
       await tx.table('spells').bulkAdd(srdSpells);
+    });
+    this.version(8).stores({
+      characters: '++id, name, race, level, xp, createdAt',
+      classes: 'name',
+      races: 'id, name',
+      spells: 'name, level, school, *classes',
+      equipment: 'name, equipmentCategory, weaponCategory, armorCategory',
+      customStatusEffects: 'id, name, category'
+    }).upgrade(tx => {
+      return tx.table('characters').toCollection().modify(character => {
+        if (character.currency === undefined) {
+          character.currency = { cp: 0, sp: 0, ep: 0, gp: 0, pp: 0 };
+        }
+        if (character.equipment) {
+          character.equipment = character.equipment.map((item: Equipment) => {
+            const hasStatEffects = 
+              item.weaponCategory || 
+              item.armorCategory || 
+              item.abilityOverride || 
+              item.statModifiers || 
+              item.skillModifiers || 
+              item.savingThrowModifiers ||
+              item.armorClass;
+            
+            if (hasStatEffects) {
+              return { ...item, equippable: true, equipped: item.equipped !== false };
+            }
+            return { ...item, equippable: false };
+          });
+        }
+      });
     });
     this.on('populate', tx => {
       tx.table('classes').bulkAdd(srdClasses);

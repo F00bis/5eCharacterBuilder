@@ -91,6 +91,7 @@ export function getSavingThrowBreakdown(ability: Ability, character: Character):
 
   let equipmentBonus = 0;
   for (const item of character.equipment) {
+    if (!item.equipped) continue;
     const bonus = item.savingThrowModifiers?.[ability];
     if (bonus !== undefined && bonus !== 0) {
       equipmentBonus += bonus;
@@ -139,6 +140,7 @@ export function getSavingThrowBreakdown(ability: Ability, character: Character):
   }
 
   for (const item of character.equipment) {
+    if (!item.equipped) continue;
     const bonus = item.savingThrowModifiers?.[ability];
     if (bonus !== undefined && bonus !== 0) {
       sources.push({

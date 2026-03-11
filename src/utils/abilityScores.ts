@@ -44,6 +44,7 @@ export function getAbilityBreakdown(ability: Ability, character: Character): Abi
   }
 
   for (const item of character.equipment) {
+    if (!item.equipped) continue;
     const bonus = item.statModifiers?.[ability];
     if (bonus !== undefined && bonus !== 0) {
       equipmentSources.push({ name: item.name, type: 'equipment', value: bonus });
@@ -53,6 +54,7 @@ export function getAbilityBreakdown(ability: Ability, character: Character): Abi
   // Find the highest ability override from equipment
   let override: AbilityOverrideSource | null = null;
   for (const item of character.equipment) {
+    if (!item.equipped) continue;
     const overrideValue = item.abilityOverride?.[ability];
     if (overrideValue !== undefined) {
       if (override === null || overrideValue > override.value) {

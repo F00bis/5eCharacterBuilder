@@ -53,6 +53,7 @@ function getPassiveBreakdown(skill: PassiveSkill, character: Character): Passive
 
   let equipmentBonus = 0;
   for (const item of character.equipment) {
+    if (!item.equipped) continue;
     const bonus = item.skillModifiers?.[skill];
     if (bonus !== undefined && bonus !== 0) {
       equipmentBonus += bonus;
@@ -78,6 +79,7 @@ function getPassiveBreakdown(skill: PassiveSkill, character: Character): Passive
   }
 
   for (const item of character.equipment) {
+    if (!item.equipped) continue;
     const bonus = item.skillModifiers?.[skill];
     if (bonus !== undefined && bonus !== 0) {
       sources.push({ name: item.name, value: bonus });

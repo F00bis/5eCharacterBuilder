@@ -34,6 +34,7 @@ function baseCharacter(overrides: Partial<Character> = {}): Character {
     proficiencyBonus: 3,
     skills: [],
     equipment: [],
+    currency: { cp: 0, sp: 0, ep: 0, gp: 0, pp: 0 },
     spellSlots: [],
     spells: [],
     statusEffects: [],
@@ -187,6 +188,7 @@ describe('getSkillBreakdown', () => {
           weight: 1,
           description: 'Grants advantage on Stealth checks',
           skillModifiers: { stealth: 5 },
+          equipped: true,
         },
       ],
     });
@@ -231,6 +233,7 @@ describe('getSkillBreakdown', () => {
           weight: 1,
           description: 'Grants advantage on Stealth checks',
           skillModifiers: { stealth: 5 },
+          equipped: true,
         },
       ],
     });
@@ -297,6 +300,7 @@ describe('getSkillBreakdown', () => {
           weight: 1,
           description: 'Grants advantage on Stealth checks',
           skillModifiers: { stealth: 5 },
+          equipped: true,
         },
         {
           name: 'Boots of Elvenkind',
@@ -304,6 +308,7 @@ describe('getSkillBreakdown', () => {
           weight: 1,
           description: 'Your steps make no sound',
           skillModifiers: { stealth: 3 },
+          equipped: true,
         },
       ],
     });

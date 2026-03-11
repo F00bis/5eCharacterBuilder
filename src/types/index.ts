@@ -28,6 +28,14 @@ export type ProficiencyLevel = 'none' | 'proficient' | 'expertise';
 
 export type Rarity = 'common' | 'uncommon' | 'rare' | 'veryRare' | 'legendary' | 'artifact';
 
+export interface Currency {
+  cp: number;
+  sp: number;
+  ep: number;
+  gp: number;
+  pp: number;
+}
+
 export type StatusEffectCategory = 'harmful' | 'neutral' | 'beneficial';
 
 export type StatusEffect = {
@@ -60,6 +68,10 @@ export interface Equipment {
   rarity: Rarity;
   weight: number;
   description: string;
+  cost?: string;
+  attunement?: boolean;
+  attuned?: boolean;
+  equippable?: boolean;
   statModifiers?: Partial<AbilityScores>;
   abilityOverride?: Partial<AbilityScores>;
   skillModifiers?: Partial<Record<Skill, number>>;
@@ -131,6 +143,7 @@ export interface Character {
   proficiencyBonus: number;
   skills: SkillProficiency[];
   equipment: Equipment[];
+  currency: Currency;
   spellSlots: SpellSlot[];
   spells: CharacterSpell[];
   feats: Feat[];

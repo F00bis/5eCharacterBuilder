@@ -47,6 +47,7 @@ export async function getInitiativeBreakdown(character: Character): Promise<Stat
   }
 
   for (const item of character.equipment) {
+    if (!item.equipped) continue;
     if (item.abilityOverride?.dexterity) {
       const overrideValue = item.abilityOverride.dexterity - character.abilityScores.dexterity;
       if (overrideValue > 0) {
@@ -123,7 +124,7 @@ export async function getSpeedBreakdown(character: Character): Promise<StatBreak
   }
 
   const itemSpeedBonuses = character.equipment.filter(e => 
-    'speed' in (e.statModifiers || {})
+    e.equipped && 'speed' in (e.statModifiers || {})
   );
   for (const item of itemSpeedBonuses) {
     const bonus = (item.statModifiers as Record<string, number>).speed || 0;
