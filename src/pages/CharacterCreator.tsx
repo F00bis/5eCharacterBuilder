@@ -3,6 +3,7 @@ import { useParams } from 'react-router-dom';
 import { useCharacterBuilder } from '../contexts/CharacterBuilderContextTypes';
 import Stepper from '../components/ui/stepper';
 import type { Step } from '../components/ui/stepper';
+import RaceBackgroundStep from './builder/steps/RaceBackgroundStep';
 
 interface CharacterCreatorProps {
   mode: 'create' | 'levelup';
@@ -80,9 +81,12 @@ export default function CharacterCreator({ mode }: CharacterCreatorProps) {
 
       <div className="mt-8 bg-slate-50 border border-slate-200 rounded-lg p-8 min-h-[400px]">
         {/* Render specific step content here based on state.currentStep */}
-        <div className="text-center text-slate-500">
-          <p>Step Content for: {steps[state.currentStep]?.label}</p>
-        </div>
+        {steps[state.currentStep]?.id === 'race' && <RaceBackgroundStep />}
+        {steps[state.currentStep]?.id !== 'race' && (
+          <div className="text-center text-slate-500">
+            <p>Step Content for: {steps[state.currentStep]?.label}</p>
+          </div>
+        )}
       </div>
 
       <div className="mt-6 flex justify-between">
