@@ -8,3 +8,11 @@ export function getCharacterById(id: number): Promise<Character | undefined> {
 export async function updateCharacter(id: number, updates: Partial<Character>): Promise<number> {
   return db.characters.update(id, { ...updates, updatedAt: new Date() });
 }
+
+export function getAllCharacters(): Promise<Character[]> {
+  return db.characters.toArray();
+}
+
+export function deleteCharacter(id: number): Promise<void> {
+  return db.characters.delete(id);
+}

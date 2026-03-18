@@ -1,8 +1,10 @@
-import { render, screen, fireEvent } from '@testing-library/react';
-import { describe, it, expect, beforeEach, vi } from 'vitest';
-import { CharacterHeader } from './CharacterHeader';
+import '@testing-library/jest-dom';
+import { fireEvent, render, screen } from '@testing-library/react';
+import { BrowserRouter } from 'react-router-dom';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { CharacterContext, type CharacterContextValue } from '../contexts/CharacterContext';
 import type { Character } from '../types';
+import { CharacterHeader } from './CharacterHeader';
 
 function renderWithCharacter(
   ui: React.ReactElement,
@@ -17,9 +19,11 @@ function renderWithCharacter(
   };
   
   return render(
-    <CharacterContext.Provider value={mockContext}>
-      {ui}
-    </CharacterContext.Provider>
+    <BrowserRouter>
+      <CharacterContext.Provider value={mockContext}>
+        {ui}
+      </CharacterContext.Provider>
+    </BrowserRouter>
   );
 }
 
@@ -56,6 +60,7 @@ const baseCharacter: Character = {
   proficiencyBonus: 3,
   skills: [],
   equipment: [],
+  currency: { cp: 0, sp: 0, ep: 0, gp: 0, pp: 0 },
   spellSlots: [],
   spells: [],
   statusEffects: [],

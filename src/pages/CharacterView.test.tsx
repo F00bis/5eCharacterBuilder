@@ -1,7 +1,8 @@
 import { render, screen } from '@testing-library/react';
 import { MemoryRouter, Route, Routes } from 'react-router-dom';
-import { CharacterView } from './CharacterView';
+import { afterEach, describe, expect, it, vi } from 'vitest';
 import type { Character } from '../types';
+import { CharacterView } from './CharacterView';
 
 let mockQueryResult: Character | null | undefined = undefined;
 
@@ -137,8 +138,7 @@ describe('CharacterView ability scores section', () => {
           {
             name: 'Resilient',
             description: '+1 to Strength',
-            statModifiers: { strength: 2 },
-          },
+            statModifiers: { strength: 2 }, },
         ],
       });
 
@@ -164,13 +164,11 @@ describe('CharacterView ability scores section', () => {
           {
             name: 'Resilient',
             description: '+1 to Constitution',
-            statModifiers: { constitution: 1 },
-          },
+            statModifiers: { constitution: 1 }, },
           {
             name: 'Observant',
             description: '+1 to Wisdom',
-            statModifiers: { wisdom: 1 },
-          },
+            statModifiers: { wisdom: 1 }, },
         ],
       });
 
@@ -198,7 +196,7 @@ describe('CharacterView ability scores section', () => {
             rarity: 'uncommon',
             weight: 1,
             description: 'Increases strength',
-            statModifiers: { strength: 5 },
+            statModifiers: { strength: 5 }, equippable: true, equipped: true,
           },
         ],
       });
@@ -227,14 +225,14 @@ describe('CharacterView ability scores section', () => {
             rarity: 'rare',
             weight: 2,
             description: 'Increases strength',
-            statModifiers: { strength: 4 },
+            statModifiers: { strength: 4 }, equippable: true, equipped: true,
           },
           {
             name: 'Amulet of Health',
             rarity: 'rare',
             weight: 1,
             description: 'Increases constitution',
-            statModifiers: { constitution: 4 },
+            statModifiers: { constitution: 4 }, equippable: true, equipped: true,
           },
         ],
       });
@@ -263,13 +261,11 @@ describe('CharacterView ability scores section', () => {
           {
             name: 'Resilient',
             description: '+1 to Constitution',
-            statModifiers: { constitution: 1 },
-          },
+            statModifiers: { constitution: 1 }, },
           {
             name: 'Actor',
             description: '+1 to Charisma',
-            statModifiers: { charisma: 1 },
-          },
+            statModifiers: { charisma: 1 }, },
         ],
         equipment: [
           {
@@ -277,14 +273,14 @@ describe('CharacterView ability scores section', () => {
             rarity: 'uncommon',
             weight: 1,
             description: 'Increases strength',
-            statModifiers: { strength: 5 },
+            statModifiers: { strength: 5 }, equippable: true, equipped: true,
           },
           {
             name: 'Headband of Intellect',
             rarity: 'uncommon',
             weight: 1,
             description: 'Increases intelligence',
-            statModifiers: { intelligence: 11 },
+            statModifiers: { intelligence: 11 }, equippable: true, equipped: true,
           },
         ],
       });
@@ -319,8 +315,7 @@ describe('CharacterView ability scores section', () => {
           {
             name: 'Resilient',
             description: '+1 to Strength',
-            statModifiers: { strength: 1 },
-          },
+            statModifiers: { strength: 1 }, },
         ],
         equipment: [
           {
@@ -328,7 +323,7 @@ describe('CharacterView ability scores section', () => {
             rarity: 'rare',
             weight: 2,
             description: 'Increases strength',
-            statModifiers: { strength: 7 },
+            statModifiers: { strength: 7 }, equippable: true, equipped: true,
           },
         ],
       });
@@ -465,7 +460,7 @@ describe('CharacterView ability scores section', () => {
             rarity: 'uncommon',
             weight: 1,
             description: 'Your Strength score is 19 while you wear these gauntlets.',
-            abilityOverride: { strength: 19 },
+            abilityOverride: { strength: 19 }, equippable: true, equipped: true,
           },
         ],
       });
@@ -494,7 +489,7 @@ describe('CharacterView ability scores section', () => {
             rarity: 'uncommon',
             weight: 1,
             description: 'Your Strength score is 19 while you wear these gauntlets.',
-            abilityOverride: { strength: 19 },
+            abilityOverride: { strength: 19 }, equippable: true, equipped: true,
           },
         ],
       });
@@ -522,14 +517,14 @@ describe('CharacterView ability scores section', () => {
             rarity: 'uncommon',
             weight: 1,
             description: 'Your Strength score is 19.',
-            abilityOverride: { strength: 19 },
+            abilityOverride: { strength: 19 }, equippable: true, equipped: true,
           },
           {
             name: 'Belt of Fire Giant Strength',
             rarity: 'veryRare',
             weight: 2,
             description: 'Your Strength score is 25.',
-            abilityOverride: { strength: 25 },
+            abilityOverride: { strength: 25 }, equippable: true, equipped: true,
           },
         ],
       });
@@ -555,8 +550,7 @@ describe('CharacterView ability scores section', () => {
           {
             name: 'Heavy Armor Master',
             description: '+1 to Strength',
-            statModifiers: { strength: 1 },
-          },
+            statModifiers: { strength: 1 }, },
         ],
         equipment: [
           {
@@ -564,7 +558,7 @@ describe('CharacterView ability scores section', () => {
             rarity: 'uncommon',
             weight: 1,
             description: 'Your Strength score is 19.',
-            abilityOverride: { strength: 19 },
+            abilityOverride: { strength: 19 }, equippable: true, equipped: true,
           },
         ],
       });
@@ -590,13 +584,11 @@ describe('CharacterView ability scores section', () => {
           {
             name: 'Heavy Armor Master',
             description: '+1 to Strength',
-            statModifiers: { strength: 1 },
-          },
+            statModifiers: { strength: 1 }, },
           {
             name: 'Tavern Brawler',
             description: '+1 to Strength',
-            statModifiers: { strength: 1 },
-          },
+            statModifiers: { strength: 1 }, },
         ],
         equipment: [
           {
@@ -604,7 +596,7 @@ describe('CharacterView ability scores section', () => {
             rarity: 'uncommon',
             weight: 1,
             description: 'Your Strength score is 19.',
-            abilityOverride: { strength: 19 },
+            abilityOverride: { strength: 19 }, equippable: true, equipped: true,
           },
         ],
       });
@@ -630,8 +622,7 @@ describe('CharacterView ability scores section', () => {
           {
             name: 'Heavy Armor Master',
             description: '+1 to Strength',
-            statModifiers: { strength: 1 },
-          },
+            statModifiers: { strength: 1 }, },
         ],
         equipment: [
           {
@@ -639,7 +630,7 @@ describe('CharacterView ability scores section', () => {
             rarity: 'uncommon',
             weight: 1,
             description: 'Your Strength score is 19.',
-            abilityOverride: { strength: 19 },
+            abilityOverride: { strength: 19 }, equippable: true, equipped: true,
           },
         ],
       });
@@ -666,8 +657,7 @@ describe('CharacterView ability scores section', () => {
           {
             name: 'Heavy Armor Master',
             description: '+1 to Strength',
-            statModifiers: { strength: 1 },
-          },
+            statModifiers: { strength: 1 }, },
         ],
         equipment: [
           {
@@ -675,7 +665,7 @@ describe('CharacterView ability scores section', () => {
             rarity: 'uncommon',
             weight: 1,
             description: 'Your Strength score is 19.',
-            abilityOverride: { strength: 19 },
+            abilityOverride: { strength: 19 }, equippable: true, equipped: true,
           },
         ],
       });
@@ -704,8 +694,7 @@ describe('CharacterView ability scores section', () => {
           {
             name: 'Heavy Armor Master',
             description: '+1 to Strength',
-            statModifiers: { strength: 1 },
-          },
+            statModifiers: { strength: 1 }, },
         ],
         equipment: [
           {
@@ -713,7 +702,7 @@ describe('CharacterView ability scores section', () => {
             rarity: 'uncommon',
             weight: 1,
             description: 'Your Strength score is 19.',
-            abilityOverride: { strength: 19 },
+            abilityOverride: { strength: 19 }, equippable: true, equipped: true,
           },
         ],
       });
@@ -740,7 +729,7 @@ describe('CharacterView ability scores section', () => {
             rarity: 'uncommon',
             weight: 1,
             description: 'Your Strength score is 19.',
-            abilityOverride: { strength: 19 },
+            abilityOverride: { strength: 19 }, equippable: true, equipped: true,
           },
         ],
       });
@@ -765,8 +754,7 @@ describe('CharacterView ability scores section', () => {
           {
             name: 'Resilient',
             description: '+1 to Constitution',
-            statModifiers: { constitution: 1 },
-          },
+            statModifiers: { constitution: 1 }, },
         ],
         equipment: [
           {
@@ -774,7 +762,7 @@ describe('CharacterView ability scores section', () => {
             rarity: 'uncommon',
             weight: 1,
             description: 'Your Strength score is 19.',
-            abilityOverride: { strength: 19 },
+            abilityOverride: { strength: 19 }, equippable: true, equipped: true,
           },
         ],
       });
