@@ -1,5 +1,14 @@
 # Development Practices
 
+## Git operations
+Agents are not permitted to use git commands on this project. Human developers must first review the code generated and are the only users permitted to use git commands within the scope of this project.
+
+## Testing Practices
+All code within the project must follow a test-driven development model where tests outlining behavior must be written before implementing any real business logic. Tests should be well encapsulated and should utilize mocks when applicable.
+
+## State Management and Contexts
+In order to preserve vite fast refresh we should have separate files for context providers and actual context functions and hooks. Hooks, functions and types should live in a file that ends in Context and the actual provider element should export its own react component.
+
 ## External Bounding Box Pattern
 
 When building panel-based layouts (e.g., character sheets, dashboards), panels should size according to external bounding boxes defined by parent containers, not hardcoded dimensions within each panel.
