@@ -1,8 +1,9 @@
+import '@testing-library/jest-dom';
 import { render, screen } from '@testing-library/react';
-import { describe, it, expect, vi } from 'vitest';
-import { SkillsPanel } from './SkillsPanel';
+import { describe, expect, it, vi } from 'vitest';
 import { CharacterContext, type CharacterContextValue } from '../contexts/CharacterContext';
 import type { Character } from '../types';
+import { SkillsPanel } from './SkillsPanel';
 
 function renderWithCharacter(
   ui: React.ReactElement,
@@ -53,6 +54,7 @@ function baseCharacter(overrides: Partial<Character> = {}): Character {
     proficiencyBonus: 3,
     skills: [],
     equipment: [],
+    currency: { cp: 0, sp: 0, ep: 0, gp: 0, pp: 0 },
     spellSlots: [],
     spells: [],
     statusEffects: [],
@@ -224,6 +226,8 @@ describe('SkillsPanel', () => {
           weight: 1,
           description: 'Grants advantage on Stealth checks',
           skillModifiers: { stealth: 5 },
+          equippable: true,
+          equipped: true,
         },
       ],
     });
@@ -260,6 +264,8 @@ describe('SkillsPanel', () => {
           weight: 1,
           description: 'Grants advantage on Stealth checks',
           skillModifiers: { stealth: 5 },
+          equippable: true,
+          equipped: true,
         },
       ],
     });

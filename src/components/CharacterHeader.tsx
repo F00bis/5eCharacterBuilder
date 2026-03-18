@@ -1,3 +1,5 @@
+import { ArrowLeft } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import {
@@ -35,6 +37,7 @@ export function CharacterHeader(_props: CharacterHeaderProps) {
   const context = useCharacter();
   const character = _props.character ?? context.character!;
   const update = _props.onUpdate ?? context.update;
+  const navigate = useNavigate();
   
   const [isEditingName, setIsEditingName] = useState(false);
   const [isEditingXp, setIsEditingXp] = useState(false);
@@ -152,6 +155,15 @@ export function CharacterHeader(_props: CharacterHeaderProps) {
     <TooltipProvider delayDuration={200}>
       <Card className="w-full h-full p-2">
         <div className="flex gap-3">
+          <Button 
+            variant="ghost" 
+            size="icon" 
+            className="shrink-0 w-10 h-10 my-auto text-slate-500 hover:text-slate-900" 
+            onClick={() => navigate('/')}
+            title="Back to Characters"
+          >
+            <ArrowLeft className="w-6 h-6" />
+          </Button>
           <div 
             className="shrink-0 cursor-pointer"
             onClick={() => setIsModalOpen(true)}
