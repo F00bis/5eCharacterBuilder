@@ -21,6 +21,10 @@ export interface ClassFeature {
   description: string;
   levelAcquired: number;
   actions?: FeatureAction[];
+  choices?: {
+    count: number;
+    options: string[];
+  };
   effects?: {
     abilityScores?: Partial<Record<Ability, number>>;
     ac?: number;
@@ -45,4 +49,13 @@ export interface DndClass {
   spellcastingAbility?: Ability;
   spellsKnownPerLevel?: number[];
   slotsPerLevel?: number[];
+  multiclassing?: {
+    prerequisites: { ability: Ability; min: number }[];
+    proficienciesGained: {
+      armor?: string[];
+      weapons?: string[];
+      tools?: string[];
+      skills?: number;
+    };
+  };
 }

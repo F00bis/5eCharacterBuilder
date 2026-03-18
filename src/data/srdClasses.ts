@@ -8,6 +8,13 @@ export const srdClasses: DndClass[] = [
     savingThrows: ['strength', 'constitution'],
     skillProficienciesChoices: 2,
     skillOptions: ['animalHandling', 'athletics', 'intimidation', 'nature', 'perception', 'survival'],
+    multiclassing: {
+      prerequisites: [{ ability: 'strength', min: 13 }],
+      proficienciesGained: {
+        armor: ['Light', 'Medium', 'Shield'],
+        weapons: ['Simple', 'Martial']
+      }
+    },
     features: [
       {
         name: 'Rage',
@@ -38,7 +45,8 @@ export const srdClasses: DndClass[] = [
       {
         name: 'Primal Path',
         description: 'Choose a path that shapes the nature of your rage. At 3rd level, you choose a path that shapes the nature of your rage. Choose either the Berserker or the Totem Warrior, both detailed at the end of the class description. Your choice grants you features at 3rd level and again at 6th, 10th, and 14th levels.',
-        levelAcquired: 3
+        levelAcquired: 3,
+        choices: { count: 1, options: ['Path of the Berserker', 'Path of the Totem Warrior'] }
       },
       {
         name: 'Ability Score Improvement',
@@ -92,6 +100,14 @@ export const srdClasses: DndClass[] = [
     savingThrows: ['dexterity', 'charisma'],
     skillProficienciesChoices: 3,
     skillOptions: ['acrobatics', 'animalHandling', 'arcana', 'athletics', 'deception', 'history', 'insight', 'intimidation', 'investigation', 'medicine', 'nature', 'perception', 'performance', 'persuasion', 'religion', 'sleightOfHand', 'stealth', 'survival'],
+    multiclassing: {
+      prerequisites: [{ ability: 'charisma', min: 13 }],
+      proficienciesGained: {
+        armor: ['Light'],
+        skills: 1,
+        weapons: ['Simple', 'hand crossbow', 'longsword', 'rapier', 'shortsword']
+      }
+    },
     spellcastingAbility: 'charisma',
     features: [
       {
@@ -112,7 +128,8 @@ export const srdClasses: DndClass[] = [
       {
         name: 'Bard College',
         description: 'Choose a college that represents your musical training. At 3rd level, you choose a college that inspires and informs your casting. Choose the College of Lore or the College of Valor, both detailed at the end of the class description. Your choice grants you features at 3rd level and again at 6th and 14th levels.',
-        levelAcquired: 3
+        levelAcquired: 3,
+        choices: { count: 1, options: ['College of Lore', 'College of Valor'] }
       },
       {
         name: 'Expertise',
@@ -154,12 +171,19 @@ export const srdClasses: DndClass[] = [
     savingThrows: ['wisdom', 'charisma'],
     skillProficienciesChoices: 2,
     skillOptions: ['history', 'insight', 'medicine', 'persuasion', 'religion'],
+    multiclassing: {
+      prerequisites: [{ ability: 'wisdom', min: 13 }],
+      proficienciesGained: {
+        armor: ['Light', 'Medium', 'Shield']
+      }
+    },
     spellcastingAbility: 'wisdom',
     features: [
       {
         name: 'Divine Domain',
         description: 'Choose one domain related to your deity. At 1st level, you choose one domain related to your deity. Each domain is detailed at the end of this class description. Your choice grants you domain spells and other features when you choose it at 1st level. It also grants you additional benefits at 2nd, 5th, 8th, and 11th levels.',
-        levelAcquired: 1
+        levelAcquired: 1,
+        choices: { count: 1, options: ['Knowledge Domain', 'Life Domain', 'Light Domain', 'Nature Domain', 'Tempest Domain', 'Trickery Domain', 'War Domain'] }
       },
       {
         name: 'Channel Divinity',
@@ -196,6 +220,12 @@ export const srdClasses: DndClass[] = [
     savingThrows: ['intelligence', 'wisdom'],
     skillProficienciesChoices: 2,
     skillOptions: ['arcana', 'animalHandling', 'insight', 'medicine', 'nature', 'perception', 'religion', 'survival'],
+    multiclassing: {
+      prerequisites: [{ ability: 'wisdom', min: 13 }],
+      proficienciesGained: {
+        armor: ['Light', 'Medium', 'Shield']
+      }
+    },
     spellcastingAbility: 'wisdom',
     features: [
       {
@@ -216,7 +246,8 @@ export const srdClasses: DndClass[] = [
       {
         name: 'Druid Circle',
         description: 'Your circle grants you special features. At 2nd level, you choose to identify with a circle of druids. Your choice grants you features at 2nd level and again at 6th, 10th, and 14th levels.',
-        levelAcquired: 2
+        levelAcquired: 2,
+        choices: { count: 1, options: ['Circle of the Land', 'Circle of the Moon'] }
       },
       {
         name: 'Ability Score Improvement',
@@ -248,11 +279,19 @@ export const srdClasses: DndClass[] = [
     savingThrows: ['strength', 'constitution'],
     skillProficienciesChoices: 2,
     skillOptions: ['acrobatics', 'animalHandling', 'athletics', 'history', 'insight', 'intimidation', 'perception', 'survival'],
+    multiclassing: {
+      prerequisites: [{ ability: 'strength', min: 13 }],
+      proficienciesGained: {
+        armor: ['Light', 'Medium', 'Shield'],
+        weapons: ['Simple', 'Martial']
+      }
+    },
     features: [
       {
         name: 'Fighting Style',
         description: 'You adopt a particular style of fighting as your specialty. You adopt a particular style of fighting as your specialty. You can\'t take a Fighting Style option more than once, even if you later get to choose again.',
-        levelAcquired: 1
+        levelAcquired: 1,
+        choices: { count: 1, options: ['Archery', 'Defense', 'Dueling', 'Great Weapon Fighting', 'Protection', 'Two-Weapon Fighting'] }
       },
       {
         name: 'Second Wind',
@@ -267,7 +306,8 @@ export const srdClasses: DndClass[] = [
       {
         name: 'Martial Archetype',
         description: 'Choose an archetype that you strive to emulate. At 3rd level, you choose an archetype that you strive to emulate in your combat styles and techniques. Choose Champion, Battle Master, or Eldritch Knight, all detailed at the end of the class description. The archetype you choose grants you features at 3rd level and again at 7th, 10th, 15th, and 18th level.',
-        levelAcquired: 3
+        levelAcquired: 3,
+        choices: { count: 1, options: ['Champion', 'Battle Master', 'Eldritch Knight'] }
       },
       {
         name: 'Ability Score Improvement',
@@ -293,6 +333,12 @@ export const srdClasses: DndClass[] = [
     savingThrows: ['strength', 'dexterity'],
     skillProficienciesChoices: 1,
     skillOptions: ['acrobatics', 'athletics', 'history', 'insight', 'religion', 'stealth'],
+    multiclassing: {
+      prerequisites: [{ ability: 'dexterity', min: 13 }, { ability: 'wisdom', min: 13 }],
+      proficienciesGained: {
+        weapons: ['Simple', 'shortsword']
+      }
+    },
     features: [
       {
         name: 'Unarmored Defense',
@@ -317,7 +363,8 @@ export const srdClasses: DndClass[] = [
       {
         name: 'Monastic Tradition',
         description: 'Choose a tradition that represents your training. At 3rd level, you commit yourself to a monastic tradition: the Way of the Open Hand, the Way of Shadow, or the Way of the Four Elements, all detailed at the end of the class description. Your tradition grants you features at 3rd level and again at 6th, 11th, and 17th level.',
-        levelAcquired: 3
+        levelAcquired: 3,
+        choices: { count: 1, options: ['Way of the Open Hand', 'Way of Shadow', 'Way of the Four Elements'] }
       },
       {
         name: 'Deflect Missiles',
@@ -399,6 +446,13 @@ export const srdClasses: DndClass[] = [
     skillProficienciesChoices: 2,
     skillOptions: ['athletics', 'insight', 'intimidation', 'medicine', 'persuasion', 'religion'],
     spellcastingAbility: 'charisma',
+    multiclassing: {
+      prerequisites: [{ ability: 'strength', min: 13 }, { ability: 'charisma', min: 13 }],
+      proficienciesGained: {
+        armor: ['Light', 'Medium', 'Shield'],
+        weapons: ['Simple', 'Martial']
+      }
+    },
     features: [
       {
         name: 'Divine Sense',
@@ -418,7 +472,8 @@ export const srdClasses: DndClass[] = [
       {
         name: 'Fighting Style',
         description: 'You adopt a particular style of fighting as your specialty. At 2nd level, you adopt a particular style of fighting as your specialty. You can\'t take a Fighting Style option more than once, even if you later get to choose again.',
-        levelAcquired: 2
+        levelAcquired: 2,
+        choices: { count: 1, options: ['Defense', 'Dueling', 'Great Weapon Fighting', 'Protection'] }
       },
       {
         name: 'Divine Health',
@@ -428,7 +483,8 @@ export const srdClasses: DndClass[] = [
       {
         name: 'Sacred Oath',
         description: 'Choose an oath that you will swear to uphold. When you reach 3rd level, you swear the oath that binds you as a paladin forever. Up to this time you have been in a preparatory stage, committed to the path but not yet sworn to it. Now you choose the Oath of Devotion, the Oath of the Ancients, or the Oath of Vengeance, all detailed at the end of the class description. Your choice grants you features at 3rd level and again at 7th, 15th, and 20th level.',
-        levelAcquired: 3
+        levelAcquired: 3,
+        choices: { count: 1, options: ['Oath of Devotion', 'Oath of the Ancients', 'Oath of Vengeance'] }
       },
       {
         name: 'Ability Score Improvement',
@@ -470,26 +526,38 @@ export const srdClasses: DndClass[] = [
     savingThrows: ['strength', 'dexterity'],
     skillProficienciesChoices: 3,
     skillOptions: ['animalHandling', 'athletics', 'insight', 'investigation', 'nature', 'perception', 'stealth', 'survival'],
+    multiclassing: {
+      prerequisites: [{ ability: 'dexterity', min: 13 }, { ability: 'wisdom', min: 13 }],
+      proficienciesGained: {
+        armor: ['Light', 'Medium', 'Shield'],
+        weapons: ['Simple', 'Martial'],
+        skills: 1
+      }
+    },
     features: [
       {
         name: 'Favored Enemy',
         description: 'You have significant experience studying, tracking, and combating a particular type of enemy. Beginning at 1st level, you have significant experience studying, tracking, and combating a particular type of enemy. Choose a type of favored enemy: aberrations, beasts, celestials, constructs, dragons, elementals, fey, fiends, giants, monstrosities, oozes, plants, or undead. You have advantage on Wisdom (Survival) checks to track your favored enemies, as well as on Intelligence checks to recall information about them.',
-        levelAcquired: 1
+        levelAcquired: 1,
+        choices: { count: 1, options: ['Aberrations', 'Beasts', 'Celestials', 'Constructs', 'Dragons', 'Elementals', 'Fey', 'Fiends', 'Giants', 'Monstrosities', 'Oozes', 'Plants', 'Undead'] }
       },
       {
         name: 'Natural Explorer',
         description: 'You are particularly familiar with one type of natural environment. You are particularly familiar with one type of natural environment and are adept at traveling and surviving in such regions. Choose one type of terrain: arctic, coast, desert, forest, grassland, hill, mountain, or swamp. When you make an Intelligence or Wisdom check related to your favored terrain, your proficiency bonus is doubled if you are using any of your trained skills.',
-        levelAcquired: 1
+        levelAcquired: 1,
+        choices: { count: 1, options: ['Arctic', 'Coast', 'Desert', 'Forest', 'Grassland', 'Hill', 'Mountain', 'Swamp'] }
       },
       {
         name: 'Fighting Style',
         description: 'You adopt a particular style of fighting as your specialty. At 2nd level, you adopt a particular style of fighting as your specialty. Choose one of the following options. Once you choose a style, you can\'t take a Fighting Style option more than again, even if you later get to choose again.',
-        levelAcquired: 2
+        levelAcquired: 2,
+        choices: { count: 1, options: ['Archery', 'Defense', 'Dueling', 'Two-Weapon Fighting'] }
       },
       {
         name: 'Ranger Archetype',
         description: 'Choose an archetype that you emulate in the exercise of your ranger abilities. At 3rd level, you choose an archetype that you emulate in the exercise of your ranger abilities. Choose Hunter or Beast Master, both detailed at the end of the class description. Your archetype choice grants you features at 3rd, 7th, 11th, and 15th level.',
-        levelAcquired: 3
+        levelAcquired: 3,
+        choices: { count: 1, options: ['Hunter', 'Beast Master'] }
       },
       {
         name: 'Primeval Awareness',
@@ -540,11 +608,20 @@ export const srdClasses: DndClass[] = [
     savingThrows: ['dexterity', 'intelligence'],
     skillProficienciesChoices: 4,
     skillOptions: ['acrobatics', 'athletics', 'deception', 'insight', 'intimidation', 'investigation', 'perception', 'performance', 'persuasion', 'sleightOfHand', 'stealth'],
+    multiclassing: {
+      prerequisites: [{ ability: 'dexterity', min: 13 }],
+      proficienciesGained: {
+        armor: ['Light'],
+        skills: 1,
+        weapons: ['thieves tools']
+      }
+    },
     features: [
       {
         name: 'Expertise',
         description: 'Choose two of your skill proficiencies, or one of your skill proficiencies and your proficiency with thieves\' tools. At 1st level, choose two of your skill proficiencies, or one of your skill proficiencies and your proficiency with thieves\' tools. Your proficiency bonus is doubled for any ability check that uses either of these skills. At 6th level, you can choose another two skills (or thieves\' tools) to gain this benefit.',
-        levelAcquired: 1
+        levelAcquired: 1,
+        choices: { count: 2, options: ['acrobatics', 'athletics', 'deception', 'insight', 'intimidation', 'investigation', 'perception', 'performance', 'persuasion', 'sleightOfHand', 'stealth', 'thieves tools'] }
       },
       {
         name: 'Sneak Attack',
@@ -564,7 +641,8 @@ export const srdClasses: DndClass[] = [
       {
         name: 'Roguish Archetype',
         description: 'Choose an archetype that represents your area of expertise. At 3rd level, you choose an archetype that represents your area of expertise: Assassin, Arcane Trickster, or Thief. Your archetype choice grants you features at 3rd level and again at 9th, 13th, and 17th level.',
-        levelAcquired: 3
+        levelAcquired: 3,
+        choices: { count: 1, options: ['Assassin', 'Arcane Trickster', 'Thief'] }
       },
       {
         name: 'Ability Score Improvement',
@@ -616,6 +694,10 @@ export const srdClasses: DndClass[] = [
     skillProficienciesChoices: 2,
     skillOptions: ['arcana', 'deception', 'insight', 'intimidation', 'persuasion', 'religion'],
     spellcastingAbility: 'charisma',
+    multiclassing: {
+      prerequisites: [{ ability: 'charisma', min: 13 }],
+      proficienciesGained: {}
+    },
     features: [
       {
         name: 'Spellcasting',
@@ -625,7 +707,8 @@ export const srdClasses: DndClass[] = [
       {
         name: 'Sorcerous Origin',
         description: 'Choose a sorcerous origin that describes the source of your magical power. Choose a sorcerous origin, which describes the source of your innate magical power: Draconic Bloodline or Wild Magic, both detailed at the end of the class description. Your choice grants you features when you choose it at 1st level and again at 6th, 14th, and 18th level.',
-        levelAcquired: 1
+        levelAcquired: 1,
+        choices: { count: 1, options: ['Draconic Bloodline', 'Wild Magic'] }
       },
       {
         name: 'Font of Magic',
@@ -658,11 +741,19 @@ export const srdClasses: DndClass[] = [
     skillProficienciesChoices: 2,
     skillOptions: ['arcana', 'deception', 'history', 'intimidation', 'investigation', 'nature', 'religion'],
     spellcastingAbility: 'charisma',
+    multiclassing: {
+      prerequisites: [{ ability: 'charisma', min: 13 }],
+      proficienciesGained: {
+        armor: ['Light'],
+        weapons: ['Simple']
+      }
+    },
     features: [
       {
         name: 'Otherworldly Patron',
         description: 'You have struck a bargain with an otherworldly being. You have struck a bargain with an otherworldly being of your choice: the Archfey, the Fiend, or the Great Old One, each detailed at the end of the class description. Your choice grants you features at 1st level and again at 6th, 10th, and 14th level.',
-        levelAcquired: 1
+        levelAcquired: 1,
+        choices: { count: 1, options: ['The Archfey', 'The Fiend', 'The Great Old One'] }
       },
       {
         name: 'Pact Magic',
@@ -677,7 +768,8 @@ export const srdClasses: DndClass[] = [
       {
         name: 'Pact Boon',
         description: 'Your otherworldly patron grants you a magical gift. At 3rd level, your otherworldly patron grants you a magical gift based on the pact you made with your patron. Choose one of the following patron-specific bonus spells.',
-        levelAcquired: 3
+        levelAcquired: 3,
+        choices: { count: 1, options: ['Pact of the Chain', 'Pact of the Blade', 'Pact of the Tome'] }
       },
       {
         name: 'Ability Score Improvement',
@@ -705,6 +797,10 @@ export const srdClasses: DndClass[] = [
     skillProficienciesChoices: 2,
     skillOptions: ['arcana', 'history', 'insight', 'investigation', 'medicine', 'religion'],
     spellcastingAbility: 'intelligence',
+    multiclassing: {
+      prerequisites: [{ ability: 'intelligence', min: 13 }],
+      proficienciesGained: {}
+    },
     features: [
       {
         name: 'Spellcasting',
@@ -719,7 +815,8 @@ export const srdClasses: DndClass[] = [
       {
         name: 'Arcane Tradition',
         description: 'Choose an arcane tradition that shapes your magical practice. At 2nd level, you choose an arcane tradition, shaping your magical practice. Your choice grants you features at 2nd level and again at 6th, 10th, and 14th level. Choose either Abjuration, Conjuration, Divination, Enchantment, Evocation, Illusion, Necromancy, or Transmutation, all detailed at the end of the class description.',
-        levelAcquired: 2
+        levelAcquired: 2,
+        choices: { count: 1, options: ['School of Abjuration', 'School of Conjuration', 'School of Divination', 'School of Enchantment', 'School of Evocation', 'School of Illusion', 'School of Necromancy', 'School of Transmutation'] }
       },
       {
         name: 'Ability Score Improvement',

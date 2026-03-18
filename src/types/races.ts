@@ -2,7 +2,7 @@ import type { Ability } from './index';
 import type { FeatureAction } from './classes';
 
 export interface AbilityScoreIncrease {
-  ability: Ability;
+  ability?: Ability;
   amount: number;
 }
 

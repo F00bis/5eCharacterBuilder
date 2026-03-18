@@ -60,6 +60,7 @@ export interface SkillProficiency {
   skill: Skill;
   ability: Ability;
   level: ProficiencyLevel;
+  source?: string;
 }
 
 export interface Equipment {
@@ -83,6 +84,7 @@ export interface Equipment {
   damage?: string;
   properties?: string[];
   mastery?: WeaponMastery;
+  source?: string;
 }
 
 export interface SpellSlot {
@@ -94,6 +96,7 @@ export interface SpellSlot {
 export interface CharacterSpell extends DndSpell {
   id?: number;
   prepared: boolean;
+  source?: string;
 }
 
 export interface Feat {
@@ -120,10 +123,14 @@ export interface Character {
   background: string;
   alignment: string;
   classes: ClassEntry[];
+  baseAbilityScores: AbilityScores;
   abilityScores: AbilityScores;
+  featureChoices: Record<string, string | string[]>;
+  hpRolls: number[];
   level: number;
   xp: number;
   portrait: string | null;
+  hpBonus: number;
   hp: number;
   maxHp: number;
   currentHp: number;
