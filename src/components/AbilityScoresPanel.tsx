@@ -1,7 +1,7 @@
 import { TooltipProvider } from '@/components/ui/tooltip';
-import { useCharacter } from '../contexts/CharacterContext';
-import type { Ability } from '../types';
-import { getAbilityBreakdown } from '../utils/abilityScores';
+import { useCharacter } from '@/contexts/CharacterContext';
+import type { Ability } from '@/types';
+import { getAbilityBreakdown } from '@/utils/abilityScores';
 import { AbilityScoreBox } from './AbilityScoreBox';
 
 const abilityOrder: Ability[] = [

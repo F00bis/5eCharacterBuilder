@@ -129,7 +129,7 @@ export function ActionsPanel(_props: ActionsPanelProps) {
     
     loadActions();
     return () => { cancelled = true; };
-  }, [actionDataKey]);
+  }, [actionDataKey, character]);
 
   // Derive resources from spell slots (pure computation, no effect needed)
   const resources = useMemo(
@@ -248,7 +248,7 @@ export function ActionsPanel(_props: ActionsPanelProps) {
             {resources.map((pool) => (
               <div key={pool.id} className="text-xs flex items-center gap-1">
                 <span className="text-slate-500">{pool.name}: </span>
-                <span className="flex inline-flex gap-0.5">
+                <span className="flex gap-0.5">
                   {Array.from({ length: pool.max }).map((_, i) => (
                     <button
                       key={i}
@@ -294,7 +294,7 @@ export function ActionsPanel(_props: ActionsPanelProps) {
                               {action.spellDescription && <p className="text-slate-600">{action.spellDescription}</p>}
                             </div>
                             {action.damageProgression && action.damageProgression.length > 0 && (
-                              <div className="border-l border-slate-300 pl-3 min-w-[110px]">
+                              <div className="border-l border-slate-300 pl-3 min-w-27.5">
                                 <div className="text-[11px] uppercase tracking-wide text-slate-500 mb-1">Damage</div>
                                 <div className="space-y-0.5 text-xs text-slate-700">
                                   {action.damageProgression.map((entry) => (
@@ -307,7 +307,7 @@ export function ActionsPanel(_props: ActionsPanelProps) {
                               </div>
                             )}
                             {action.healingProgression && action.healingProgression.length > 0 && (
-                              <div className="border-l border-slate-300 pl-3 min-w-[110px]">
+                              <div className="border-l border-slate-300 pl-3 min-w-27.5">
                                 <div className="text-[11px] uppercase tracking-wide text-slate-500 mb-1">Healing</div>
                                 <div className="space-y-0.5 text-xs text-slate-700">
                                   {action.healingProgression.map((entry) => (
