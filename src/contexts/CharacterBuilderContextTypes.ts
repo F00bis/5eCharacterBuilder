@@ -1,12 +1,18 @@
 import { createContext, useContext } from 'react';
 import type React from 'react';
-import type { Character } from '../types';
+import type { Character, Ability } from '../types';
+
+export interface AsiChoice {
+  level: number;
+  bonuses: { ability: Ability; amount: number }[];
+}
 
 export interface CharacterBuilderState {
   draft: Partial<Character>;
   currentStep: number;
   mode: 'create' | 'levelup';
   baseCharacterId: number | null;
+  asiChoices: AsiChoice[];
 }
 
 export type BuilderAction =
@@ -16,6 +22,8 @@ export type BuilderAction =
   | { type: 'SET_STEP'; step: number }
   | { type: 'ADD_ITEM_WITH_SOURCE'; listName: keyof Character; item: unknown }
   | { type: 'REMOVE_ITEMS_BY_SOURCE'; listName: keyof Character; source: string }
+  | { type: 'ADD_ASI_CHOICE'; choice: AsiChoice }
+  | { type: 'REMOVE_ASI_CHOICE'; level: number }
   | { type: 'CLEAR_DRAFT' };
 
 export const defaultState: CharacterBuilderState = {
@@ -23,6 +31,7 @@ export const defaultState: CharacterBuilderState = {
   currentStep: 0,
   mode: 'create',
   baseCharacterId: null,
+  asiChoices: [],
 };
 
 export function characterBuilderReducer(
@@ -33,7 +42,11 @@ export function characterBuilderReducer(
     case 'SET_MODE':
       return { ...state, mode: action.mode, baseCharacterId: action.baseCharacterId ?? null };
     case 'LOAD_BASE_CHARACTER':
-      return { ...state, draft: { ...action.character } };
+      return { 
+        ...state, 
+        draft: { ...action.character },
+        asiChoices: (action.character as unknown as { asiChoices?: AsiChoice[] })?.asiChoices || []
+      };
     case 'UPDATE_DRAFT':
       return { ...state, draft: { ...state.draft, ...action.updates } };
     case 'SET_STEP':
@@ -64,6 +77,17 @@ export function characterBuilderReducer(
         },
       };
     }
+    case 'ADD_ASI_CHOICE': {
+      const existingIndex = state.asiChoices.findIndex(c => c.level === action.choice.level);
+      if (existingIndex >= 0) {
+        const updated = [...state.asiChoices];
+        updated[existingIndex] = action.choice;
+        return { ...state, asiChoices: updated };
+      }
+      return { ...state, asiChoices: [...state.asiChoices, action.choice] };
+    }
+    case 'REMOVE_ASI_CHOICE':
+      return { ...state, asiChoices: state.asiChoices.filter(c => c.level !== action.level) };
     case 'CLEAR_DRAFT':
       return { ...defaultState };
     default:

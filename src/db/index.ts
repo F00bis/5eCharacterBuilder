@@ -3,11 +3,13 @@ import { srdClasses } from '../data/srdClasses';
 import { srdEquipment } from '../data/srdEquipment';
 import { srdRaces } from '../data/srdRaces';
 import { srdSpells } from '../data/srdSpells';
+import { srdFeats } from '../data/srdFeats';
 import type { Character, Equipment, StatusEffect } from '../types';
 import type { DndClass } from '../types/classes';
 import type { DndRace } from '../types/races';
 import type { SrdEquipment } from '../types/equipment';
 import type { DndSpell } from '../types/spells';
+import type { Feat } from '../types/feats';
 
 export class CharacterDatabase extends Dexie {
   characters!: Table<Character>;
@@ -15,6 +17,7 @@ export class CharacterDatabase extends Dexie {
   races!: Table<DndRace, string>;
   spells!: Table<DndSpell, string>;
   equipment!: Table<SrdEquipment, string>;
+  feats!: Table<Feat, number>;
   customStatusEffects!: Table<StatusEffect, string>;
 
   constructor() {
@@ -136,6 +139,15 @@ export class CharacterDatabase extends Dexie {
         }
       });
     });
+    this.version(9).stores({
+      characters: '++id, name, race, level, xp, createdAt',
+      classes: 'name',
+      races: 'id, name',
+      spells: 'name, level, school, *classes',
+      equipment: 'name, equipmentCategory, weaponCategory, armorCategory',
+      feats: '++id, &name, prerequisite, isSRD',
+      customStatusEffects: 'id, name, category'
+    });
     this.on('populate', tx => {
       tx.table('classes').bulkAdd(srdClasses);
       
@@ -147,6 +159,7 @@ export class CharacterDatabase extends Dexie {
       
       tx.table('spells').bulkAdd(srdSpells);
       tx.table('equipment').bulkAdd(srdEquipment);
+      tx.table('feats').bulkAdd(srdFeats);
     });
   }
 }

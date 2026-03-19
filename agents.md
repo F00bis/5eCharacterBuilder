@@ -8,10 +8,16 @@ Agents are not permitted to use git commands on this project. Human developers m
 ### Functional Programming
 Functions and components should be as close to pure functions as possible. These should be well encapsulated and avoid side effects if possible. If the feature is impossible without side effects, limit the blast radius of these side effects to as many components or functions as possible
 
+### Type Safety
+Typescript types should be explicitly outlined with interfaces or types. The use of `any` should be avoided. Type casting should also be avoided.
+
 ## Testing Practices
 
 ### Test Driven Development
 All code within the project must follow a test-driven development model where tests outlining behavior must be written before implementing any real business logic. Tests should be well encapsulated and should utilize mocks when applicable.
+
+### Writing Tests
+Tests should comprehensively test the behavior of the feature in question. Tests should ideally cover all behavioral lines of code within a feature and take into account happy path scenarios as well as edge cases. Dependencies should be mocked accordingly. These mocks should also account for happy path and edge case scenarios.
 
 ### Running Tests
 When working on a feature only run tests that directly test the feature in question. Only run multiple test suites for behavior that spans multiple components. This should be rare as components and other typescript functions should be well encapsulated and avoid side effects

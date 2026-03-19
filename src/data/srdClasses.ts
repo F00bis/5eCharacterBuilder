@@ -91,7 +91,28 @@ export const srdClasses: DndClass[] = [
           abilityScores: { strength: 4, constitution: 4 }
         }
       }
-    ]
+    ],
+    startingEquipment: {
+      startingGoldFormula: '2d4 * 10',
+      startingGoldAverage: 50,
+      choices: [
+        {
+          label: 'Choose your weapons:',
+          options: [
+            { label: '(a) Greataxe', items: ['Greataxe'] },
+            { label: '(b) Martial Melee Weapon', items: ['Battleaxe', 'Flail', 'Glaive', 'Greatsword', 'Halberd', 'Lance', 'Longsword', 'Maul', 'Morningstar', 'Pike', 'Rapier', 'Scimitar', 'Shortsword', 'Trident', 'Warhammer', 'War Pick', 'Whip'] }
+          ]
+        },
+        {
+          label: 'Choose your secondary weapons:',
+          options: [
+            { label: '(a) Two Handaxes', items: ['Handaxe', 'Handaxe'] },
+            { label: '(b) Simple Weapon', items: ['Club', 'Dagger', 'Greatclub', 'Light Hammer', 'Mace', 'Quarterstaff', 'Sickle', 'Spear', 'Javelin', 'Handaxe'] }
+          ]
+        }
+      ],
+      fixedEquipment: ['Explorer\'s Pack', 'Javelin']
+    }
   },
   {
     name: 'Bard',
@@ -162,7 +183,29 @@ export const srdClasses: DndClass[] = [
         levelAcquired: 20
       }
     ],
-    slotsPerLevel: [2, 3, 4, 4, 4, 4, 5, 5, 5, 5, 6, 6, 6, 6, 7, 7, 7, 7, 8, 8]
+    slotsPerLevel: [2, 3, 4, 4, 4, 4, 5, 5, 5, 5, 6, 6, 6, 6, 7, 7, 7, 7, 8, 8],
+    startingEquipment: {
+      startingGoldFormula: '5d4 * 10',
+      startingGoldAverage: 125,
+      choices: [
+        {
+          label: 'Choose your weapon:',
+          options: [
+            { label: '(a) Rapier', items: ['Rapier'] },
+            { label: '(b) Longsword', items: ['Longsword'] },
+            { label: '(c) Simple Weapon', items: ['Club', 'Dagger', 'Greatclub', 'Handaxe', 'Light Hammer', 'Javelin', 'Mace', 'Quarterstaff', 'Sickle', 'Spear'] }
+          ]
+        },
+        {
+          label: 'Choose your instrument:',
+          options: [
+            { label: '(a) Lute', items: ['Lute'] },
+            { label: '(b) Other Musical Instrument', items: ['Drum', 'Dulcimer', 'Flute', 'Lyre', 'Horn', 'Pan Flute', 'Shawm', 'Viol'] }
+          ]
+        }
+      ],
+      fixedEquipment: ['Leather Armor', 'Dagger']
+    }
   },
   {
     name: 'Cleric',
@@ -211,7 +254,21 @@ export const srdClasses: DndClass[] = [
         levelAcquired: 1
       }
     ],
-    slotsPerLevel: [3, 4, 4, 4, 4, 4, 5, 5, 5, 5, 6, 6, 6, 6, 7, 7, 7, 7, 8, 8]
+    slotsPerLevel: [3, 4, 4, 4, 4, 4, 5, 5, 5, 5, 6, 6, 6, 6, 7, 7, 7, 7, 8, 8],
+    startingEquipment: {
+      startingGoldFormula: '5d4 * 10',
+      startingGoldAverage: 125,
+      choices: [
+        {
+          label: 'Choose your weapon:',
+          options: [
+            { label: '(a) Mace', items: ['Mace'] },
+            { label: '(b) Warhammer', items: ['Warhammer'] }
+          ]
+        }
+      ],
+      fixedEquipment: ['Scale Mail', 'Shield', 'Priest\'s Pack', 'Holy Symbol: Amulet']
+    }
   },
   {
     name: 'Druid',
@@ -270,7 +327,21 @@ export const srdClasses: DndClass[] = [
         levelAcquired: 20
       }
     ],
-    slotsPerLevel: [3, 4, 4, 4, 4, 4, 5, 5, 5, 5, 6, 6, 6, 6, 7, 7, 7, 7, 8, 8]
+    slotsPerLevel: [3, 4, 4, 4, 4, 4, 5, 5, 5, 5, 6, 6, 6, 6, 7, 7, 7, 7, 8, 8],
+    startingEquipment: {
+      startingGoldFormula: '2d4 * 10',
+      startingGoldAverage: 50,
+      choices: [
+        {
+          label: 'Choose your weapon:',
+          options: [
+            { label: '(a) Scimitar', items: ['Scimitar'] },
+            { label: '(b) Simple Melee Weapon (non-metal)', items: ['Club', 'Dagger', 'Greatclub', 'Light Hammer', 'Quarterstaff', 'Sickle', 'Spear'] }
+          ]
+        }
+      ],
+      fixedEquipment: ['Leather Armor', 'Explorer\'s Pack', 'Druidic Focus: Sprig of Mistletoe']
+    }
   },
   {
     name: 'Fighter',
@@ -324,7 +395,28 @@ export const srdClasses: DndClass[] = [
         description: 'You can reroll a saving throw that you fail. Beginning at 9th level, you can reroll a saving throw that you fail. If you do so, you must use the new roll, and you can\'t use this feature again until you finish a long rest. You can use this feature twice before a long rest when you reach 13th level in this class and three times before a long rest when you reach 17th level in this class.',
         levelAcquired: 9
       }
-    ]
+    ],
+    startingEquipment: {
+      startingGoldFormula: '5d4 * 10',
+      startingGoldAverage: 125,
+      choices: [
+        {
+          label: 'Choose your armor:',
+          options: [
+            { label: '(a) Chain Mail', items: ['Chain Mail'] },
+            { label: '(b) Leather Armor, Longbow, and Arrows', items: ['Leather Armor', 'Longbow', 'Arrows'] }
+          ]
+        },
+        {
+          label: 'Choose your weapon:',
+          options: [
+            { label: '(a) Martial Weapon and Shield', items: ['Battleaxe', 'Flail', 'Glaive', 'Greataxe', 'Greatsword', 'Halberd', 'Lance', 'Longsword', 'Maul', 'Morningstar', 'Pike', 'Rapier', 'Scimitar', 'Shortsword', 'Trident', 'Warhammer', 'War Pick', 'Whip', 'Shield'] },
+            { label: '(b) Two Martial Weapons', items: ['Battleaxe', 'Flail', 'Glaive', 'Greataxe', 'Greatsword', 'Halberd', 'Lance', 'Longsword', 'Maul', 'Morningstar', 'Pike', 'Rapier', 'Scimitar', 'Shortsword', 'Trident', 'Warhammer', 'War Pick', 'Whip'] }
+          ]
+        }
+      ],
+      fixedEquipment: ['Dungeoneer\'s Pack']
+    }
   },
   {
     name: 'Monk',
@@ -436,7 +528,21 @@ export const srdClasses: DndClass[] = [
         description: 'When you roll for initiative and have no ki remaining, you regain 4 ki points. At 20th level, when you roll for initiative and have no Ki points remaining, you regain 4 Ki points.',
         levelAcquired: 20
       }
-    ]
+    ],
+    startingEquipment: {
+      startingGoldFormula: '5d4',
+      startingGoldAverage: 12,
+      choices: [
+        {
+          label: 'Choose your weapon:',
+          options: [
+            { label: '(a) Shortsword', items: ['Shortsword'] },
+            { label: '(b) Simple Weapon', items: ['Club', 'Dagger', 'Greatclub', 'Handaxe', 'Light Hammer', 'Javelin', 'Mace', 'Quarterstaff', 'Sickle', 'Spear'] }
+          ]
+        }
+      ],
+      fixedEquipment: ['Dungeoneer\'s Pack']
+    }
   },
   {
     name: 'Paladin',
@@ -517,7 +623,21 @@ export const srdClasses: DndClass[] = [
         levelAcquired: 14
       }
     ],
-    slotsPerLevel: [0, 0, 3, 4, 4, 4, 4, 4, 4, 4, 5, 5, 5, 5, 5, 5, 6, 6, 6, 6]
+    slotsPerLevel: [0, 0, 3, 4, 4, 4, 4, 4, 4, 4, 5, 5, 5, 5, 5, 5, 6, 6, 6, 6],
+    startingEquipment: {
+      startingGoldFormula: '5d4 * 10',
+      startingGoldAverage: 125,
+      choices: [
+        {
+          label: 'Choose your weapon:',
+          options: [
+            { label: '(a) Martial Weapon and Shield', items: ['Battleaxe', 'Flail', 'Glaive', 'Greataxe', 'Greatsword', 'Halberd', 'Lance', 'Longsword', 'Maul', 'Morningstar', 'Pike', 'Rapier', 'Scimitar', 'Shortsword', 'Trident', 'Warhammer', 'War Pick', 'Whip', 'Shield'] },
+            { label: '(b) Two Martial Weapons', items: ['Battleaxe', 'Flail', 'Glaive', 'Greataxe', 'Greatsword', 'Halberd', 'Lance', 'Longsword', 'Maul', 'Morningstar', 'Pike', 'Rapier', 'Scimitar', 'Shortsword', 'Trident', 'Warhammer', 'War Pick', 'Whip'] }
+          ]
+        }
+      ],
+      fixedEquipment: ['Chain Mail', 'Holy Symbol: Amulet', 'Priest\'s Pack', 'Shield']
+    }
   },
   {
     name: 'Ranger',
@@ -599,7 +719,28 @@ export const srdClasses: DndClass[] = [
         description: 'You become a master hunter. At 20th level, you become a master hunter. Once on each of your turns, you can add your Wisdom modifier to the attack roll or the damage roll of an attack you make against one of your favored enemies. You can choose to use this feature before or after the roll, but before any effects of the roll are applied.',
         levelAcquired: 20
       }
-    ]
+    ],
+    startingEquipment: {
+      startingGoldFormula: '5d4 * 10',
+      startingGoldAverage: 125,
+      choices: [
+        {
+          label: 'Choose your armor:',
+          options: [
+            { label: '(a) Scale Mail', items: ['Scale Mail'] },
+            { label: '(b) Leather Armor', items: ['Leather Armor'] }
+          ]
+        },
+        {
+          label: 'Choose your weapons:',
+          options: [
+            { label: '(a) Two Shortswords', items: ['Shortsword', 'Shortsword'] },
+            { label: '(b) Two Simple Melee Weapons', items: ['Club', 'Dagger', 'Greatclub', 'Handaxe', 'Light Hammer', 'Javelin', 'Mace', 'Quarterstaff', 'Sickle', 'Spear'] }
+          ]
+        }
+      ],
+      fixedEquipment: ['Explorer\'s Pack', 'Longbow', 'Arrows']
+    }
   },
   {
     name: 'Rogue',
@@ -684,7 +825,21 @@ export const srdClasses: DndClass[] = [
         description: 'You have an uncanny ability to succeed when you need it. At 20th level, you have an uncanny ability to succeed when you need it. If your attack misses a target within range, you can turn the miss into a hit. Alternatively, if you fail an ability check, you can treat the d20 roll as a 20.',
         levelAcquired: 20
       }
-    ]
+    ],
+    startingEquipment: {
+      startingGoldFormula: '4d4 * 10',
+      startingGoldAverage: 100,
+      choices: [
+        {
+          label: 'Choose your weapon:',
+          options: [
+            { label: '(a) Rapier', items: ['Rapier'] },
+            { label: '(b) Shortsword', items: ['Shortsword'] }
+          ]
+        }
+      ],
+      fixedEquipment: ['Leather Armor', 'Burglar\'s Pack', 'Thieves\' Tools', 'Dagger', 'Dagger']
+    }
   },
   {
     name: 'Sorcerer',
@@ -731,7 +886,21 @@ export const srdClasses: DndClass[] = [
         levelAcquired: 20
       }
     ],
-    slotsPerLevel: [2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20]
+    slotsPerLevel: [2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20],
+    startingEquipment: {
+      startingGoldFormula: '3d4 * 10',
+      startingGoldAverage: 75,
+      choices: [
+        {
+          label: 'Choose your weapon:',
+          options: [
+            { label: '(a) Light Crossbow and Bolts', items: ['Light Crossbow', 'Bolts'] },
+            { label: '(b) Simple Weapon', items: ['Club', 'Dagger', 'Greatclub', 'Handaxe', 'Light Hammer', 'Javelin', 'Mace', 'Quarterstaff', 'Sickle', 'Spear'] }
+          ]
+        }
+      ],
+      fixedEquipment: ['Leather Armor', 'Component Pouch', 'Dungeoneer\'s Pack', 'Dagger', 'Dagger']
+    }
   },
   {
     name: 'Warlock',
@@ -787,7 +956,21 @@ export const srdClasses: DndClass[] = [
         levelAcquired: 20
       }
     ],
-    slotsPerLevel: [1, 2, 2, 2, 2, 2, 2, 2, 2, 2, 3, 3, 3, 3, 3, 4, 4, 4, 4, 4]
+    slotsPerLevel: [1, 2, 2, 2, 2, 2, 2, 2, 2, 2, 3, 3, 3, 3, 3, 4, 4, 4, 4, 4],
+    startingEquipment: {
+      startingGoldFormula: '4d4 * 10',
+      startingGoldAverage: 100,
+      choices: [
+        {
+          label: 'Choose your weapon:',
+          options: [
+            { label: '(a) Light Crossbow and Bolts', items: ['Light Crossbow', 'Bolts'] },
+            { label: '(b) Simple Weapon', items: ['Club', 'Dagger', 'Greatclub', 'Handaxe', 'Light Hammer', 'Javelin', 'Mace', 'Quarterstaff', 'Sickle', 'Spear'] }
+          ]
+        }
+      ],
+      fixedEquipment: ['Leather Armor', 'Component Pouch', 'Dungeoneer\'s Pack', 'Dagger', 'Dagger']
+    }
   },
   {
     name: 'Wizard',
@@ -834,6 +1017,20 @@ export const srdClasses: DndClass[] = [
         levelAcquired: 20
       }
     ],
-    slotsPerLevel: [3, 4, 4, 4, 4, 4, 5, 5, 5, 5, 6, 6, 6, 6, 7, 7, 7, 7, 8, 8]
+    slotsPerLevel: [3, 4, 4, 4, 4, 4, 5, 5, 5, 5, 6, 6, 6, 6, 7, 7, 7, 7, 8, 8],
+    startingEquipment: {
+      startingGoldFormula: '4d4 * 10',
+      startingGoldAverage: 100,
+      choices: [
+        {
+          label: 'Choose your weapon:',
+          options: [
+            { label: '(a) Quarterstaff', items: ['Quarterstaff'] },
+            { label: '(b) Dagger', items: ['Dagger'] }
+          ]
+        }
+      ],
+      fixedEquipment: ['Spellbook', 'Scholar\'s Pack', 'Component Pouch']
+    }
   }
 ];

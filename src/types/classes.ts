@@ -1,5 +1,20 @@
 import type { Ability } from './index';
 
+export interface StartingEquipmentOption {
+  label: string;
+  options: {
+    label: string;
+    items: string[];
+  }[];
+}
+
+export interface StartingEquipment {
+  startingGoldFormula: string;
+  startingGoldAverage: number;
+  choices: StartingEquipmentOption[];
+  fixedEquipment: string[];
+}
+
 export type ActionType = 'action' | 'bonus-action' | 'reaction';
 
 export interface ResourceDefinition {
@@ -49,6 +64,7 @@ export interface DndClass {
   spellcastingAbility?: Ability;
   spellsKnownPerLevel?: number[];
   slotsPerLevel?: number[];
+  startingEquipment: StartingEquipment;
   multiclassing?: {
     prerequisites: { ability: Ability; min: number }[];
     proficienciesGained: {
