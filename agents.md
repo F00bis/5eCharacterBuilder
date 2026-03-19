@@ -3,8 +3,18 @@
 ## Git operations
 Agents are not permitted to use git commands on this project. Human developers must first review the code generated and are the only users permitted to use git commands within the scope of this project.
 
+## Implementation Practices
+
+### Functional Programming
+Functions and components should be as close to pure functions as possible. These should be well encapsulated and avoid side effects if possible. If the feature is impossible without side effects, limit the blast radius of these side effects to as many components or functions as possible
+
 ## Testing Practices
+
+### Test Driven Development
 All code within the project must follow a test-driven development model where tests outlining behavior must be written before implementing any real business logic. Tests should be well encapsulated and should utilize mocks when applicable.
+
+### Running Tests
+When working on a feature only run tests that directly test the feature in question. Only run multiple test suites for behavior that spans multiple components. This should be rare as components and other typescript functions should be well encapsulated and avoid side effects
 
 ## State Management and Contexts
 In order to preserve vite fast refresh we should have separate files for context providers and actual context functions and hooks. Hooks, functions and types should live in a file that ends in Context and the actual provider element should export its own react component.
