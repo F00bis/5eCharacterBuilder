@@ -22,13 +22,17 @@ const TEST_CHARACTER: Character = {
     wisdom: 13,
     charisma: 10,
   },
+  raceStatSelections: [
+    { ability: 'strength', amount: 2 },
+    { ability: 'charisma', amount: 1 }
+  ],
   abilityScores: {
-    strength: 15,
+    strength: 17,
     dexterity: 12,
     constitution: 14,
     intelligence: 8,
     wisdom: 13,
-    charisma: 10,
+    charisma: 11,
   },
   featureChoices: {
     'fighter-1-fighting-style': 'Defense',

@@ -14,11 +14,16 @@ export interface AbilityOverrideSource {
 export interface AbilityBreakdown {
   ability: Ability;
   baseScore: number;
+  racialBonus: number;
   featSources: AbilityModifierSource[];
   equipmentSources: AbilityModifierSource[];
   override: AbilityOverrideSource | null;
   totalScore: number;
   modifier: number;
+}
+
+export function calculateProficiencyBonus(level: number): number {
+  return 2 + Math.floor((level - 1) / 4);
 }
 
 export function getModifier(score: number): number {
@@ -32,7 +37,9 @@ export function formatModifier(modifier: number): string {
 }
 
 export function getAbilityBreakdown(ability: Ability, character: Character): AbilityBreakdown {
-  const baseScore = character.abilityScores[ability];
+  const baseScore = character.baseAbilityScores?.[ability]
+    ?? character.abilityScores[ability];
+  const racialBonus = calculateRacialBonus(ability, character);
   const featSources: AbilityModifierSource[] = [];
   const equipmentSources: AbilityModifierSource[] = [];
 
@@ -65,9 +72,9 @@ export function getAbilityBreakdown(ability: Ability, character: Character): Abi
 
   const featBonus = featSources.reduce((sum, s) => sum + s.value, 0);
   const equipmentBonus = equipmentSources.reduce((sum, s) => sum + s.value, 0);
-  const computedWithoutOverride = baseScore + featBonus + equipmentBonus;
+  const computedWithoutOverride = baseScore + racialBonus + featBonus + equipmentBonus;
 
-  // When an override applies, it replaces base + equipment bonuses,
+  // When an override applies, it replaces base + racial + equipment bonuses,
   // but feat bonuses still stack on top.
   const overrideTotal = override !== null
     ? override.value + featBonus
@@ -83,5 +90,13 @@ export function getAbilityBreakdown(ability: Ability, character: Character): Abi
 
   const modifier = getModifier(totalScore);
 
-  return { ability, baseScore, featSources, equipmentSources, override: appliedOverride, totalScore, modifier };
+  return { ability, baseScore, racialBonus, featSources, equipmentSources, override: appliedOverride, totalScore, modifier };
+}
+
+function calculateRacialBonus(ability: Ability, character: Character): number {
+  if (!character.raceStatSelections) return 0;
+
+  return character.raceStatSelections
+    .filter(selection => selection.ability === ability)
+    .reduce((sum, selection) => sum + selection.amount, 0);
 }

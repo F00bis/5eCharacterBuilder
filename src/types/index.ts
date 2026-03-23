@@ -115,6 +115,11 @@ export interface ClassEntry {
   level: number;
 }
 
+export interface RaceStatSelection {
+  ability: Ability;
+  amount: number;
+}
+
 export interface Character {
   id?: number;
   name: string;
@@ -123,6 +128,7 @@ export interface Character {
   background: string;
   alignment: string;
   classes: ClassEntry[];
+  raceStatSelections: RaceStatSelection[];
   baseAbilityScores: AbilityScores;
   abilityScores: AbilityScores;
   featureChoices: Record<string, string | string[]>;

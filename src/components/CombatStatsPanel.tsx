@@ -6,7 +6,8 @@ import { useEffect, useRef, useState } from 'react';
 import { useCharacter } from '../contexts/CharacterContext';
 import { StatusEffectsSection } from './StatusEffectsSection';
 import { getArmorClass } from '../utils/armorClass';
-import { getInitiativeBreakdown, getSpeedBreakdown, getVisionBreakdown, type StatBreakdown, type VisionBreakdown } from '../utils/combatStats';
+import { calculateMaxHp, getInitiativeBreakdown, getSpeedBreakdown, getVisionBreakdown, type StatBreakdown, type VisionBreakdown } from '../utils/combatStats';
+import { getModifier } from '../utils/abilityScores';
 
 function formatModifier(value: number): string {
   return value >= 0 ? `+${value}` : String(value);
@@ -44,12 +45,30 @@ interface CombatStatsPanelProps {
   onUpdate?: (updates: Partial<import('../types').Character>) => void;
 }
 
+function getHpBreakdown(character: import('../types').Character) {
+  const hpRollsTotal = character.hpRolls
+    ? character.hpRolls.reduce((a, b) => a + b, 0)
+    : character.maxHp ?? 0;
+  const totalLevel = character.classes
+    ? character.classes.reduce((sum, c) => sum + c.level, 0)
+    : 1;
+  const conMod = getModifier(character.abilityScores.constitution);
+  const conModBonus = conMod * totalLevel;
+
+  return {
+    hpRollsTotal,
+    conModBonus,
+    hpBonus: character.hpBonus ?? 0,
+    total: calculateMaxHp(character),
+  };
+}
+
 export function CombatStatsPanel(_props: CombatStatsPanelProps) {
   const context = useCharacter();
-  // Use prop if provided (for backward compatibility with tests), otherwise use context
-  // Non-null assertion because CharacterView handles loading/not-found states before rendering
   const character = _props.character ?? context.character!;
   const update = _props.onUpdate ?? context.update;
+
+  const calculatedMaxHp = calculateMaxHp(character);
   
   const [isEditingCurrentHp, setIsEditingCurrentHp] = useState(false);
   const [isEditingMaxHp, setIsEditingMaxHp] = useState(false);
@@ -100,7 +119,7 @@ export function CombatStatsPanel(_props: CombatStatsPanelProps) {
   const handleCurrentHpSave = () => {
     const value = parseInt(editedCurrentHp, 10);
     if (!isNaN(value) && value >= 0) {
-      const cappedValue = Math.min(value, character.maxHp);
+      const cappedValue = Math.min(value, calculatedMaxHp);
       update({ currentHp: cappedValue });
     } else {
       setEditedCurrentHp(String(character.currentHp));
@@ -111,11 +130,11 @@ export function CombatStatsPanel(_props: CombatStatsPanelProps) {
   const handleMaxHpSave = () => {
     const value = parseInt(editedMaxHp, 10);
     if (!isNaN(value) && value > 0) {
-      const newMaxHp = value;
-      const newCurrentHp = Math.min(character.currentHp, newMaxHp);
-      update({ maxHp: newMaxHp, currentHp: newCurrentHp });
+      const currentCalculated = calculateMaxHp(character);
+      const newHpBonus = value - (currentCalculated - (character.hpBonus ?? 0));
+      update({ hpBonus: newHpBonus });
     } else {
-      setEditedMaxHp(String(character.maxHp));
+      setEditedMaxHp(String(calculatedMaxHp));
     }
     setIsEditingMaxHp(false);
   };
@@ -309,12 +328,46 @@ export function CombatStatsPanel(_props: CombatStatsPanelProps) {
                     min="1"
                   />
                 ) : (
-                  <div
-                    className="text-base font-bold text-slate-700 cursor-pointer hover:text-purple-700 transition-colors"
-                    onClick={() => setIsEditingMaxHp(true)}
-                  >
-                    {character.maxHp}
-                  </div>
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <div
+                        className="text-base font-bold text-slate-700 cursor-pointer hover:text-purple-700 transition-colors"
+                        onClick={() => setIsEditingMaxHp(true)}
+                      >
+                        {calculatedMaxHp}
+                      </div>
+                    </TooltipTrigger>
+                    <TooltipContent side="top" className="w-48">
+                      {(() => {
+                        const breakdown = getHpBreakdown(character);
+                        return (
+                          <>
+                            <div className="font-bold text-slate-900 mb-1">Max HP</div>
+                            <hr className="my-1 border-slate-300" />
+                            <div className="text-sm text-slate-700 flex justify-between">
+                              <span>HP Rolls</span>
+                              <span className="font-medium">{breakdown.hpRollsTotal}</span>
+                            </div>
+                            <div className="text-sm text-slate-700 flex justify-between">
+                              <span>Con Bonus</span>
+                              <span className="font-medium">{breakdown.conModBonus >= 0 ? '+' : ''}{breakdown.conModBonus}</span>
+                            </div>
+                            {breakdown.hpBonus !== 0 && (
+                              <div className="text-sm text-slate-700 flex justify-between">
+                                <span>HP Bonus</span>
+                                <span className="font-medium">{breakdown.hpBonus >= 0 ? '+' : ''}{breakdown.hpBonus}</span>
+                              </div>
+                            )}
+                            <hr className="my-1 border-slate-300" />
+                            <div className="text-sm font-bold text-slate-900 flex justify-between">
+                              <span>Total</span>
+                              <span>{breakdown.total}</span>
+                            </div>
+                          </>
+                        );
+                      })()}
+                    </TooltipContent>
+                  </Tooltip>
                 )}
               </div>
             </div>

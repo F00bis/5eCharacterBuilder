@@ -20,6 +20,30 @@ export const srdRaces: DndRace[] = [
       { type: 'advantage', description: 'vs poison' },
     ],
     weaponProficiencies: ['battleaxe', 'handaxe', 'light hammer', 'warhammer'],
+    subraces: [
+      {
+        id: 'hill-dwarf',
+        name: 'Hill Dwarf',
+        description: 'Hill Dwarves have heightened senses and increased resilience.',
+        abilityScoreIncreases: [
+          { ability: 'wisdom', amount: 1 }
+        ],
+        features: [
+          { name: 'Dwarven Toughness', description: 'Your hit point maximum increases by 1, and it increases by 1 every time you gain a level.' }
+        ]
+      },
+      {
+        id: 'mountain-dwarf',
+        name: 'Mountain Dwarf',
+        description: 'Mountain Dwarves are built for battle and armored combat.',
+        abilityScoreIncreases: [
+          { ability: 'strength', amount: 2 }
+        ],
+        features: [
+          { name: 'Dwarven Armor Training', description: 'You have proficiency with medium armor and shields.' }
+        ]
+      }
+    ],
   },
   {
     id: 'elf',
@@ -38,6 +62,46 @@ export const srdRaces: DndRace[] = [
     ],
     savingThrowFeatures: [
       { type: 'advantage', description: 'vs charmed' },
+    ],
+    subraces: [
+      {
+        id: 'high-elf',
+        name: 'High Elf',
+        description: 'High Elves are master of the arcane arts and ancient lore.',
+        abilityScoreIncreases: [
+          { ability: 'intelligence', amount: 1 }
+        ],
+        features: [
+          { name: 'Elf Weapon Training', description: 'You have proficiency with the longsword, shortsword, shortbow, and longbow.' },
+          { name: 'Cantrip', description: 'You know one cantrip of your choice from the wizard spell list. Intelligence is your spellcasting ability for it.' }
+        ]
+      },
+      {
+        id: 'wood-elf',
+        name: 'Wood Elf',
+        description: 'Wood Elves are swift and stealthy, deeply connected to the forest.',
+        abilityScoreIncreases: [
+          { ability: 'wisdom', amount: 1 }
+        ],
+        speed: 35,
+        features: [
+          { name: 'Elf Weapon Training', description: 'You have proficiency with the longsword, shortsword, shortbow, and longbow.' },
+          { name: 'Mask of the Wild', description: 'You can attempt to hide even when you are only lightly obscured by foliage, heavy rain, falling snow, mist, and other natural phenomena.' }
+        ]
+      },
+      {
+        id: 'drow',
+        name: 'Drow',
+        description: 'Drow are exiled underground, masterfully adapted to darkness.',
+        abilityScoreIncreases: [
+          { ability: 'charisma', amount: 1 }
+        ],
+        darkvision: 120,
+        features: [
+          { name: 'Superior Darkvision', description: 'Your darkvision has a radius of 120 feet.' },
+          { name: 'Sunlight Sensitivity', description: 'You have disadvantage on attack rolls and Wisdom (Perception) checks that rely on sight when you, the target of your attack, or whatever you are trying to perceive is in direct sunlight.' }
+        ]
+      }
     ],
   },
   {
@@ -59,13 +123,41 @@ export const srdRaces: DndRace[] = [
     savingThrowFeatures: [
       { type: 'advantage', description: 'vs frightened' },
     ],
+    subraces: [
+      {
+        id: 'lightfoot',
+        name: 'Lightfoot',
+        description: 'Lightfoot Halflings are masters of stealth and diplomacy.',
+        abilityScoreIncreases: [
+          { ability: 'charisma', amount: 1 }
+        ],
+        features: [
+          { name: 'Naturally Stealthy', description: 'You can attempt to hide even when you are obscured only by a creature that is at least one size larger than you.' }
+        ]
+      },
+      {
+        id: 'stout',
+        name: 'Stout',
+        description: 'Stout Halflings are hardier than their cousins, with a resistance to poison.',
+        abilityScoreIncreases: [
+          { ability: 'constitution', amount: 1 }
+        ],
+        features: [
+          { name: 'Stout Resilience', description: 'You have advantage on saving throws against poison, and you have resistance against poison damage.' }
+        ]
+      }
+    ],
   },
   {
     id: 'human',
     name: 'Human',
     abilityScoreIncreases: [
-      { amount: 2 },
-      { amount: 1 },
+      { ability: 'strength', amount: 1 },
+      { ability: 'dexterity', amount: 1 },
+      { ability: 'constitution', amount: 1 },
+      { ability: 'intelligence', amount: 1 },
+      { ability: 'wisdom', amount: 1 },
+      { ability: 'charisma', amount: 1 },
     ],
     speed: 30,
     size: 'Medium',
@@ -73,13 +165,27 @@ export const srdRaces: DndRace[] = [
     additionalLanguages: 1,
     features: [],
     savingThrowFeatures: [],
+    subraces: [
+      {
+        id: 'variant-human',
+        name: 'Variant Human',
+        description: 'Variant Humans are diverse, talented, and ambitious.',
+        abilityScoreIncreases: [
+          { amount: 1 },
+          { amount: 1 },
+        ],
+        features: [
+          { name: 'Skill Versatility', description: 'You gain proficiency in one skill of your choice.' }
+        ]
+      }
+    ],
   },
   {
     id: 'dragonborn',
     name: 'Dragonborn',
     abilityScoreIncreases: [
-      { amount: 2 },
-      { amount: 1 },
+      { ability: 'strength', amount: 2 },
+      { ability: 'charisma', amount: 1 },
     ],
     speed: 30,
     size: 'Medium',
@@ -110,12 +216,39 @@ export const srdRaces: DndRace[] = [
     savingThrowFeatures: [
       { type: 'advantage', description: 'vs magic (INT/WIS/CHA)' },
     ],
+    subraces: [
+      {
+        id: 'forest-gnome',
+        name: 'Forest Gnome',
+        description: 'Forest Gnomes are reclusive and skilled at illusion magic.',
+        abilityScoreIncreases: [
+          { ability: 'dexterity', amount: 1 }
+        ],
+        features: [
+          { name: 'Natural Illusionist', description: 'You know the minor illusion cantrip. Intelligence is your spellcasting ability for it.' },
+          { name: 'Speak with Small Beasts', description: 'Through sounds and gestures, you can communicate simple ideas with Small or smaller beasts.' }
+        ]
+      },
+      {
+        id: 'rock-gnome',
+        name: 'Rock Gnome',
+        description: 'Rock Gnomes are inventive and deeply connected to their craft.',
+        abilityScoreIncreases: [
+          { ability: 'constitution', amount: 1 }
+        ],
+        features: [
+          { name: 'Artificer\'s Lore', description: 'Whenever you make an Intelligence (History) check related to magic items, alchemical objects, or technological devices, you can add twice your proficiency bonus, instead of any proficiency bonus you normally apply.' },
+          { name: 'Tinker', description: 'You have proficiency with artisan\'s tools (tinker\'s tools). Using those tools, you can spend 1 hour and 10 gp worth of materials to construct a Tiny device (AC 5, 1 hp). You can attend to one device at a time. You can use an action to cause it to activate, and you can use a bonus action to deactivate it.' }
+        ]
+      }
+    ],
   },
   {
     id: 'half-elf',
     name: 'Half-Elf',
     abilityScoreIncreases: [
-      { amount: 2 },
+      { ability: 'charisma', amount: 2 },
+      { amount: 1 },
       { amount: 1 },
     ],
     speed: 30,
@@ -134,8 +267,8 @@ export const srdRaces: DndRace[] = [
     id: 'half-orc',
     name: 'Half-Orc',
     abilityScoreIncreases: [
-      { amount: 2 },
-      { amount: 1 },
+      { ability: 'strength', amount: 2 },
+      { ability: 'constitution', amount: 1 },
     ],
     speed: 30,
     size: 'Medium',
@@ -151,8 +284,8 @@ export const srdRaces: DndRace[] = [
     id: 'tiefling',
     name: 'Tiefling',
     abilityScoreIncreases: [
-      { amount: 2 },
-      { amount: 1 },
+      { ability: 'charisma', amount: 2 },
+      { ability: 'intelligence', amount: 1 },
     ],
     speed: 30,
     size: 'Medium',

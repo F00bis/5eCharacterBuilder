@@ -1,0 +1,293 @@
+import { describe, it, expect, vi, beforeEach } from 'vitest';
+import type { Character } from '../types';
+import { getCharacterFeatures } from './characterFeatures';
+
+vi.mock('../db/index', () => ({
+  db: {
+    races: {
+      get: vi.fn(),
+    },
+  },
+}));
+
+vi.mock('../db/classes', () => ({
+  getClassByName: vi.fn(),
+}));
+
+function baseCharacter(overrides: Partial<Character> = {}): Character {
+  return {
+    id: 1,
+    name: 'Test Hero',
+    race: 'Human',
+    background: 'Soldier',
+    alignment: 'Neutral',
+    classes: [{ className: 'Fighter', level: 5 }],
+    raceStatSelections: [],
+    baseAbilityScores: {
+      strength: 10,
+      dexterity: 10,
+      constitution: 10,
+      intelligence: 10,
+      wisdom: 10,
+      charisma: 10,
+    },
+    abilityScores: {
+      strength: 10,
+      dexterity: 10,
+      constitution: 10,
+      intelligence: 10,
+      wisdom: 10,
+      charisma: 10,
+    },
+    featureChoices: {},
+    hpRolls: [],
+    level: 5,
+    xp: 3500,
+    portrait: null,
+    hpBonus: 0,
+    hp: 40,
+    maxHp: 40,
+    currentHp: 40,
+    tempHp: 0,
+    ac: 16,
+    speed: 30,
+    initiative: 0,
+    vision: {},
+    deathSaves: { successes: 0, failures: 0 },
+    proficiencyBonus: 3,
+    skills: [],
+    equipment: [],
+    currency: { cp: 0, sp: 0, ep: 0, gp: 0, pp: 0 },
+    spellSlots: [],
+    spells: [],
+    statusEffects: [],
+    feats: [],
+    notes: '',
+    createdAt: new Date(),
+    updatedAt: new Date(),
+    ...overrides,
+  };
+}
+
+describe('getCharacterFeatures', () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+  });
+
+  it('filters feature to selected choice only', async () => {
+    const { db } = await import('../db/index');
+    const { getClassByName } = await import('../db/classes');
+
+    vi.mocked(db.races.get).mockResolvedValue({
+      id: 'human',
+      name: 'Human',
+      abilityScoreIncreases: [],
+      speed: 30,
+      size: 'Medium' as const,
+      languages: ['Common'],
+      additionalLanguages: 1,
+      features: [],
+      savingThrowFeatures: [],
+    });
+
+    vi.mocked(getClassByName).mockResolvedValue({
+      name: 'Fighter',
+      hitDie: 10,
+      primaryAbility: 'strength' as const,
+      savingThrows: ['strength' as const, 'constitution' as const],
+      skillProficienciesChoices: 2,
+      skillOptions: ['athletics', 'acrobatics'],
+      features: [
+        {
+          name: 'Fighting Style',
+          description: 'Choose a fighting style: Archery, Defense, Dueling, Great Weapon Fighting, Protection, Two-Weapon Fighting.',
+          levelAcquired: 1,
+          choices: { count: 1, options: ['Archery', 'Defense', 'Dueling', 'Great Weapon Fighting', 'Protection', 'Two-Weapon Fighting'] },
+        },
+      ],
+      startingEquipment: {
+        startingGoldFormula: '5d4×10',
+        startingGoldAverage: 125,
+        choices: [],
+        fixedEquipment: [],
+      },
+    });
+
+    const character = baseCharacter({
+      featureChoices: {
+        'fighter-1-fighting-style': 'Defense',
+      },
+    });
+
+    const result = await getCharacterFeatures(character);
+    expect(result.classFeatures[0].features[0].description).toBe('Fighting Style: Defense');
+  });
+
+  it('skips features without user selection', async () => {
+    const { db } = await import('../db/index');
+    const { getClassByName } = await import('../db/classes');
+
+    vi.mocked(db.races.get).mockResolvedValue({
+      id: 'human',
+      name: 'Human',
+      abilityScoreIncreases: [],
+      speed: 30,
+      size: 'Medium' as const,
+      languages: ['Common'],
+      additionalLanguages: 1,
+      features: [],
+      savingThrowFeatures: [],
+    });
+
+    vi.mocked(getClassByName).mockResolvedValue({
+      name: 'Fighter',
+      hitDie: 10,
+      primaryAbility: 'strength' as const,
+      savingThrows: ['strength' as const, 'constitution' as const],
+      skillProficienciesChoices: 2,
+      skillOptions: ['athletics', 'acrobatics'],
+      features: [
+        {
+          name: 'Fighting Style',
+          description: 'Choose a fighting style.',
+          levelAcquired: 1,
+          choices: { count: 1, options: ['Archery', 'Defense'] },
+        },
+        {
+          name: 'Second Wind',
+          description: 'On your turn, you can use a bonus action to regain hit points.',
+          levelAcquired: 1,
+        },
+      ],
+      startingEquipment: {
+        startingGoldFormula: '5d4×10',
+        startingGoldAverage: 125,
+        choices: [],
+        fixedEquipment: [],
+      },
+    });
+
+    const character = baseCharacter({
+      featureChoices: {},
+    });
+
+    const result = await getCharacterFeatures(character);
+    expect(result.classFeatures[0].features).toHaveLength(1);
+    expect(result.classFeatures[0].features[0].name).toBe('Second Wind');
+  });
+
+  it('handles multiple feature choices', async () => {
+    const { db } = await import('../db/index');
+    const { getClassByName } = await import('../db/classes');
+
+    vi.mocked(db.races.get).mockResolvedValue({
+      id: 'human',
+      name: 'Human',
+      abilityScoreIncreases: [],
+      speed: 30,
+      size: 'Medium' as const,
+      languages: ['Common'],
+      additionalLanguages: 1,
+      features: [],
+      savingThrowFeatures: [],
+    });
+
+    vi.mocked(getClassByName).mockResolvedValue({
+      name: 'Fighter',
+      hitDie: 10,
+      primaryAbility: 'strength' as const,
+      savingThrows: ['strength' as const, 'constitution' as const],
+      skillProficienciesChoices: 2,
+      skillOptions: ['athletics', 'acrobatics'],
+      features: [
+        {
+          name: 'Fighting Style',
+          description: 'Choose a fighting style.',
+          levelAcquired: 1,
+          choices: { count: 1, options: ['Archery', 'Defense', 'Dueling'] },
+        },
+        {
+          name: 'Action Surge',
+          description: 'You can push yourself beyond your normal limits for a moment.',
+          levelAcquired: 2,
+        },
+      ],
+      startingEquipment: {
+        startingGoldFormula: '5d4×10',
+        startingGoldAverage: 125,
+        choices: [],
+        fixedEquipment: [],
+      },
+    });
+
+    const character = baseCharacter({
+      classes: [{ className: 'Fighter', level: 3 }],
+      featureChoices: {
+        'fighter-1-fighting-style': 'Defense',
+      },
+    });
+
+    const result = await getCharacterFeatures(character);
+    expect(result.classFeatures[0].features).toHaveLength(2);
+    expect(result.classFeatures[0].features[0].description).toBe('Fighting Style: Defense');
+    expect(result.classFeatures[0].features[1].name).toBe('Action Surge');
+  });
+
+  it('handles string vs array choice values', async () => {
+    const { db } = await import('../db/index');
+    const { getClassByName } = await import('../db/classes');
+
+    vi.mocked(db.races.get).mockResolvedValue({
+      id: 'human',
+      name: 'Human',
+      abilityScoreIncreases: [],
+      speed: 30,
+      size: 'Medium' as const,
+      languages: ['Common'],
+      additionalLanguages: 1,
+      features: [],
+      savingThrowFeatures: [],
+    });
+
+    vi.mocked(getClassByName).mockResolvedValue({
+      name: 'Fighter',
+      hitDie: 10,
+      primaryAbility: 'strength' as const,
+      savingThrows: ['strength' as const, 'constitution' as const],
+      skillProficienciesChoices: 2,
+      skillOptions: ['athletics', 'acrobatics'],
+      features: [
+        {
+          name: 'Fighting Style',
+          description: 'Choose a fighting style.',
+          levelAcquired: 1,
+          choices: { count: 1, options: ['Archery', 'Defense'] },
+        },
+      ],
+      startingEquipment: {
+        startingGoldFormula: '5d4×10',
+        startingGoldAverage: 125,
+        choices: [],
+        fixedEquipment: [],
+      },
+    });
+
+    const characterWithStringChoice = baseCharacter({
+      featureChoices: {
+        'fighter-1-fighting-style': 'Defense',
+      },
+    });
+
+    const characterWithArrayChoice = baseCharacter({
+      featureChoices: {
+        'fighter-1-fighting-style': ['Defense'],
+      },
+    });
+
+    const resultString = await getCharacterFeatures(characterWithStringChoice);
+    const resultArray = await getCharacterFeatures(characterWithArrayChoice);
+
+    expect(resultString.classFeatures[0].features[0].description).toBe('Fighting Style: Defense');
+    expect(resultArray.classFeatures[0].features[0].description).toBe('Fighting Style: Defense');
+  });
+});

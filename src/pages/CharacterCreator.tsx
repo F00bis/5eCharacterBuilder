@@ -3,8 +3,10 @@ import { useParams } from 'react-router-dom';
 import type { Step } from '../components/ui/stepper';
 import Stepper from '../components/ui/stepper';
 import { useCharacterBuilder } from '../contexts/CharacterBuilderContextTypes';
+import { getCharacterById } from '../db/characters';
 import AbilityScoresStep from './builder/steps/AbilityScoresStep';
 import RaceBackgroundStep from './builder/steps/RaceBackgroundStep';
+import ReviewStep from './builder/steps/ReviewStep';
 
 interface CharacterCreatorProps {
   mode: 'create' | 'levelup';
@@ -25,7 +27,13 @@ export default function CharacterCreator({ mode }: CharacterCreatorProps) {
       if (state.mode !== 'levelup' || state.baseCharacterId !== id) {
         dispatch({ type: 'CLEAR_DRAFT' });
         dispatch({ type: 'SET_MODE', mode: 'levelup', baseCharacterId: id });
-        // In the future, we would load the character here and dispatch LOAD_BASE_CHARACTER
+        if (id) {
+          getCharacterById(id).then(character => {
+            if (character) {
+              dispatch({ type: 'LOAD_BASE_CHARACTER', character });
+            }
+          });
+        }
       }
     }
   }, [mode, characterId, state.mode, state.baseCharacterId, dispatch]);
@@ -33,7 +41,7 @@ export default function CharacterCreator({ mode }: CharacterCreatorProps) {
   const steps = useMemo<Step[]>(() => {
     if (mode === 'create') {
       return [
-        { id: 'race', label: 'Race & Background', isValid: true },
+        { id: 'race', label: 'Race & Background', isValid: state.stepValidations['race'] ?? false },
         { id: 'abilities', label: 'Ability Scores', isValid: true },
         { id: 'class', label: 'Class', isValid: true },
         { id: 'proficiencies', label: 'Proficiencies', isValid: true },
@@ -48,7 +56,7 @@ export default function CharacterCreator({ mode }: CharacterCreatorProps) {
         { id: 'review', label: 'Review', isValid: true },
       ];
     }
-  }, [mode]);
+  }, [mode, state.stepValidations]);
 
   const handleNext = () => {
     if (state.currentStep < steps.length - 1) {
@@ -84,7 +92,8 @@ export default function CharacterCreator({ mode }: CharacterCreatorProps) {
         {/* Render specific step content here based on state.currentStep */}
         {steps[state.currentStep]?.id === 'race' && <RaceBackgroundStep />}
         {steps[state.currentStep]?.id === 'abilities' && <AbilityScoresStep />}
-        {steps[state.currentStep]?.id !== 'race' && steps[state.currentStep]?.id !== 'abilities' && (
+        {steps[state.currentStep]?.id === 'review' && <ReviewStep />}
+        {steps[state.currentStep]?.id !== 'race' && steps[state.currentStep]?.id !== 'abilities' && steps[state.currentStep]?.id !== 'review' && (
           <div className="text-center text-slate-500">
             <p>Step Content for: {steps[state.currentStep]?.label}</p>
           </div>

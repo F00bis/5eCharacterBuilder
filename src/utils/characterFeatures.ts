@@ -65,12 +65,28 @@ export async function getCharacterFeatures(character: Character): Promise<Groupe
 
     if (race) {
       const raceFeatureList: DisplayFeature[] = [];
+      const subrace = character.subrace 
+        ? race.subraces?.find(sr => sr.id === character.subrace)
+        : undefined;
+
+      const raceName = subrace 
+        ? `${race.name} (${subrace.name})`
+        : race.name;
 
       // Map regular racial features
       for (const feature of race.features || []) {
         raceFeatureList.push(
-          mapRaceFeature(feature.name, feature.description, race.name)
+          mapRaceFeature(feature.name, feature.description, raceName)
         );
+      }
+
+      // Map subrace features if selected
+      if (subrace?.features) {
+        for (const feature of subrace.features) {
+          raceFeatureList.push(
+            mapRaceFeature(feature.name, feature.description, raceName)
+          );
+        }
       }
 
       // Map racial saving throw features
@@ -80,13 +96,13 @@ export async function getCharacterFeatures(character: Character): Promise<Groupe
           mapRaceFeature(
             `${typeLabel} on Saving Throws`,
             stFeature.description,
-            race.name
+            raceName
           )
         );
       }
 
       result.raceFeatures = {
-        raceName: race.name,
+        raceName: raceName,
         features: raceFeatureList,
       };
     }
@@ -105,10 +121,25 @@ export async function getCharacterFeatures(character: Character): Promise<Groupe
 
         for (const feature of dndClass.features) {
           if (feature.levelAcquired <= classEntry.level) {
+            const featureName = feature.name;
+            let featureDescription = feature.description;
+
+            if (feature.choices) {
+              const featureKey = `${dndClass.name.toLowerCase()}-${feature.levelAcquired}-${feature.name.toLowerCase().replace(/\s+/g, '-')}`;
+              const selectedChoice = character.featureChoices[featureKey];
+
+              if (selectedChoice) {
+                const choices = Array.isArray(selectedChoice) ? selectedChoice : [selectedChoice];
+                featureDescription = `${feature.name}: ${choices.join(', ')}`;
+              } else {
+                continue;
+              }
+            }
+
             classFeatureList.push(
               mapClassFeature(
-                feature.name,
-                feature.description,
+                featureName,
+                featureDescription,
                 dndClass.name,
                 feature.levelAcquired
               )

@@ -17,6 +17,16 @@ export interface RaceSavingThrowFeature {
   description: string;
 }
 
+export interface DndSubrace {
+  id: string;
+  name: string;
+  description?: string;
+  abilityScoreIncreases?: AbilityScoreIncrease[];
+  speed?: number;
+  features?: RaceFeature[];
+  darkvision?: number;
+}
+
 export interface DndRace {
   id: string;
   name: string;
@@ -28,4 +38,5 @@ export interface DndRace {
   features: RaceFeature[];
   savingThrowFeatures: RaceSavingThrowFeature[];
   weaponProficiencies?: string[];
+  subraces?: DndSubrace[];
 }

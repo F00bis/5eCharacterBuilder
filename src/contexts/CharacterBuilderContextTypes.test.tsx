@@ -1,13 +1,11 @@
 import { describe, it, expect } from 'vitest';
-import { characterBuilderReducer, CharacterBuilderState, BuilderAction } from './CharacterBuilderContextTypes';
+import { characterBuilderReducer, CharacterBuilderState, BuilderAction, defaultState } from './CharacterBuilderContextTypes';
 import type { Character } from '../types';
 
 describe('characterBuilderReducer', () => {
   const initialState: CharacterBuilderState = {
+    ...defaultState,
     draft: {},
-    currentStep: 0,
-    mode: 'create',
-    baseCharacterId: null,
   };
 
   it('handles SET_MODE', () => {
@@ -74,10 +72,11 @@ describe('characterBuilderReducer', () => {
 
   it('handles CLEAR_DRAFT', () => {
     const startState: CharacterBuilderState = {
+      ...defaultState,
       draft: { name: 'Frodo' },
       currentStep: 5,
       mode: 'levelup',
-      baseCharacterId: 1
+      baseCharacterId: 1,
     };
     const action: BuilderAction = { type: 'CLEAR_DRAFT' };
     const state = characterBuilderReducer(startState, action);
@@ -85,5 +84,34 @@ describe('characterBuilderReducer', () => {
     expect(state.currentStep).toBe(0);
     expect(state.mode).toBe('create');
     expect(state.baseCharacterId).toBe(null);
+  });
+
+  it('handles SET_STEP_VALIDATION', () => {
+    const action: BuilderAction = { type: 'SET_STEP_VALIDATION', stepId: 'race', isValid: true };
+    const state = characterBuilderReducer(initialState, action);
+    expect(state.stepValidations['race']).toBe(true);
+  });
+
+  it('handles SET_STEP_VALIDATION aggregates multiple steps', () => {
+    let state = characterBuilderReducer(initialState, { type: 'SET_STEP_VALIDATION', stepId: 'race', isValid: true });
+    state = characterBuilderReducer(state, { type: 'SET_STEP_VALIDATION', stepId: 'abilities', isValid: true });
+    expect(state.stepValidations['race']).toBe(true);
+    expect(state.stepValidations['abilities']).toBe(true);
+  });
+
+  it('handles SET_TASHAS_RULES', () => {
+    const action: BuilderAction = { type: 'SET_TASHAS_RULES', enabled: false };
+    const state = characterBuilderReducer(initialState, action);
+    expect(state.useTashasRules).toBe(false);
+  });
+
+  it('handles RESET_VALIDATIONS', () => {
+    const startState: CharacterBuilderState = {
+      ...initialState,
+      stepValidations: { race: true, abilities: true }
+    };
+    const action: BuilderAction = { type: 'RESET_VALIDATIONS' };
+    const state = characterBuilderReducer(startState, action);
+    expect(state.stepValidations).toEqual({});
   });
 });

@@ -13,6 +13,8 @@ export interface CharacterBuilderState {
   mode: 'create' | 'levelup';
   baseCharacterId: number | null;
   asiChoices: AsiChoice[];
+  stepValidations: Record<string, boolean>;
+  useTashasRules: boolean;
 }
 
 export type BuilderAction =
@@ -24,6 +26,9 @@ export type BuilderAction =
   | { type: 'REMOVE_ITEMS_BY_SOURCE'; listName: keyof Character; source: string }
   | { type: 'ADD_ASI_CHOICE'; choice: AsiChoice }
   | { type: 'REMOVE_ASI_CHOICE'; level: number }
+  | { type: 'SET_STEP_VALIDATION'; stepId: string; isValid: boolean }
+  | { type: 'SET_TASHAS_RULES'; enabled: boolean }
+  | { type: 'RESET_VALIDATIONS' }
   | { type: 'CLEAR_DRAFT' };
 
 export const defaultState: CharacterBuilderState = {
@@ -32,6 +37,8 @@ export const defaultState: CharacterBuilderState = {
   mode: 'create',
   baseCharacterId: null,
   asiChoices: [],
+  stepValidations: {},
+  useTashasRules: true,
 };
 
 export function characterBuilderReducer(
@@ -88,6 +95,15 @@ export function characterBuilderReducer(
     }
     case 'REMOVE_ASI_CHOICE':
       return { ...state, asiChoices: state.asiChoices.filter(c => c.level !== action.level) };
+    case 'SET_STEP_VALIDATION':
+      return {
+        ...state,
+        stepValidations: { ...state.stepValidations, [action.stepId]: action.isValid }
+      };
+    case 'SET_TASHAS_RULES':
+      return { ...state, useTashasRules: action.enabled };
+    case 'RESET_VALIDATIONS':
+      return { ...state, stepValidations: {} };
     case 'CLEAR_DRAFT':
       return { ...defaultState };
     default:
@@ -98,6 +114,7 @@ export function characterBuilderReducer(
 export interface CharacterBuilderContextType {
   state: CharacterBuilderState;
   dispatch: React.Dispatch<BuilderAction>;
+  isComplete: boolean;
 }
 
 export const CharacterBuilderContext = createContext<CharacterBuilderContextType | undefined>(undefined);
