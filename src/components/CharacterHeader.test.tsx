@@ -6,6 +6,15 @@ import { CharacterContext, type CharacterContextValue } from '../contexts/Charac
 import type { Character } from '../types';
 import { CharacterHeader } from './CharacterHeader';
 
+const mockNavigate = vi.fn();
+vi.mock('react-router-dom', async () => {
+  const actual = await vi.importActual('react-router-dom');
+  return {
+    ...actual,
+    useNavigate: () => mockNavigate,
+  };
+});
+
 function renderWithCharacter(
   ui: React.ReactElement,
   character: Character,
@@ -68,6 +77,11 @@ const baseCharacter: Character = {
   notes: '',
   createdAt: new Date(),
   updatedAt: new Date(),
+  raceStatSelections: [],
+  baseAbilityScores: undefined,
+  featureChoices: undefined,
+  hpRolls: [],
+  hpBonus: 0
 };
 
 describe('CharacterHeader', () => {
@@ -223,10 +237,20 @@ describe('CharacterHeader', () => {
     expect(screen.getByText(/Level 7 Fighter/)).toBeInTheDocument();
   });
 
-  it('shows tooltip for XP to next level', () => {
+it('shows tooltip for XP to next level', () => {
     renderWithCharacter(<CharacterHeader />, baseCharacter, mockOnUpdate);
 
     const xpElement = screen.getByText(/3,500/);
     expect(xpElement).toBeInTheDocument();
+  });
+
+  it('shows level up button and navigates to level-up page', () => {
+    renderWithCharacter(<CharacterHeader />, baseCharacter, mockOnUpdate);
+
+    const levelUpButton = screen.getByText('Level Up');
+    expect(levelUpButton).toBeInTheDocument();
+
+    fireEvent.click(levelUpButton);
+    expect(mockNavigate).toHaveBeenCalledWith('/characters/1/level-up');
   });
 });
