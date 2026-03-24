@@ -7,22 +7,11 @@ import {
 } from './CharacterBuilderContextTypes';
 
 export function CharacterBuilderProvider({ children }: { children: ReactNode }) {
-  const [state, dispatch] = useReducer(characterBuilderReducer, defaultState, (initial) => {
-    try {
-      const localData = localStorage.getItem('builderDraft_v1');
-      if (localData) {
-        const parsed = JSON.parse(localData);
-        return { ...initial, ...parsed, stepValidations: parsed.stepValidations || {}, useTashasRules: parsed.useTashasRules ?? true };
-      }
-    } catch (e) {
-      console.error('Failed to parse builder draft from localStorage', e);
-    }
-    return initial;
-  });
+  const [state, dispatch] = useReducer(characterBuilderReducer, defaultState);
 
   useEffect(() => {
-    localStorage.setItem('builderDraft_v1', JSON.stringify(state));
-  }, [state]);
+    localStorage.removeItem('builderDraft_v1');
+  }, []);
 
   const isComplete = useMemo(() => 
     Object.values(state.stepValidations).every(v => v), 

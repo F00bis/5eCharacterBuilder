@@ -51,7 +51,7 @@ export function Stepper({ steps, currentStep, onStepClick, className }: StepperP
                 </div>
                 
                 {/* Label */}
-                <div className="absolute top-12 mt-2 text-center w-32 -ml-11">
+                <div className="absolute top-12 mt-2 text-center w-max max-w-[120px] left-1/2 -translate-x-1/2">
                   <p className={cn(
                     "text-sm font-medium",
                     isActive ? "text-purple-700" :

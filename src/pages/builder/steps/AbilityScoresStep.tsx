@@ -2,7 +2,6 @@ import { useState, useEffect, useMemo } from 'react';
 import { useCharacterBuilder } from '../../../contexts/CharacterBuilderContextTypes';
 import { rollDice } from '../../../utils/diceRoller';
 import type { Ability, AbilityScores } from '../../../types';
-import { getModifier, formatModifier } from '../../../utils/abilityScores';
 
 const ABILITIES: Ability[] = ['strength', 'dexterity', 'constitution', 'intelligence', 'wisdom', 'charisma'];
 const STANDARD_ARRAY = [15, 14, 13, 12, 10, 8];
@@ -13,7 +12,7 @@ const POINT_COSTS: Record<number, number> = {
 };
 
 export default function AbilityScoresStep() {
-  const { state, dispatch } = useCharacterBuilder();
+  const { dispatch } = useCharacterBuilder();
   const [activeTab, setActiveTab] = useState<'standard' | 'pointBuy' | 'manual'>('standard');
   
   // States for each method
@@ -39,6 +38,13 @@ export default function AbilityScoresStep() {
 
   // Sync to global state whenever the active method changes
   useEffect(() => {
+    const hasUserSelections = 
+      Object.keys(standardScores).length > 0 ||
+      Object.keys(pointBuyScores).filter(k => pointBuyScores[k as Ability] !== 8).length > 0 ||
+      Object.keys(manualAssignments).length > 0;
+    
+    if (!hasUserSelections) return;
+
     let newScores: Partial<Record<Ability, number>> = {};
     if (activeTab === 'standard') {
       newScores = standardScores;
@@ -260,39 +266,6 @@ export default function AbilityScoresStep() {
             </div>
           </div>
         )}
-      </div>
-
-      {/* Summary Table */}
-      <div className="bg-slate-800 text-white rounded-lg p-6 overflow-hidden">
-        <h3 className="font-bold mb-4">Ability Scores Summary</h3>
-        <div className="grid grid-cols-5 gap-4 text-sm mb-2 border-b border-slate-700 pb-2 text-slate-300">
-          <div>Ability</div>
-          <div className="text-center">Base</div>
-          <div className="text-center">Race</div>
-          <div className="text-center">Total</div>
-          <div className="text-center">Mod</div>
-        </div>
-        <div className="space-y-2">
-          {ABILITIES.map(ability => {
-            const base = state.draft.baseAbilityScores?.[ability] || 0;
-            // Phase 4 did not correctly store flexible choices. For now we assume 0 or placeholder logic.
-            // Ideally we check `state.draft.abilityScores` or racial choice records. 
-            // In a full app, we'd calculate the racial bonus here based on user choices.
-            const raceBonus = 0; 
-            const total = base + raceBonus;
-            const modifier = base > 0 ? getModifier(total) : 0;
-            
-            return (
-              <div key={ability} className="grid grid-cols-5 gap-4 text-sm py-1 border-b border-slate-700/50 last:border-0">
-                <div className="capitalize font-medium text-slate-300">{ability.substring(0, 3)}</div>
-                <div className="text-center">{base || '-'}</div>
-                <div className="text-center text-slate-400">+{raceBonus}</div>
-                <div className="text-center font-bold text-purple-300">{base ? total : '-'}</div>
-                <div className="text-center">{base ? formatModifier(modifier) : '-'}</div>
-              </div>
-            );
-          })}
-        </div>
       </div>
     </div>
   );

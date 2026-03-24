@@ -5,7 +5,10 @@ import Stepper from '../components/ui/stepper';
 import { useCharacterBuilder } from '../contexts/CharacterBuilderContextTypes';
 import { getCharacterById } from '../db/characters';
 import AbilityScoresStep from './builder/steps/AbilityScoresStep';
+import ClassSelectionStep from './builder/steps/ClassSelectionStep';
+import EquipmentFeatsStep from './builder/steps/EquipmentFeatsStep';
 import RaceBackgroundStep from './builder/steps/RaceBackgroundStep';
+import ProficienciesStep from './builder/steps/ProficienciesStep';
 import ReviewStep from './builder/steps/ReviewStep';
 
 interface CharacterCreatorProps {
@@ -89,18 +92,16 @@ export default function CharacterCreator({ mode }: CharacterCreatorProps) {
       </div>
 
       <div className="mt-8 bg-slate-50 border border-slate-200 rounded-lg p-8 min-h-100">
-        {/* Render specific step content here based on state.currentStep */}
         {steps[state.currentStep]?.id === 'race' && <RaceBackgroundStep />}
         {steps[state.currentStep]?.id === 'abilities' && <AbilityScoresStep />}
+        {steps[state.currentStep]?.id === 'class' && <ClassSelectionStep />}
+        {steps[state.currentStep]?.id === 'proficiencies' && <ProficienciesStep />}
+        {steps[state.currentStep]?.id === 'equipment' && <EquipmentFeatsStep />}
+        {steps[state.currentStep]?.id === 'feats' && <EquipmentFeatsStep />}
         {steps[state.currentStep]?.id === 'review' && <ReviewStep />}
-        {steps[state.currentStep]?.id !== 'race' && steps[state.currentStep]?.id !== 'abilities' && steps[state.currentStep]?.id !== 'review' && (
-          <div className="text-center text-slate-500">
-            <p>Step Content for: {steps[state.currentStep]?.label}</p>
-          </div>
-        )}
       </div>
 
-      <div className="mt-6 flex justify-between">
+      <div className="sticky bottom-0 pt-4 bg-slate-50 flex justify-between">
         <button
           onClick={handleBack}
           disabled={state.currentStep === 0}

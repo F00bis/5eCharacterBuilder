@@ -22,6 +22,13 @@ export default function ProficienciesStep() {
   const isLevel1 = currentTotalLevel === 0;
   const isMulticlass = state.mode === 'levelup';
 
+  useEffect(() => {
+    const existingClass = state.draft.classes?.[0]?.className;
+    if (existingClass && !selectedClass && !pendingClass) {
+      setSelectedClass(existingClass);
+    }
+  }, [state.draft.classes, selectedClass, pendingClass]);
+
   const classData = useMemo<DndClass | undefined>(() => {
     if (pendingClass) return srdClasses.find(c => c.name === pendingClass);
     return srdClasses.find(c => c.name === selectedClass);
@@ -102,6 +109,17 @@ export default function ProficienciesStep() {
       dispatch({ type: 'REMOVE_ITEMS_BY_SOURCE', listName: 'skills', source: `Class: ${pendingClass}` });
     }
   }, [pendingClass, dispatch]);
+
+  useEffect(() => {
+    const existingSkills = state.draft.skills || [];
+    const classSkills = existingSkills.filter(s => s.source === `Class: ${selectedClass}`);
+    setSelectedClassSkills(classSkills.map(s => s.skill));
+    
+    const expertiseSkills = existingSkills.filter(s => 
+      s.source === `Class: ${selectedClass}` && s.level === 'expertise'
+    );
+    setExpertiseSelections(expertiseSkills.map(s => s.skill));
+  }, []);
 
   const handleClassChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     const newClass = e.target.value;
@@ -265,25 +283,23 @@ export default function ProficienciesStep() {
     expertiseChoicesCount
   ]);
 
+  const hasClassInDraft = state.draft.classes && state.draft.classes.length > 0;
+
+  if (!hasClassInDraft) {
+    return (
+      <div className="space-y-6">
+        <div className="text-center text-slate-500 py-8">
+          Please complete the Class step first to configure proficiencies.
+        </div>
+      </div>
+    );
+  }
+
   if (!selectedClass && !pendingClass) {
     return (
       <div className="space-y-6">
-        <div>
-          <label className="block text-sm font-medium text-slate-700 mb-1">Select Class</label>
-          <select 
-            className="w-full border-slate-300 rounded-md shadow-sm focus:border-purple-500 focus:ring-purple-500 p-2 border"
-            value=""
-            onChange={handleClassChange}
-          >
-            <option value="" disabled>-- Choose a Class --</option>
-            {srdClasses.map(c => (
-              <option key={c.name} value={c.name}>{c.name}</option>
-            ))}
-          </select>
-        </div>
-        
         <div className="text-center text-slate-500 py-8">
-          No class selected. Please select a class to configure proficiencies.
+          Loading class selections...
         </div>
       </div>
     );

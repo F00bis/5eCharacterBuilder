@@ -244,7 +244,7 @@ export default function RaceBackgroundStep() {
       </div>
 
       <div>
-        <div className="bg-white border border-slate-200 rounded-lg shadow-sm p-6 h-full">
+        <div className="bg-white border border-slate-200 rounded-lg shadow-sm p-6 max-h-[60vh] overflow-y-auto">
           <h2 className="text-xl font-bold border-b pb-2 mb-4">Summary</h2>
           
           {!selectedRace && !selectedBg && (
