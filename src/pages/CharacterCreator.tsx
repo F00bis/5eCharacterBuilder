@@ -91,7 +91,7 @@ export default function CharacterCreator({ mode }: CharacterCreatorProps) {
         />
       </div>
 
-      <div className="mt-8 bg-slate-50 border border-slate-200 rounded-lg p-8 min-h-100">
+      <div className="mt-8 bg-slate-50 border border-slate-200 rounded-lg p-8 h-[600px]">
         {steps[state.currentStep]?.id === 'race' && <RaceBackgroundStep />}
         {steps[state.currentStep]?.id === 'abilities' && <AbilityScoresStep />}
         {steps[state.currentStep]?.id === 'class' && <ClassSelectionStep />}

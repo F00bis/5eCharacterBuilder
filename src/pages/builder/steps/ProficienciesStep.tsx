@@ -1,4 +1,4 @@
-import { useMemo, useState, useEffect, useCallback } from 'react';
+import { useMemo, useState } from 'react';
 import { useCharacterBuilder } from '../../../contexts/CharacterBuilderContextTypes';
 import { srdClasses } from '../../../data/srdClasses';
 import { SKILL_DISPLAY_NAMES, SKILL_ABILITY_MAP } from '../../../utils/skills';
@@ -12,42 +12,35 @@ interface FreeChoice {
 
 export default function ProficienciesStep() {
   const { state, dispatch } = useCharacterBuilder();
-  const [selectedClass, setSelectedClass] = useState<string>('');
-  const [selectedClassSkills, setSelectedClassSkills] = useState<Skill[]>([]);
-  const [freeChoices, setFreeChoices] = useState<FreeChoice[]>([]);
-  const [expertiseSelections, setExpertiseSelections] = useState<Skill[]>([]);
   const [pendingClass, setPendingClass] = useState<string | null>(null);
 
   const currentTotalLevel = (state.draft.classes || []).reduce((acc, c) => acc + c.level, 0);
   const isLevel1 = currentTotalLevel === 0;
   const isMulticlass = state.mode === 'levelup';
 
-  useEffect(() => {
-    const existingClass = state.draft.classes?.[0]?.className;
-    if (existingClass && !selectedClass && !pendingClass) {
-      setSelectedClass(existingClass);
-    }
-  }, [state.draft.classes, selectedClass, pendingClass]);
+  const draftClassName = state.draft.classes?.[0]?.className || '';
+  const effectiveClassName = pendingClass || draftClassName;
 
   const classData = useMemo<DndClass | undefined>(() => {
-    if (pendingClass) return srdClasses.find(c => c.name === pendingClass);
-    return srdClasses.find(c => c.name === selectedClass);
-  }, [pendingClass, selectedClass]);
+    return srdClasses.find(c => c.name === effectiveClassName);
+  }, [effectiveClassName]);
+
+  const draftSkills = useMemo(() => state.draft.skills || [], [state.draft.skills]);
 
   const backgroundSkills = useMemo(() => {
-    return (state.draft.skills || []).filter(
+    return draftSkills.filter(
       (s): s is SkillProficiency => s !== undefined && s.source === 'Background'
     );
-  }, [state.draft.skills]);
+  }, [draftSkills]);
 
   const raceSkills = useMemo(() => {
-    return (state.draft.skills || []).filter(
+    return draftSkills.filter(
       (s): s is SkillProficiency => 
         s !== undefined && 
         s.source !== undefined && 
         (s.source === 'Race' || s.source.startsWith('Race:'))
     );
-  }, [state.draft.skills]);
+  }, [draftSkills]);
 
   const nonClassSkills = useMemo(() => {
     const all: Skill[] = [
@@ -97,36 +90,47 @@ export default function ProficienciesStep() {
   const freeChoiceCount = lockedSkills.size;
 
   const currentClassSkills = useMemo(() => {
-    return (state.draft.skills || []).filter(
+    return draftSkills.filter(
       (s): s is SkillProficiency => 
         s !== undefined && 
-        s.source === `Class: ${pendingClass || selectedClass}`
+        s.source === `Class: ${pendingClass || effectiveClassName}`
     );
-  }, [state.draft.skills, pendingClass, selectedClass]);
+  }, [draftSkills, pendingClass, effectiveClassName]);
 
-  useEffect(() => {
-    if (pendingClass) {
-      dispatch({ type: 'REMOVE_ITEMS_BY_SOURCE', listName: 'skills', source: `Class: ${pendingClass}` });
+  const freeChoiceSkills = useMemo(() => {
+    return draftSkills.filter(
+      (s): s is SkillProficiency => 
+        s !== undefined && 
+        s.source === `Class: ${effectiveClassName}: Free Choice`
+    );
+  }, [draftSkills, effectiveClassName]);
+
+  const effectiveClassNameSkills = useMemo(() => {
+    return currentClassSkills
+      .filter(s => s.level !== 'expertise')
+      .map(s => s.skill);
+  }, [currentClassSkills]);
+
+  const expertiseSelections = useMemo(() => {
+    return currentClassSkills
+      .filter(s => s.level === 'expertise')
+      .map(s => s.skill);
+  }, [currentClassSkills]);
+
+  const freeChoices = useMemo<FreeChoice[]>(() => {
+    const choices: FreeChoice[] = [];
+    for (let i = 0; i < freeChoiceCount; i++) {
+      const existingSkill = freeChoiceSkills[i];
+      choices.push({
+        id: i,
+        skill: existingSkill?.skill || null
+      });
     }
-  }, [pendingClass, dispatch]);
-
-  useEffect(() => {
-    const existingSkills = state.draft.skills || [];
-    const classSkills = existingSkills.filter(s => s.source === `Class: ${selectedClass}`);
-    setSelectedClassSkills(classSkills.map(s => s.skill));
-    
-    const expertiseSkills = existingSkills.filter(s => 
-      s.source === `Class: ${selectedClass}` && s.level === 'expertise'
-    );
-    setExpertiseSelections(expertiseSkills.map(s => s.skill));
-  }, []);
+    return choices;
+  }, [freeChoiceCount, freeChoiceSkills]);
 
   const handleClassChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     const newClass = e.target.value;
-    setSelectedClass(newClass);
-    setSelectedClassSkills([]);
-    setFreeChoices([]);
-    setExpertiseSelections([]);
     setPendingClass(null);
 
     if (newClass) {
@@ -140,16 +144,14 @@ export default function ProficienciesStep() {
   const handleSkillToggle = (skill: Skill) => {
     if (lockedSkills.has(skill)) return;
 
-    if (selectedClassSkills.includes(skill)) {
-      setSelectedClassSkills(prev => prev.filter(s => s !== skill));
+    if (effectiveClassNameSkills.includes(skill)) {
       dispatch({
         type: 'REMOVE_ITEMS_BY_SOURCE',
         listName: 'skills',
-        source: `Class: ${selectedClass}`,
+        source: `Class: ${effectiveClassName}`,
       });
     } else {
-      if (selectedClassSkills.length >= skillChoicesCount) return;
-      setSelectedClassSkills(prev => [...prev, skill]);
+      if (effectiveClassNameSkills.length >= skillChoicesCount - freeChoiceCount) return;
       dispatch({
         type: 'ADD_ITEM_WITH_SOURCE',
         listName: 'skills',
@@ -157,20 +159,20 @@ export default function ProficienciesStep() {
           skill,
           ability: SKILL_ABILITY_MAP[skill],
           level: 'proficient',
-          source: `Class: ${selectedClass}`,
+          source: `Class: ${effectiveClassName}`,
         },
       });
     }
   };
 
   const handleFreeChoiceChange = (index: number, skill: Skill | null) => {
-    const oldSkill = freeChoices[index]?.skill;
+    const existingChoice = freeChoiceSkills[index];
     
-    if (oldSkill) {
+    if (existingChoice) {
       dispatch({
         type: 'REMOVE_ITEMS_BY_SOURCE',
         listName: 'skills',
-        source: `Class: ${selectedClass}: Free Choice`,
+        source: `Class: ${effectiveClassName}: Free Choice`,
       });
     }
 
@@ -182,70 +184,33 @@ export default function ProficienciesStep() {
           skill,
           ability: SKILL_ABILITY_MAP[skill],
           level: 'proficient',
-          source: `Class: ${selectedClass}: Free Choice`,
+          source: `Class: ${effectiveClassName}: Free Choice`,
         },
       });
     }
-
-    setFreeChoices(prev => {
-      const updated = [...prev];
-      updated[index] = { id: index, skill };
-      return updated;
-    });
   };
 
   const handleExpertiseToggle = (skill: Skill) => {
-    if (!expertiseSelections.includes(skill)) {
-      if (expertiseSelections.length >= expertiseChoicesCount) return;
-      setExpertiseSelections(prev => [...prev, skill]);
+    const skills = draftSkills;
+    if (expertiseSelections.includes(skill)) {
+      const updatedSkills = skills.map(s => {
+        if (s.skill === skill && s.source === `Class: ${effectiveClassName}`) {
+          return { ...s, level: 'proficient' as const };
+        }
+        return s;
+      });
+      dispatch({ type: 'UPDATE_DRAFT', updates: { skills: updatedSkills } });
     } else {
-      setExpertiseSelections(prev => prev.filter(s => s !== skill));
+      if (expertiseSelections.length >= expertiseChoicesCount) return;
+      const updatedSkills = skills.map(s => {
+        if (s.skill === skill && s.source === `Class: ${effectiveClassName}`) {
+          return { ...s, level: 'expertise' as const };
+        }
+        return s;
+      });
+      dispatch({ type: 'UPDATE_DRAFT', updates: { skills: updatedSkills } });
     }
   };
-
-  useEffect(() => {
-    const newFreeChoices: FreeChoice[] = [];
-    for (let i = 0; i < freeChoiceCount; i++) {
-      const existingChoice = freeChoices.find((_, idx) => idx === i);
-      newFreeChoices.push(existingChoice || { id: i, skill: null });
-    }
-    setFreeChoices(newFreeChoices);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [freeChoiceCount]);
-
-  const updateSkillToExpertise = useCallback((skill: Skill) => {
-    const skills = state.draft.skills || [];
-    const updatedSkills = skills.map(s => {
-      if (s.skill === skill && s.source === `Class: ${selectedClass}`) {
-        return { ...s, level: 'expertise' as const };
-      }
-      return s;
-    });
-    dispatch({ type: 'UPDATE_DRAFT', updates: { skills: updatedSkills } });
-  }, [state.draft.skills, selectedClass, dispatch]);
-
-  const updateSkillFromExpertise = useCallback((skill: Skill) => {
-    const skills = state.draft.skills || [];
-    const updatedSkills = skills.map(s => {
-      if (s.skill === skill && s.source === `Class: ${selectedClass}`) {
-        return { ...s, level: 'proficient' as const };
-      }
-      return s;
-    });
-    dispatch({ type: 'UPDATE_DRAFT', updates: { skills: updatedSkills } });
-  }, [state.draft.skills, selectedClass, dispatch]);
-
-  useEffect(() => {
-    expertiseSelections.forEach(skill => {
-      updateSkillToExpertise(skill);
-    });
-    
-    currentClassSkills.forEach(skill => {
-      if (!expertiseSelections.includes(skill.skill)) {
-        updateSkillFromExpertise(skill.skill);
-      }
-    });
-  }, [expertiseSelections, currentClassSkills, updateSkillToExpertise, updateSkillFromExpertise]);
 
   const allSkills: Skill[] = [
     'athletics', 'acrobatics', 'sleightOfHand', 'stealth',
@@ -255,13 +220,13 @@ export default function ProficienciesStep() {
   ];
 
   const availableFreeChoiceSkills = allSkills.filter(skill => 
-    !nonClassSkills.includes(skill) && !selectedClassSkills.includes(skill)
+    !nonClassSkills.includes(skill) && !effectiveClassNameSkills.includes(skill)
   );
 
   const isValid = useMemo(() => {
     if (!classData) return false;
     
-    const classSkillCount = selectedClassSkills.length;
+    const classSkillCount = effectiveClassNameSkills.length;
     if (classSkillCount < skillChoicesCount - freeChoiceCount) return false;
     
     const freeChoicesFilled = freeChoices.every(choice => choice.skill !== null);
@@ -274,7 +239,7 @@ export default function ProficienciesStep() {
     return true;
   }, [
     classData, 
-    selectedClassSkills.length, 
+    effectiveClassNameSkills.length, 
     skillChoicesCount, 
     freeChoiceCount, 
     freeChoices, 
@@ -295,7 +260,7 @@ export default function ProficienciesStep() {
     );
   }
 
-  if (!selectedClass && !pendingClass) {
+  if (!effectiveClassName && !pendingClass) {
     return (
       <div className="space-y-6">
         <div className="text-center text-slate-500 py-8">
@@ -306,12 +271,12 @@ export default function ProficienciesStep() {
   }
 
   return (
-    <div className="space-y-8">
-      <div className="flex justify-between items-center">
+    <div className="h-full overflow-y-auto pr-2 space-y-6">
+      <div className="flex justify-between items-center flex-shrink-0">
         <h2 className="text-xl font-bold">Proficiencies & Skills</h2>
         <select 
           className="border-slate-300 rounded-md shadow-sm focus:border-purple-500 focus:ring-purple-500 p-2 border"
-          value={selectedClass}
+          value={effectiveClassName}
           onChange={handleClassChange}
         >
           <option value="" disabled>-- Change Class --</option>
@@ -369,7 +334,7 @@ export default function ProficienciesStep() {
             <div className="grid grid-cols-2 md:grid-cols-3 gap-2 mb-4">
               {availableSkillsForClass.map(skill => {
                 const isLocked = lockedSkills.has(skill);
-                const isSelected = selectedClassSkills.includes(skill);
+                const isSelected = effectiveClassNameSkills.includes(skill);
                 
                 return (
                   <button
@@ -396,7 +361,7 @@ export default function ProficienciesStep() {
             </div>
             
             <div className="text-sm text-slate-600">
-              {selectedClassSkills.length}/{skillChoicesCount - freeChoiceCount} selected
+              {effectiveClassNameSkills.length}/{skillChoicesCount - freeChoiceCount} selected
             </div>
           </div>
 
@@ -444,7 +409,7 @@ export default function ProficienciesStep() {
               </p>
               
               <div className="expertise-grid grid grid-cols-2 md:grid-cols-3 gap-2 mb-4">
-                {[...selectedClassSkills, ...freeChoices.filter(c => c.skill).map(c => c.skill as Skill)].map(skill => {
+                {[...effectiveClassNameSkills, ...freeChoices.filter(c => c.skill).map(c => c.skill as Skill)].map(skill => {
                   const hasExpertiseOnSkill = expertiseSelections.includes(skill);
                   
                   return (
@@ -478,7 +443,7 @@ export default function ProficienciesStep() {
       <div className="bg-green-50 border border-green-200 rounded-lg p-4">
         <h4 className="font-semibold text-green-800 mb-2">Selection Summary</h4>
         <ul className="text-sm text-green-700 space-y-1">
-          <li>Class Skills: {selectedClassSkills.length}/{skillChoicesCount - freeChoiceCount}</li>
+          <li>Class Skills: {effectiveClassNameSkills.length}/{skillChoicesCount - freeChoiceCount}</li>
           {freeChoiceCount > 0 && (
             <li>Free Choices: {freeChoices.filter(c => c.skill).length}/{freeChoiceCount}</li>
           )}

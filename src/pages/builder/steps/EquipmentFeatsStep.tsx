@@ -406,7 +406,7 @@ export default function EquipmentFeatsStep() {
   }
   
   return (
-    <div className="space-y-8">
+    <div className="h-full overflow-y-auto space-y-8">
       {isLevel1 && (
         <div className="space-y-6">
           <h2 className="text-xl font-bold">Starting Equipment</h2>
