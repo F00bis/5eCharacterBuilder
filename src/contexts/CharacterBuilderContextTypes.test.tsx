@@ -1,11 +1,11 @@
 import { describe, it, expect } from 'vitest';
 import { characterBuilderReducer, CharacterBuilderState, BuilderAction, defaultState } from './CharacterBuilderContextTypes';
-import type { Character } from '../types';
+import { createDefaultCharacter, type CharacterBuilderDraft } from '../types';
 
 describe('characterBuilderReducer', () => {
   const initialState: CharacterBuilderState = {
     ...defaultState,
-    draft: {},
+    draft: createDefaultCharacter(),
   };
 
   it('handles SET_MODE', () => {
@@ -16,10 +16,11 @@ describe('characterBuilderReducer', () => {
   });
 
   it('handles LOAD_BASE_CHARACTER', () => {
-    const mockCharacter: Partial<Character> = { name: 'Gimli', race: 'Dwarf' };
+    const mockCharacter: Partial<CharacterBuilderDraft> = { name: 'Gimli', race: 'Dwarf' };
     const action: BuilderAction = { type: 'LOAD_BASE_CHARACTER', character: mockCharacter };
     const state = characterBuilderReducer(initialState, action);
-    expect(state.draft).toEqual(mockCharacter);
+    expect(state.draft.name).toBe('Gimli');
+    expect(state.draft.race).toBe('Dwarf');
   });
 
   it('handles UPDATE_DRAFT', () => {
@@ -37,7 +38,7 @@ describe('characterBuilderReducer', () => {
   it('handles ADD_ITEM_WITH_SOURCE', () => {
     const startState: CharacterBuilderState = {
       ...initialState,
-      draft: { skills: [] }
+      draft: { ...createDefaultCharacter(), skills: [] }
     };
     const action: BuilderAction = { 
       type: 'ADD_ITEM_WITH_SOURCE', 
@@ -46,14 +47,15 @@ describe('characterBuilderReducer', () => {
     };
     const state = characterBuilderReducer(startState, action);
     expect(state.draft.skills).toHaveLength(1);
-    expect(state.draft.skills?.[0].skill).toBe('athletics');
-    expect(state.draft.skills?.[0].source).toBe('Background: Soldier');
+    expect(state.draft.skills[0].skill).toBe('athletics');
+    expect(state.draft.skills[0].source).toBe('Background: Soldier');
   });
 
   it('handles REMOVE_ITEMS_BY_SOURCE', () => {
     const startState: CharacterBuilderState = {
       ...initialState,
       draft: {
+        ...createDefaultCharacter(),
         skills: [
           { skill: 'athletics', ability: 'strength', level: 'proficient', source: 'Background: Soldier' },
           { skill: 'perception', ability: 'wisdom', level: 'proficient', source: 'Class: Fighter' }
@@ -67,20 +69,20 @@ describe('characterBuilderReducer', () => {
     };
     const state = characterBuilderReducer(startState, action);
     expect(state.draft.skills).toHaveLength(1);
-    expect(state.draft.skills?.[0].skill).toBe('perception');
+    expect(state.draft.skills[0].skill).toBe('perception');
   });
 
   it('handles CLEAR_DRAFT', () => {
     const startState: CharacterBuilderState = {
       ...defaultState,
-      draft: { name: 'Frodo' },
+      draft: { ...createDefaultCharacter(), name: 'Frodo' },
       currentStep: 5,
       mode: 'levelup',
       baseCharacterId: 1,
     };
     const action: BuilderAction = { type: 'CLEAR_DRAFT' };
     const state = characterBuilderReducer(startState, action);
-    expect(state.draft).toEqual({});
+    expect(state.draft.name).toBe('');
     expect(state.currentStep).toBe(0);
     expect(state.mode).toBe('create');
     expect(state.baseCharacterId).toBe(null);

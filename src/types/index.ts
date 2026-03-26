@@ -120,8 +120,7 @@ export interface RaceStatSelection {
   amount: number;
 }
 
-export interface Character {
-  id?: number;
+export interface CharacterBase {
   name: string;
   race: string;
   subrace?: string;
@@ -162,8 +161,65 @@ export interface Character {
   feats: Feat[];
   statusEffects: StatusEffect[];
   notes: string;
+}
+
+export interface CharacterBuilderDraft extends CharacterBase {}
+
+export interface Character extends CharacterBase {
+  id?: number;
   createdAt: Date;
   updatedAt: Date;
+}
+
+export function createDefaultCharacter(): CharacterBuilderDraft {
+  return {
+    name: '',
+    race: '',
+    background: '',
+    alignment: '',
+    classes: [],
+    raceStatSelections: [],
+    baseAbilityScores: {
+      strength: 10,
+      dexterity: 10,
+      constitution: 10,
+      intelligence: 10,
+      wisdom: 10,
+      charisma: 10,
+    },
+    abilityScores: {
+      strength: 10,
+      dexterity: 10,
+      constitution: 10,
+      intelligence: 10,
+      wisdom: 10,
+      charisma: 10,
+    },
+    featureChoices: {},
+    hpRolls: [],
+    level: 0,
+    xp: 0,
+    portrait: null,
+    hpBonus: 0,
+    hp: 0,
+    maxHp: 0,
+    currentHp: 0,
+    tempHp: 0,
+    ac: 10,
+    speed: 30,
+    initiative: 0,
+    vision: {},
+    deathSaves: { successes: 0, failures: 0 },
+    proficiencyBonus: 2,
+    skills: [],
+    equipment: [],
+    currency: { cp: 0, sp: 0, ep: 0, gp: 0, pp: 0 },
+    spellSlots: [],
+    spells: [],
+    feats: [],
+    statusEffects: [],
+    notes: '',
+  };
 }
 
 export type { DndSpell, SpellSchool } from './spells';

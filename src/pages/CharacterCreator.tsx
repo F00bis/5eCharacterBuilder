@@ -47,15 +47,15 @@ export default function CharacterCreator({ mode }: CharacterCreatorProps) {
         { id: 'race', label: 'Race & Background', isValid: state.stepValidations['race'] ?? false },
         { id: 'abilities', label: 'Ability Scores', isValid: true },
         { id: 'class', label: 'Class', isValid: true },
-        { id: 'proficiencies', label: 'Proficiencies', isValid: true },
-        { id: 'equipment', label: 'Equipment & Feats', isValid: true },
+        { id: 'proficiencies', label: 'Proficiencies', isValid: state.stepValidations['proficiencies'] ?? false },
+        { id: 'equipment', label: 'Equipment', isValid: true },
         { id: 'review', label: 'Review', isValid: true },
       ];
     } else {
       return [
         { id: 'class', label: 'Class & Level', isValid: true },
-        { id: 'proficiencies', label: 'Proficiencies', isValid: true },
-        { id: 'feats', label: 'ASI & Feats', isValid: true },
+        { id: 'proficiencies', label: 'Proficiencies', isValid: state.stepValidations['proficiencies'] ?? false },
+        { id: 'equipment', label: 'Equipment', isValid: true },
         { id: 'review', label: 'Review', isValid: true },
       ];
     }
@@ -97,7 +97,6 @@ export default function CharacterCreator({ mode }: CharacterCreatorProps) {
         {steps[state.currentStep]?.id === 'class' && <ClassSelectionStep />}
         {steps[state.currentStep]?.id === 'proficiencies' && <ProficienciesStep />}
         {steps[state.currentStep]?.id === 'equipment' && <EquipmentFeatsStep />}
-        {steps[state.currentStep]?.id === 'feats' && <EquipmentFeatsStep />}
         {steps[state.currentStep]?.id === 'review' && <ReviewStep />}
       </div>
 

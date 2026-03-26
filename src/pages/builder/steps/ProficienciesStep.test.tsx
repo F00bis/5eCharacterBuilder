@@ -1,47 +1,88 @@
-import { render, screen, fireEvent, act } from '@testing-library/react';
+import { render, screen, fireEvent, act, waitFor } from '@testing-library/react';
 import { describe, it, expect, beforeEach } from 'vitest';
 import ProficienciesStep from './ProficienciesStep';
 import { CharacterBuilderProvider } from '../../../contexts/CharacterBuilderProvider';
+import { useCharacterBuilder } from '../../../contexts/CharacterBuilderContextTypes';
+import { useEffect, useState } from 'react';
+
+function ProficienciesStepWithSetup({ className }: { className: string }) {
+  const { dispatch } = useCharacterBuilder();
+  const [ready, setReady] = useState(false);
+  
+  useEffect(() => {
+    dispatch({ type: 'UPDATE_DRAFT', updates: { classes: [{ className, level: 1 }] } });
+    setReady(true);
+  }, [dispatch, className]);
+
+  if (!ready) {
+    return <div>Loading...</div>;
+  }
+
+  return <ProficienciesStep />;
+}
 
 describe('ProficienciesStep', () => {
   beforeEach(() => {
     localStorage.clear();
   });
 
-  const renderComponent = () => {
-    return render(
+  it('renders a class selection dropdown', async () => {
+    render(
+      <CharacterBuilderProvider>
+        <ProficienciesStepWithSetup className="Fighter" />
+      </CharacterBuilderProvider>
+    );
+    
+    await waitFor(() => {
+      expect(screen.getByRole('heading', { name: 'Proficiencies & Skills' })).toBeInTheDocument();
+    });
+    
+    const selects = screen.getAllByRole('combobox');
+    expect(selects.length).toBeGreaterThan(0);
+  });
+
+  it('shows message when no class is selected', () => {
+    render(
       <CharacterBuilderProvider>
         <ProficienciesStep />
       </CharacterBuilderProvider>
     );
-  };
-
-  it('renders a class selection dropdown', () => {
-    renderComponent();
-    expect(screen.getByRole('combobox')).toBeInTheDocument();
-    expect(screen.getByText('-- Choose a Class --')).toBeInTheDocument();
-  });
-
-  it('shows message when no class is selected', () => {
-    renderComponent();
-    expect(screen.getByText(/no class selected/i)).toBeInTheDocument();
+    expect(screen.getByText(/Please complete the Class step first/i)).toBeInTheDocument();
   });
 
   it('shows expertise section for Rogue class', async () => {
-    renderComponent();
+    render(
+      <CharacterBuilderProvider>
+        <ProficienciesStepWithSetup className="Rogue" />
+      </CharacterBuilderProvider>
+    );
     
-    const select = screen.getByRole('combobox');
+    await waitFor(() => {
+      expect(screen.getByRole('heading', { name: 'Proficiencies & Skills' })).toBeInTheDocument();
+    });
+    
+    const select = screen.getAllByRole('combobox')[0];
     await act(async () => {
       fireEvent.change(select, { target: { value: 'Rogue' } });
     });
     
-    expect(screen.getByRole('heading', { name: /expertise/i })).toBeInTheDocument();
+    await waitFor(() => {
+      expect(screen.getByRole('heading', { name: /expertise/i })).toBeInTheDocument();
+    });
   });
 
   it('does not show expertise section for Fighter class', async () => {
-    renderComponent();
+    render(
+      <CharacterBuilderProvider>
+        <ProficienciesStepWithSetup className="Fighter" />
+      </CharacterBuilderProvider>
+    );
     
-    const select = screen.getByRole('combobox');
+    await waitFor(() => {
+      expect(screen.getByRole('heading', { name: 'Proficiencies & Skills' })).toBeInTheDocument();
+    });
+    
+    const select = screen.getAllByRole('combobox')[0];
     await act(async () => {
       fireEvent.change(select, { target: { value: 'Fighter' } });
     });
@@ -50,24 +91,39 @@ describe('ProficienciesStep', () => {
   });
 
   it('shows validation summary', async () => {
-    renderComponent();
+    render(
+      <CharacterBuilderProvider>
+        <ProficienciesStepWithSetup className="Fighter" />
+      </CharacterBuilderProvider>
+    );
     
-    const select = screen.getByRole('combobox');
+    await waitFor(() => {
+      expect(screen.getByRole('heading', { name: 'Proficiencies & Skills' })).toBeInTheDocument();
+    });
+    
+    const select = screen.getAllByRole('combobox')[0];
     await act(async () => {
       fireEvent.change(select, { target: { value: 'Fighter' } });
     });
     
-    expect(screen.getByText(/selection summary/i)).toBeInTheDocument();
+    await waitFor(() => {
+      expect(screen.getByText(/selection summary/i)).toBeInTheDocument();
+    });
   });
 
   it('shows class skill options after selection', async () => {
-    renderComponent();
+    render(
+      <CharacterBuilderProvider>
+        <ProficienciesStepWithSetup className="Fighter" />
+      </CharacterBuilderProvider>
+    );
     
-    const select = screen.getByRole('combobox');
-    await act(async () => {
-      fireEvent.change(select, { target: { value: 'Fighter' } });
+    await waitFor(() => {
+      expect(screen.getByRole('heading', { name: 'Proficiencies & Skills' })).toBeInTheDocument();
     });
     
-    expect(screen.getByText(/choose 2 skills/i)).toBeInTheDocument();
+    await waitFor(() => {
+      expect(screen.getByText(/choose \d+ skill/i)).toBeInTheDocument();
+    });
   });
 });

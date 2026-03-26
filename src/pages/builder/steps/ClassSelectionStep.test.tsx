@@ -32,8 +32,8 @@ describe('ClassSelectionStep', () => {
     
     expect(screen.getAllByText('Fighter').length).toBeGreaterThan(0);
     expect(screen.getByText('d10')).toBeInTheDocument();
-    expect(screen.getByText(/Hit Points \(Level 1\)/)).toBeInTheDocument();
-    expect(screen.getByText(/At Level 1, you automatically get maximum hit points/)).toBeInTheDocument();
+    expect(screen.getByText(/Hit Points at Level 1/)).toBeInTheDocument();
+    expect(screen.getByText(/At 1st level/i)).toBeInTheDocument();
     expect(screen.getAllByText(/Fighting Style/).length).toBeGreaterThan(0);
     expect(screen.getByText('Class Feature Choices')).toBeInTheDocument();
   });

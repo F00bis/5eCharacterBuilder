@@ -315,9 +315,11 @@ export function InventoryPanel() {
   const sortedNonEquippable = [...nonEquippable].sort((a, b) => a.name.localeCompare(b.name));
   
   const handleToggleEquip = async (item: EquipmentType) => {
+    const idx = character.equipment.indexOf(item);
+    if (idx === -1) return;
     const newEquipped = !item.equipped;
-    const updatedEquipment = character.equipment.map(e => 
-      e.name === item.name ? { ...e, equipped: newEquipped } : e
+    const updatedEquipment = character.equipment.map((e, i) => 
+      i === idx ? { ...e, equipped: newEquipped } : e
     );
     await update({ equipment: updatedEquipment });
   };

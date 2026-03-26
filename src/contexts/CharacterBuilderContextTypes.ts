@@ -1,6 +1,7 @@
 import { createContext, useContext } from 'react';
 import type React from 'react';
-import type { Character, Ability } from '../types';
+import type { CharacterBuilderDraft, Ability } from '../types';
+import { createDefaultCharacter } from '../types';
 
 export interface AsiChoice {
   level: number;
@@ -8,7 +9,7 @@ export interface AsiChoice {
 }
 
 export interface CharacterBuilderState {
-  draft: Partial<Character>;
+  draft: CharacterBuilderDraft;
   currentStep: number;
   mode: 'create' | 'levelup';
   baseCharacterId: number | null;
@@ -19,11 +20,11 @@ export interface CharacterBuilderState {
 
 export type BuilderAction =
   | { type: 'SET_MODE'; mode: 'create' | 'levelup'; baseCharacterId?: number | null }
-  | { type: 'LOAD_BASE_CHARACTER'; character: Partial<Character> }
-  | { type: 'UPDATE_DRAFT'; updates: Partial<Character> }
+  | { type: 'LOAD_BASE_CHARACTER'; character: Partial<CharacterBuilderDraft> }
+  | { type: 'UPDATE_DRAFT'; updates: Partial<CharacterBuilderDraft> }
   | { type: 'SET_STEP'; step: number }
-  | { type: 'ADD_ITEM_WITH_SOURCE'; listName: keyof Character; item: unknown }
-  | { type: 'REMOVE_ITEMS_BY_SOURCE'; listName: keyof Character; source: string }
+  | { type: 'ADD_ITEM_WITH_SOURCE'; listName: keyof CharacterBuilderDraft; item: unknown }
+  | { type: 'REMOVE_ITEMS_BY_SOURCE'; listName: keyof CharacterBuilderDraft; source: string }
   | { type: 'ADD_ASI_CHOICE'; choice: AsiChoice }
   | { type: 'REMOVE_ASI_CHOICE'; level: number }
   | { type: 'SET_STEP_VALIDATION'; stepId: string; isValid: boolean }
@@ -32,7 +33,7 @@ export type BuilderAction =
   | { type: 'CLEAR_DRAFT' };
 
 export const defaultState: CharacterBuilderState = {
-  draft: {},
+  draft: createDefaultCharacter(),
   currentStep: 0,
   mode: 'create',
   baseCharacterId: null,
@@ -48,12 +49,14 @@ export function characterBuilderReducer(
   switch (action.type) {
     case 'SET_MODE':
       return { ...state, mode: action.mode, baseCharacterId: action.baseCharacterId ?? null };
-    case 'LOAD_BASE_CHARACTER':
+    case 'LOAD_BASE_CHARACTER': {
+      const loadedDraft = createDefaultCharacter();
       return { 
         ...state, 
-        draft: { ...action.character },
+        draft: { ...loadedDraft, ...action.character },
         asiChoices: (action.character as unknown as { asiChoices?: AsiChoice[] })?.asiChoices || []
       };
+    }
     case 'UPDATE_DRAFT':
       return { ...state, draft: { ...state.draft, ...action.updates } };
     case 'SET_STEP':

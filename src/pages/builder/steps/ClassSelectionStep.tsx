@@ -24,6 +24,13 @@ export default function ClassSelectionStep() {
 
     const newClassEntry = { className: classData.name, level: 1 };
     const existingClasses = state.draft.classes || [];
+    
+    // Prevent duplicate saves - check if this class already exists at level 1
+    const alreadyExists = existingClasses.some(c => c.className === classData.name && c.level === 1);
+    if (alreadyExists) {
+      return;
+    }
+
     const updatedClasses = isFirstLevel ? [newClassEntry] : [...existingClasses, newClassEntry];
 
     dispatch({
