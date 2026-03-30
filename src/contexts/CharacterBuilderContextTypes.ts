@@ -1,6 +1,6 @@
-import { createContext, useContext } from 'react';
 import type React from 'react';
-import type { CharacterBuilderDraft, Ability } from '../types';
+import { createContext, useContext } from 'react';
+import type { Ability, CharacterBase } from '../types';
 import { createDefaultCharacter } from '../types';
 
 export interface AsiChoice {
@@ -9,7 +9,7 @@ export interface AsiChoice {
 }
 
 export interface CharacterBuilderState {
-  draft: CharacterBuilderDraft;
+  draft: CharacterBase;
   currentStep: number;
   mode: 'create' | 'levelup';
   baseCharacterId: number | null;
@@ -20,11 +20,11 @@ export interface CharacterBuilderState {
 
 export type BuilderAction =
   | { type: 'SET_MODE'; mode: 'create' | 'levelup'; baseCharacterId?: number | null }
-  | { type: 'LOAD_BASE_CHARACTER'; character: Partial<CharacterBuilderDraft> }
-  | { type: 'UPDATE_DRAFT'; updates: Partial<CharacterBuilderDraft> }
+  | { type: 'LOAD_BASE_CHARACTER'; character: Partial<CharacterBase> }
+  | { type: 'UPDATE_DRAFT'; updates: Partial<CharacterBase> }
   | { type: 'SET_STEP'; step: number }
-  | { type: 'ADD_ITEM_WITH_SOURCE'; listName: keyof CharacterBuilderDraft; item: unknown }
-  | { type: 'REMOVE_ITEMS_BY_SOURCE'; listName: keyof CharacterBuilderDraft; source: string }
+  | { type: 'ADD_ITEM_WITH_SOURCE'; listName: keyof CharacterBase; item: unknown }
+  | { type: 'REMOVE_ITEMS_BY_SOURCE'; listName: keyof CharacterBase; source: string }
   | { type: 'ADD_ASI_CHOICE'; choice: AsiChoice }
   | { type: 'REMOVE_ASI_CHOICE'; level: number }
   | { type: 'SET_STEP_VALIDATION'; stepId: string; isValid: boolean }

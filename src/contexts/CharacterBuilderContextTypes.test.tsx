@@ -1,6 +1,6 @@
-import { describe, it, expect } from 'vitest';
-import { characterBuilderReducer, CharacterBuilderState, BuilderAction, defaultState } from './CharacterBuilderContextTypes';
-import { createDefaultCharacter, type CharacterBuilderDraft } from '../types';
+import { describe, expect, it } from 'vitest';
+import { createDefaultCharacter, type CharacterBase } from '../types';
+import { BuilderAction, characterBuilderReducer, CharacterBuilderState, defaultState } from './CharacterBuilderContextTypes';
 
 describe('characterBuilderReducer', () => {
   const initialState: CharacterBuilderState = {
@@ -16,7 +16,7 @@ describe('characterBuilderReducer', () => {
   });
 
   it('handles LOAD_BASE_CHARACTER', () => {
-    const mockCharacter: Partial<CharacterBuilderDraft> = { name: 'Gimli', race: 'Dwarf' };
+    const mockCharacter: Partial<CharacterBase> = { name: 'Gimli', race: 'Dwarf' };
     const action: BuilderAction = { type: 'LOAD_BASE_CHARACTER', character: mockCharacter };
     const state = characterBuilderReducer(initialState, action);
     expect(state.draft.name).toBe('Gimli');

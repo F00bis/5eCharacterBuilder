@@ -10,6 +10,9 @@ import type { DndRace } from '../types/races';
 import type { SrdEquipment } from '../types/equipment';
 import type { DndSpell } from '../types/spells';
 import type { Feat } from '../types/feats';
+import { DEFAULT_SPELL_PROGRESSIONS, type SpellProgression } from './spellProgressions';
+
+export type { SpellProgression } from './spellProgressions';
 
 export class CharacterDatabase extends Dexie {
   characters!: Table<Character>;
@@ -19,17 +22,19 @@ export class CharacterDatabase extends Dexie {
   equipment!: Table<SrdEquipment, string>;
   feats!: Table<Feat, number>;
   customStatusEffects!: Table<StatusEffect, string>;
+  spellProgressions!: Table<SpellProgression, number>;
 
   constructor() {
     super('5eCharacterBuilder');
-    this.version(9).stores({
+    this.version(10).stores({
       characters: '++id, name, race, level, xp, createdAt',
       classes: 'name',
       races: 'id, name',
       spells: 'name, level, school, *classes',
       equipment: 'name, equipmentCategory, weaponCategory, armorCategory',
       feats: '++id, &name, prerequisite, isSRD',
-      customStatusEffects: 'id, name, category'
+      customStatusEffects: 'id, name, category',
+      spellProgressions: '++id, className, isCustom'
     });
     this.on('populate', tx => {
       tx.table('classes').bulkAdd(srdClasses);
@@ -43,6 +48,8 @@ export class CharacterDatabase extends Dexie {
       tx.table('spells').bulkAdd(srdSpells);
       tx.table('equipment').bulkAdd(srdEquipment);
       tx.table('feats').bulkAdd(srdFeats);
+      
+      tx.table('spellProgressions').bulkAdd(DEFAULT_SPELL_PROGRESSIONS);
     });
   }
 }

@@ -130,6 +130,7 @@ export const srdClasses: DndClass[] = [
       }
     },
     spellcastingAbility: 'charisma',
+    spellPrepType: 'known',
     features: [
       {
         name: 'Bardic Inspiration',
@@ -183,7 +184,6 @@ export const srdClasses: DndClass[] = [
         levelAcquired: 20
       }
     ],
-    slotsPerLevel: [2, 3, 4, 4, 4, 4, 5, 5, 5, 5, 6, 6, 6, 6, 7, 7, 7, 7, 8, 8],
     startingEquipment: {
       startingGoldFormula: '5d4 * 10',
       startingGoldAverage: 125,
@@ -221,6 +221,7 @@ export const srdClasses: DndClass[] = [
       }
     },
     spellcastingAbility: 'wisdom',
+    spellPrepType: 'prepared',
     features: [
       {
         name: 'Divine Domain',
@@ -254,7 +255,6 @@ export const srdClasses: DndClass[] = [
         levelAcquired: 1
       }
     ],
-    slotsPerLevel: [3, 4, 4, 4, 4, 4, 5, 5, 5, 5, 6, 6, 6, 6, 7, 7, 7, 7, 8, 8],
     startingEquipment: {
       startingGoldFormula: '5d4 * 10',
       startingGoldAverage: 125,
@@ -284,6 +284,7 @@ export const srdClasses: DndClass[] = [
       }
     },
     spellcastingAbility: 'wisdom',
+    spellPrepType: 'prepared',
     features: [
       {
         name: 'Druidic',
@@ -327,7 +328,6 @@ export const srdClasses: DndClass[] = [
         levelAcquired: 20
       }
     ],
-    slotsPerLevel: [3, 4, 4, 4, 4, 4, 5, 5, 5, 5, 6, 6, 6, 6, 7, 7, 7, 7, 8, 8],
     startingEquipment: {
       startingGoldFormula: '2d4 * 10',
       startingGoldAverage: 50,
@@ -552,6 +552,7 @@ export const srdClasses: DndClass[] = [
     skillProficienciesChoices: 2,
     skillOptions: ['athletics', 'insight', 'intimidation', 'medicine', 'persuasion', 'religion'],
     spellcastingAbility: 'charisma',
+    spellPrepType: 'prepared',
     multiclassing: {
       prerequisites: [{ ability: 'strength', min: 13 }, { ability: 'charisma', min: 13 }],
       proficienciesGained: {
@@ -623,7 +624,6 @@ export const srdClasses: DndClass[] = [
         levelAcquired: 14
       }
     ],
-    slotsPerLevel: [0, 0, 3, 4, 4, 4, 4, 4, 4, 4, 5, 5, 5, 5, 5, 5, 6, 6, 6, 6],
     startingEquipment: {
       startingGoldFormula: '5d4 * 10',
       startingGoldAverage: 125,
@@ -740,7 +740,9 @@ export const srdClasses: DndClass[] = [
         }
       ],
       fixedEquipment: ['Explorer\'s Pack', 'Longbow', 'Arrows']
-    }
+    },
+    spellcastingAbility: 'wisdom',
+    spellPrepType: 'prepared',
   },
   {
     name: 'Rogue',
@@ -849,6 +851,7 @@ export const srdClasses: DndClass[] = [
     skillProficienciesChoices: 2,
     skillOptions: ['arcana', 'deception', 'insight', 'intimidation', 'persuasion', 'religion'],
     spellcastingAbility: 'charisma',
+    spellPrepType: 'known',
     multiclassing: {
       prerequisites: [{ ability: 'charisma', min: 13 }],
       proficienciesGained: {}
@@ -886,7 +889,6 @@ export const srdClasses: DndClass[] = [
         levelAcquired: 20
       }
     ],
-    slotsPerLevel: [2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20],
     startingEquipment: {
       startingGoldFormula: '3d4 * 10',
       startingGoldAverage: 75,
@@ -910,6 +912,7 @@ export const srdClasses: DndClass[] = [
     skillProficienciesChoices: 2,
     skillOptions: ['arcana', 'deception', 'history', 'intimidation', 'investigation', 'nature', 'religion'],
     spellcastingAbility: 'charisma',
+    spellPrepType: 'known',
     multiclassing: {
       prerequisites: [{ ability: 'charisma', min: 13 }],
       proficienciesGained: {
@@ -956,7 +959,6 @@ export const srdClasses: DndClass[] = [
         levelAcquired: 20
       }
     ],
-    slotsPerLevel: [1, 2, 2, 2, 2, 2, 2, 2, 2, 2, 3, 3, 3, 3, 3, 4, 4, 4, 4, 4],
     startingEquipment: {
       startingGoldFormula: '4d4 * 10',
       startingGoldAverage: 100,
@@ -980,6 +982,7 @@ export const srdClasses: DndClass[] = [
     skillProficienciesChoices: 2,
     skillOptions: ['arcana', 'history', 'insight', 'investigation', 'medicine', 'religion'],
     spellcastingAbility: 'intelligence',
+    spellPrepType: 'known',
     multiclassing: {
       prerequisites: [{ ability: 'intelligence', min: 13 }],
       proficienciesGained: {}
@@ -1017,7 +1020,6 @@ export const srdClasses: DndClass[] = [
         levelAcquired: 20
       }
     ],
-    slotsPerLevel: [3, 4, 4, 4, 4, 4, 5, 5, 5, 5, 6, 6, 6, 6, 7, 7, 7, 7, 8, 8],
     startingEquipment: {
       startingGoldFormula: '4d4 * 10',
       startingGoldAverage: 100,

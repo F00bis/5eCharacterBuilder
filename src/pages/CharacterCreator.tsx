@@ -4,12 +4,14 @@ import type { Step } from '../components/ui/stepper';
 import Stepper from '../components/ui/stepper';
 import { useCharacterBuilder } from '../contexts/CharacterBuilderContextTypes';
 import { getCharacterById } from '../db/characters';
+import { calculateSpellEntitlements } from '../utils/spellCalculations';
 import AbilityScoresStep from './builder/steps/AbilityScoresStep';
 import ClassSelectionStep from './builder/steps/ClassSelectionStep';
 import EquipmentFeatsStep from './builder/steps/EquipmentFeatsStep';
 import RaceBackgroundStep from './builder/steps/RaceBackgroundStep';
 import ProficienciesStep from './builder/steps/ProficienciesStep';
 import ReviewStep from './builder/steps/ReviewStep';
+import SpellSelectionStep from './builder/steps/SpellSelectionStep';
 
 interface CharacterCreatorProps {
   mode: 'create' | 'levelup';
@@ -18,6 +20,16 @@ interface CharacterCreatorProps {
 export default function CharacterCreator({ mode }: CharacterCreatorProps) {
   const { state, dispatch } = useCharacterBuilder();
   const { characterId } = useParams();
+
+  const showSpellSelection = useMemo(() => {
+    const classes = state.draft.classes || [];
+    const subclass = state.draft.subclass;
+    
+    if (classes.length === 0) return false;
+    
+    const entitlements = calculateSpellEntitlements(classes, subclass);
+    return entitlements !== null;
+  }, [state.draft.classes, state.draft.subclass]);
 
   useEffect(() => {
     if (mode === 'create') {
@@ -43,7 +55,7 @@ export default function CharacterCreator({ mode }: CharacterCreatorProps) {
 
   const steps = useMemo<Step[]>(() => {
     if (mode === 'create') {
-      return [
+      const baseSteps = [
         { id: 'race', label: 'Race & Background', isValid: state.stepValidations['race'] ?? false },
         { id: 'abilities', label: 'Ability Scores', isValid: true },
         { id: 'class', label: 'Class', isValid: true },
@@ -51,15 +63,29 @@ export default function CharacterCreator({ mode }: CharacterCreatorProps) {
         { id: 'equipment', label: 'Equipment', isValid: true },
         { id: 'review', label: 'Review', isValid: true },
       ];
+      
+      if (showSpellSelection) {
+        const classIdx = baseSteps.findIndex(s => s.id === 'class');
+        baseSteps.splice(classIdx + 1, 0, { id: 'spells', label: 'Spells', isValid: true });
+      }
+      
+      return baseSteps;
     } else {
-      return [
+      const baseSteps = [
         { id: 'class', label: 'Class & Level', isValid: true },
         { id: 'proficiencies', label: 'Proficiencies', isValid: state.stepValidations['proficiencies'] ?? false },
         { id: 'equipment', label: 'Equipment', isValid: true },
         { id: 'review', label: 'Review', isValid: true },
       ];
+      
+      if (showSpellSelection) {
+        const classIdx = baseSteps.findIndex(s => s.id === 'class');
+        baseSteps.splice(classIdx + 1, 0, { id: 'spells', label: 'Spells', isValid: true });
+      }
+      
+      return baseSteps;
     }
-  }, [mode, state.stepValidations]);
+  }, [mode, state.stepValidations, showSpellSelection]);
 
   const handleNext = () => {
     if (state.currentStep < steps.length - 1) {
@@ -95,6 +121,7 @@ export default function CharacterCreator({ mode }: CharacterCreatorProps) {
         {steps[state.currentStep]?.id === 'race' && <RaceBackgroundStep />}
         {steps[state.currentStep]?.id === 'abilities' && <AbilityScoresStep />}
         {steps[state.currentStep]?.id === 'class' && <ClassSelectionStep />}
+        {steps[state.currentStep]?.id === 'spells' && <SpellSelectionStep isVisible={showSpellSelection} />}
         {steps[state.currentStep]?.id === 'proficiencies' && <ProficienciesStep />}
         {steps[state.currentStep]?.id === 'equipment' && <EquipmentFeatsStep />}
         {steps[state.currentStep]?.id === 'review' && <ReviewStep />}

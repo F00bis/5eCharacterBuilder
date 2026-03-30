@@ -1,7 +1,7 @@
 export type Ability = 'strength' | 'dexterity' | 'constitution' | 'intelligence' | 'wisdom' | 'charisma';
 
-import type { WeaponCategory, WeaponMastery } from './equipment';
 import type { FeatureAction } from './classes';
+import type { WeaponCategory, WeaponMastery } from './equipment';
 import type { DndSpell } from './spells';
 
 export type Skill =
@@ -127,6 +127,7 @@ export interface CharacterBase {
   background: string;
   alignment: string;
   classes: ClassEntry[];
+  subclass?: string;
   raceStatSelections: RaceStatSelection[];
   baseAbilityScores: AbilityScores;
   abilityScores: AbilityScores;
@@ -163,15 +164,13 @@ export interface CharacterBase {
   notes: string;
 }
 
-export interface CharacterBuilderDraft extends CharacterBase {}
-
 export interface Character extends CharacterBase {
   id?: number;
   createdAt: Date;
   updatedAt: Date;
 }
 
-export function createDefaultCharacter(): CharacterBuilderDraft {
+export function createDefaultCharacter(): CharacterBase {
   return {
     name: '',
     race: '',
@@ -222,6 +221,7 @@ export function createDefaultCharacter(): CharacterBuilderDraft {
   };
 }
 
+export type { ActionType, FeatureAction, ResourceDefinition } from './classes';
+export type { ArmorCategory, EquipmentCategory, SrdEquipment, WeaponCategory, WeaponMastery } from './equipment';
 export type { DndSpell, SpellSchool } from './spells';
-export type { SrdEquipment, EquipmentCategory, WeaponCategory, ArmorCategory, WeaponMastery } from './equipment';
-export type { ResourceDefinition, FeatureAction, ActionType } from './classes';
+

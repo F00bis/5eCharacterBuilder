@@ -62,8 +62,7 @@ export interface DndClass {
   features: ClassFeature[];
   resources?: ResourceDefinition[];
   spellcastingAbility?: Ability;
-  spellsKnownPerLevel?: number[];
-  slotsPerLevel?: number[];
+  spellPrepType?: 'prepared' | 'known';
   startingEquipment: StartingEquipment;
   multiclassing?: {
     prerequisites: { ability: Ability; min: number }[];
