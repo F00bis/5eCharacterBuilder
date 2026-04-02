@@ -1,9 +1,14 @@
 import { srdClasses } from '../data/srdClasses';
 import { srdSubclassSpells } from '../data/srdSubclassSpells';
 import { db, type SpellProgression } from '../db';
+import { DEFAULT_SPELL_PROGRESSIONS } from '../db/spellProgressions';
 import type { Ability, ClassEntry } from '../types';
 
 let spellProgressionCache: Map<string, SpellProgression> | null = null;
+
+const defaultProgressionMap = new Map(
+  DEFAULT_SPELL_PROGRESSIONS.map(p => [p.className, p as SpellProgression])
+);
 
 export async function loadSpellProgressions(): Promise<void> {
   const progressions = await db.spellProgressions.toArray();
@@ -11,10 +16,10 @@ export async function loadSpellProgressions(): Promise<void> {
 }
 
 export function getSpellProgression(className: string): SpellProgression | undefined {
-  if (!spellProgressionCache) {
-    throw new Error('Spell progressions not loaded. Call loadSpellProgressions() first.');
+  if (spellProgressionCache) {
+    return spellProgressionCache.get(className);
   }
-  return spellProgressionCache.get(className);
+  return defaultProgressionMap.get(className);
 }
 
 export interface SpellEntitlement {
@@ -38,30 +43,21 @@ export interface SpellEntitlement {
 const WARLOCK_PACT_SLOTS = [1, 1, 2, 2, 2, 2, 2, 2, 2, 2, 3, 3, 3, 3, 3, 4, 4, 4, 4, 4];
 const WARLOCK_PACT_LEVEL = [1, 1, 1, 1, 2, 2, 2, 2, 3, 3, 4, 4, 4, 4, 4, 5, 5, 5, 5, 5];
 
-function getProgressionValue(progression: Record<number, number> | undefined, level: number): number {
+function getCantripsAtLevel(className: string, characterLevel: number): number {
+  const progression = getSpellProgression(className);
+  return progression?.cantripProgression[characterLevel] ?? 0;
+}
+
+function getSpellsKnownAtLevel(className: string, characterLevel: number): number {
+  const progression = getSpellProgression(className);
+  return progression?.spellsKnownProgression[characterLevel] ?? 0;
+}
+
+function getSpellSlotsAtLevel(className: string, characterLevel: number, spellLevel: number): number {
+  const progression = getSpellProgression(className);
   if (!progression) return 0;
-  let result = 0;
-  for (const [progLevel, value] of Object.entries(progression)) {
-    if (parseInt(progLevel) <= level) {
-      result = value;
-    }
-  }
-  return result;
-}
-
-function getCantripsAtLevel(className: string, level: number): number {
-  const progression = getSpellProgression(className);
-  return getProgressionValue(progression?.cantripProgression, level);
-}
-
-function getSpellsKnownAtLevel(className: string, level: number): number {
-  const progression = getSpellProgression(className);
-  return getProgressionValue(progression?.spellsKnownProgression, level);
-}
-
-function getSpellSlotsAtLevel(className: string, spellLevel: number): number {
-  const progression = getSpellProgression(className);
-  return getProgressionValue(progression?.spellSlotProgression, spellLevel);
+  const slotsAtCharacterLevel = progression.spellSlotProgression[characterLevel];
+  return slotsAtCharacterLevel?.[spellLevel] ?? 0;
 }
 
 function getClassSpellData(className: string): { cantrips: number[]; spellsKnown: number[]; spellPrepType: 'prepared' | 'known'; ability: Ability } | null {
@@ -277,7 +273,7 @@ export function getMaxAccessibleSpellLevel(
     const progression = getSpellProgression(primarySpellcastingClass);
     if (progression) {
       for (let spellLevel = 9; spellLevel >= 1; spellLevel--) {
-        if (getSpellSlotsAtLevel(primarySpellcastingClass, spellLevel) > 0) {
+        if (getSpellSlotsAtLevel(primarySpellcastingClass, primarySpellcastingLevel, spellLevel) > 0) {
           return spellLevel;
         }
       }

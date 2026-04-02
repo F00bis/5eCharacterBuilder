@@ -99,15 +99,15 @@ export const srdClasses: DndClass[] = [
         {
           label: 'Choose your weapons:',
           options: [
-            { label: '(a) Greataxe', items: ['Greataxe'] },
-            { label: '(b) Martial Melee Weapon', items: ['Battleaxe', 'Flail', 'Glaive', 'Greatsword', 'Halberd', 'Lance', 'Longsword', 'Maul', 'Morningstar', 'Pike', 'Rapier', 'Scimitar', 'Shortsword', 'Trident', 'Warhammer', 'War Pick', 'Whip'] }
+            { label: '(a) Greataxe', items: ['Greataxe'], type: 'bundle' },
+            { label: '(b) Martial Melee Weapon', type: 'choice', weaponClasses: ['Martial'], weaponForms: ['Melee'] }
           ]
         },
         {
           label: 'Choose your secondary weapons:',
           options: [
-            { label: '(a) Two Handaxes', items: ['Handaxe', 'Handaxe'] },
-            { label: '(b) Simple Weapon', items: ['Club', 'Dagger', 'Greatclub', 'Light Hammer', 'Mace', 'Quarterstaff', 'Sickle', 'Spear', 'Javelin', 'Handaxe'] }
+            { label: '(a) Two Handaxes', items: ['Handaxe', 'Handaxe'], type: 'bundle' },
+            { label: '(b) Simple Weapon', type: 'choice', weaponClasses: ['Simple'] }
           ]
         }
       ],
@@ -191,16 +191,16 @@ export const srdClasses: DndClass[] = [
         {
           label: 'Choose your weapon:',
           options: [
-            { label: '(a) Rapier', items: ['Rapier'] },
-            { label: '(b) Longsword', items: ['Longsword'] },
-            { label: '(c) Simple Weapon', items: ['Club', 'Dagger', 'Greatclub', 'Handaxe', 'Light Hammer', 'Javelin', 'Mace', 'Quarterstaff', 'Sickle', 'Spear'] }
+            { label: '(a) Rapier', items: ['Rapier'], type: 'bundle' },
+            { label: '(b) Longsword', items: ['Longsword'], type: 'bundle' },
+            { label: '(c) Simple Weapon', type: 'choice', weaponClasses: ['Simple'] }
           ]
         },
         {
           label: 'Choose your instrument:',
           options: [
-            { label: '(a) Lute', items: ['Lute'] },
-            { label: '(b) Other Musical Instrument', items: ['Drum', 'Dulcimer', 'Flute', 'Lyre', 'Horn', 'Pan Flute', 'Shawm', 'Viol'] }
+            { label: '(a) Lute', items: ['Lute'], type: 'bundle' },
+            { label: '(b) Other Musical Instrument', type: 'choice', equipmentCategories: ['Musical Instrument'] }
           ]
         }
       ],
@@ -262,8 +262,8 @@ export const srdClasses: DndClass[] = [
         {
           label: 'Choose your weapon:',
           options: [
-            { label: '(a) Mace', items: ['Mace'] },
-            { label: '(b) Warhammer', items: ['Warhammer'] }
+            { label: '(a) Light Crossbow and Bolts', items: ['Light Crossbow', 'Bolts'], type: 'bundle' },
+            { label: '(b) Simple Weapon', type: 'choice', weaponCategories: ['Simple Melee', 'Simple Ranged'] }
           ]
         }
       ],
@@ -335,8 +335,8 @@ export const srdClasses: DndClass[] = [
         {
           label: 'Choose your weapon:',
           options: [
-            { label: '(a) Scimitar', items: ['Scimitar'] },
-            { label: '(b) Simple Melee Weapon (non-metal)', items: ['Club', 'Dagger', 'Greatclub', 'Light Hammer', 'Quarterstaff', 'Sickle', 'Spear'] }
+            { label: '(a) Scimitar', items: ['Scimitar'], type: 'bundle' },
+            { label: '(b) Simple Melee Weapon (non-metal)', items: ['Club', 'Dagger', 'Greatclub', 'Light Hammer', 'Quarterstaff', 'Sickle', 'Spear'], type: 'choice' }
           ]
         }
       ],
@@ -403,15 +403,15 @@ export const srdClasses: DndClass[] = [
         {
           label: 'Choose your armor:',
           options: [
-            { label: '(a) Chain Mail', items: ['Chain Mail'] },
-            { label: '(b) Leather Armor, Longbow, and Arrows', items: ['Leather Armor', 'Longbow', 'Arrows'] }
+            { label: '(a) Chain Mail', items: ['Chain Mail'], type: 'bundle' },
+            { label: '(b) Leather Armor, Longbow, and Arrows', items: ['Leather Armor', 'Longbow', 'Arrows'], type: 'bundle' }
           ]
         },
         {
           label: 'Choose your weapon:',
           options: [
-            { label: '(a) Martial Weapon and Shield', items: ['Battleaxe', 'Flail', 'Glaive', 'Greataxe', 'Greatsword', 'Halberd', 'Lance', 'Longsword', 'Maul', 'Morningstar', 'Pike', 'Rapier', 'Scimitar', 'Shortsword', 'Trident', 'Warhammer', 'War Pick', 'Whip', 'Shield'] },
-            { label: '(b) Two Martial Weapons', items: ['Battleaxe', 'Flail', 'Glaive', 'Greataxe', 'Greatsword', 'Halberd', 'Lance', 'Longsword', 'Maul', 'Morningstar', 'Pike', 'Rapier', 'Scimitar', 'Shortsword', 'Trident', 'Warhammer', 'War Pick', 'Whip'] }
+            { label: '(a) Martial Weapon and Shield', type: 'choice', weaponClasses: ['Martial'] },
+            { label: '(b) Two Martial Weapons', type: 'choice', weaponClasses: ['Martial'] }
           ]
         }
       ],
@@ -536,8 +536,8 @@ export const srdClasses: DndClass[] = [
         {
           label: 'Choose your weapon:',
           options: [
-            { label: '(a) Shortsword', items: ['Shortsword'] },
-            { label: '(b) Simple Weapon', items: ['Club', 'Dagger', 'Greatclub', 'Handaxe', 'Light Hammer', 'Javelin', 'Mace', 'Quarterstaff', 'Sickle', 'Spear'] }
+            { label: '(a) Shortsword', items: ['Shortsword'], type: 'bundle' },
+            { label: '(b) Simple Weapon', type: 'choice', weaponClasses: ['Simple'] }
           ]
         }
       ],
@@ -631,8 +631,8 @@ export const srdClasses: DndClass[] = [
         {
           label: 'Choose your weapon:',
           options: [
-            { label: '(a) Martial Weapon and Shield', items: ['Battleaxe', 'Flail', 'Glaive', 'Greataxe', 'Greatsword', 'Halberd', 'Lance', 'Longsword', 'Maul', 'Morningstar', 'Pike', 'Rapier', 'Scimitar', 'Shortsword', 'Trident', 'Warhammer', 'War Pick', 'Whip', 'Shield'] },
-            { label: '(b) Two Martial Weapons', items: ['Battleaxe', 'Flail', 'Glaive', 'Greataxe', 'Greatsword', 'Halberd', 'Lance', 'Longsword', 'Maul', 'Morningstar', 'Pike', 'Rapier', 'Scimitar', 'Shortsword', 'Trident', 'Warhammer', 'War Pick', 'Whip'] }
+            { label: '(a) Martial Weapon and Shield', type: 'choice', weaponClasses: ['Martial'] },
+            { label: '(b) Two Martial Weapons', type: 'choice', weaponClasses: ['Martial'] }
           ]
         }
       ],
@@ -727,15 +727,15 @@ export const srdClasses: DndClass[] = [
         {
           label: 'Choose your armor:',
           options: [
-            { label: '(a) Scale Mail', items: ['Scale Mail'] },
-            { label: '(b) Leather Armor', items: ['Leather Armor'] }
+            { label: '(a) Scale Mail', items: ['Scale Mail'], type: 'bundle' },
+            { label: '(b) Leather Armor', items: ['Leather Armor'], type: 'bundle' }
           ]
         },
         {
           label: 'Choose your weapons:',
           options: [
-            { label: '(a) Two Shortswords', items: ['Shortsword', 'Shortsword'] },
-            { label: '(b) Two Simple Melee Weapons', items: ['Club', 'Dagger', 'Greatclub', 'Handaxe', 'Light Hammer', 'Javelin', 'Mace', 'Quarterstaff', 'Sickle', 'Spear'] }
+            { label: '(a) Two Shortswords', items: ['Shortsword', 'Shortsword'], type: 'bundle' },
+            { label: '(b) Two Simple Melee Weapons', type: 'choice', weaponClasses: ['Simple'], weaponForms: ['Melee'] }
           ]
         }
       ],
@@ -835,8 +835,8 @@ export const srdClasses: DndClass[] = [
         {
           label: 'Choose your weapon:',
           options: [
-            { label: '(a) Rapier', items: ['Rapier'] },
-            { label: '(b) Shortsword', items: ['Shortsword'] }
+            { label: '(a) Rapier', items: ['Rapier'], type: 'bundle' },
+            { label: '(b) Shortsword', items: ['Shortsword'], type: 'bundle' }
           ]
         }
       ],
@@ -896,8 +896,8 @@ export const srdClasses: DndClass[] = [
         {
           label: 'Choose your weapon:',
           options: [
-            { label: '(a) Light Crossbow and Bolts', items: ['Light Crossbow', 'Bolts'] },
-            { label: '(b) Simple Weapon', items: ['Club', 'Dagger', 'Greatclub', 'Handaxe', 'Light Hammer', 'Javelin', 'Mace', 'Quarterstaff', 'Sickle', 'Spear'] }
+            { label: '(a) Light Crossbow and Bolts', items: ['Light Crossbow', 'Bolts'], type: 'bundle' },
+            { label: '(b) Simple Weapon', type: 'choice', weaponClasses: ['Simple'] }
           ]
         }
       ],
@@ -966,8 +966,8 @@ export const srdClasses: DndClass[] = [
         {
           label: 'Choose your weapon:',
           options: [
-            { label: '(a) Light Crossbow and Bolts', items: ['Light Crossbow', 'Bolts'] },
-            { label: '(b) Simple Weapon', items: ['Club', 'Dagger', 'Greatclub', 'Handaxe', 'Light Hammer', 'Javelin', 'Mace', 'Quarterstaff', 'Sickle', 'Spear'] }
+            { label: '(a) Light Crossbow and Bolts', items: ['Light Crossbow', 'Bolts'], type: 'bundle' },
+            { label: '(b) Simple Weapon', type: 'choice', weaponClasses: ['Simple'] }
           ]
         }
       ],
@@ -1027,8 +1027,8 @@ export const srdClasses: DndClass[] = [
         {
           label: 'Choose your weapon:',
           options: [
-            { label: '(a) Quarterstaff', items: ['Quarterstaff'] },
-            { label: '(b) Dagger', items: ['Dagger'] }
+            { label: '(a) Quarterstaff', items: ['Quarterstaff'], type: 'bundle' },
+            { label: '(b) Dagger', items: ['Dagger'], type: 'bundle' }
           ]
         }
       ],

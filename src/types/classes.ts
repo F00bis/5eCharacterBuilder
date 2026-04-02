@@ -1,10 +1,20 @@
 import type { Ability } from './index';
+import type { WeaponCategory, ArmorCategory, EquipmentCategory, WeaponClass, WeaponForm, WeaponProperty } from './equipment';
 
 export interface StartingEquipmentOption {
   label: string;
   options: {
     label: string;
-    items: string[];
+    items?: string[];
+    type: 'bundle' | 'choice';
+    // Legacy fields (backward compatibility)
+    weaponCategories?: WeaponCategory[];
+    armorCategories?: ArmorCategory[];
+    equipmentCategories?: EquipmentCategory[];
+    // New tag-based query fields
+    weaponClasses?: WeaponClass[];
+    weaponForms?: WeaponForm[];
+    weaponProperties?: WeaponProperty[];
   }[];
 }
 

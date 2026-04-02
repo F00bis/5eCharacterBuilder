@@ -1,7 +1,7 @@
 export type Ability = 'strength' | 'dexterity' | 'constitution' | 'intelligence' | 'wisdom' | 'charisma';
 
 import type { FeatureAction } from './classes';
-import type { WeaponCategory, WeaponMastery } from './equipment';
+import type { WeaponCategory, WeaponMastery, WeaponClass, WeaponForm, WeaponProperty } from './equipment';
 import type { DndSpell } from './spells';
 
 export type Skill =
@@ -80,7 +80,12 @@ export interface Equipment {
   armorCategory?: 'Light' | 'Medium' | 'Heavy' | 'Shield';
   armorClass?: number;
   equipped?: boolean;
+  // Legacy weapon category (backward compatibility)
   weaponCategory?: WeaponCategory;
+  // New weapon tagging system
+  weaponClass?: WeaponClass;
+  weaponForm?: WeaponForm;
+  weaponProperties?: WeaponProperty[];
   damage?: string;
   properties?: string[];
   mastery?: WeaponMastery;

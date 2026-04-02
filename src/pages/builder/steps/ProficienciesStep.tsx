@@ -1,9 +1,9 @@
-import { useMemo, useState, useEffect } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useCharacterBuilder } from '../../../contexts/CharacterBuilderContextTypes';
 import { srdClasses } from '../../../data/srdClasses';
-import { SKILL_DISPLAY_NAMES, SKILL_ABILITY_MAP } from '../../../utils/skills';
 import type { Skill, SkillProficiency } from '../../../types';
 import type { DndClass } from '../../../types/classes';
+import { SKILL_ABILITY_MAP, SKILL_DISPLAY_NAMES } from '../../../utils/skills';
 
 interface FreeChoice {
   id: number;
@@ -116,8 +116,11 @@ export default function ProficienciesStep() {
       .map(s => s.skill);
   }, [currentClassSkills, effectiveClassName]);
 
-  const lockedCount = Math.min(lockedSkills.size, skillChoicesCount);
-  const remainingChoices = skillChoicesCount - lockedCount;
+  const userSelectedClassSkills = useMemo(() => {
+    return effectiveClassNameSkills.filter(skill => !lockedSkills.has(skill));
+  }, [effectiveClassNameSkills, lockedSkills]);
+
+  const remainingChoices = skillChoicesCount;
 
   const freeChoices = useMemo<FreeChoice[]>(() => {
     const choices: FreeChoice[] = [];
@@ -153,7 +156,7 @@ export default function ProficienciesStep() {
         source: `Class: ${effectiveClassName}`,
       });
     } else {
-      if (effectiveClassNameSkills.length >= remainingChoices) return;
+      if (userSelectedClassSkills.length >= skillChoicesCount) return;
       dispatch({
         type: 'ADD_ITEM_WITH_SOURCE',
         listName: 'skills',
@@ -222,14 +225,13 @@ export default function ProficienciesStep() {
   ];
 
   const availableFreeChoiceSkills = allSkills.filter(skill => 
-    !nonClassSkills.includes(skill) && !effectiveClassNameSkills.includes(skill)
+    !effectiveClassNameSkills.includes(skill)
   );
 
   const isValid = useMemo(() => {
     if (!classData) return false;
     
-    const classSkillCount = effectiveClassNameSkills.length;
-    if (classSkillCount < skillChoicesCount - remainingChoices) return false;
+    if (userSelectedClassSkills.length < skillChoicesCount) return false;
     
     const freeChoicesFilled = freeChoices.every(choice => choice.skill !== null);
     if (freeChoices.length > 0 && !freeChoicesFilled) return false;
@@ -241,9 +243,8 @@ export default function ProficienciesStep() {
     return true;
   }, [
     classData, 
-    effectiveClassNameSkills.length, 
+    userSelectedClassSkills.length, 
     skillChoicesCount, 
-    remainingChoices, 
     freeChoices, 
     hasExpertise, 
     expertiseSelections.length, 
@@ -279,7 +280,7 @@ export default function ProficienciesStep() {
 
   return (
     <div className="h-full overflow-y-auto pr-2 space-y-6">
-      <div className="flex justify-between items-center flex-shrink-0">
+      <div className="flex justify-between items-center shrink-0">
         <h2 className="text-xl font-bold">Proficiencies & Skills</h2>
         <select 
           className="border-slate-300 rounded-md shadow-sm focus:border-purple-500 focus:ring-purple-500 p-2 border"
@@ -332,7 +333,7 @@ export default function ProficienciesStep() {
         <>
           <div className="bg-white border border-slate-200 rounded-lg p-6">
             <h3 className="font-semibold text-lg mb-3">
-              Choose {skillChoicesCount - remainingChoices} skill{remainingChoices !== 1 ? 's' : ''} from:
+              Choose {remainingChoices} skill{remainingChoices !== 1 ? 's' : ''} from:
             </h3>
             <p className="text-sm text-slate-500 mb-4">
               {availableSkillsForClass.map(s => SKILL_DISPLAY_NAMES[s]).join(', ')}
@@ -341,18 +342,18 @@ export default function ProficienciesStep() {
             <div className="grid grid-cols-2 md:grid-cols-3 gap-2 mb-4">
               {availableSkillsForClass.map(skill => {
                 const isLocked = lockedSkills.has(skill);
-                const isSelected = effectiveClassNameSkills.includes(skill);
+                const isUserSelected = userSelectedClassSkills.includes(skill);
                 
                 return (
                   <button
                     key={skill}
-                    data-state={isLocked ? 'locked' : isSelected ? 'selected' : 'available'}
+                    data-state={isLocked ? 'locked' : isUserSelected ? 'selected' : 'available'}
                     onClick={() => handleSkillToggle(skill)}
                     disabled={isLocked}
                     className={`px-3 py-2 rounded text-sm font-medium transition-colors ${
                       isLocked 
                         ? 'bg-slate-200 text-slate-400 cursor-not-allowed'
-                        : isSelected 
+                        : isUserSelected 
                           ? 'bg-green-600 text-white hover:bg-green-700'
                           : 'bg-slate-100 text-slate-700 hover:bg-slate-200'
                     }`}
@@ -360,7 +361,7 @@ export default function ProficienciesStep() {
                     <div className="flex items-center justify-between">
                       <span>{SKILL_DISPLAY_NAMES[skill]}</span>
                       {isLocked && <span className="text-xs opacity-50">Known</span>}
-                      {isSelected && !isLocked && <span className="text-xs">✓</span>}
+                      {isUserSelected && !isLocked && <span className="text-xs">✓</span>}
                     </div>
                   </button>
                 );
@@ -368,7 +369,7 @@ export default function ProficienciesStep() {
             </div>
             
             <div className="text-sm text-slate-600">
-              {effectiveClassNameSkills.length}/{skillChoicesCount - remainingChoices} selected
+              {effectiveClassNameSkills.length}/{remainingChoices} selected
             </div>
           </div>
 
@@ -450,7 +451,7 @@ export default function ProficienciesStep() {
       <div className="bg-green-50 border border-green-200 rounded-lg p-4">
         <h4 className="font-semibold text-green-800 mb-2">Selection Summary</h4>
         <ul className="text-sm text-green-700 space-y-1">
-          <li>Class Skills: {effectiveClassNameSkills.length}/{skillChoicesCount - remainingChoices}</li>
+          <li>Class Skills: {userSelectedClassSkills.length}/{remainingChoices}</li>
           {remainingChoices > 0 && (
             <li>Free Choices: {freeChoices.filter(c => c.skill).length}/{remainingChoices}</li>
           )}

@@ -1,11 +1,12 @@
-import { useState, useMemo, useEffect, useCallback } from 'react';
-import { useCharacterBuilder } from '../../../contexts/CharacterBuilderContextTypes';
-import { getAllEquipment } from '../../../db/equipment';
-import { getClassByName } from '../../../db/classes';
 import { Combobox } from '@/components/ui/combobox';
-import type { Equipment } from '../../../types';
-import type { SrdEquipment } from '../../../types/equipment';
 import { TooltipProvider } from '@/components/ui/tooltip';
+import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCharacterBuilder } from '../../../contexts/CharacterBuilderContextTypes';
+import { getClassByName } from '../../../db/classes';
+import { getAllEquipment } from '../../../db/equipment';
+import type { Equipment } from '../../../types';
+import type { StartingEquipmentOption } from '../../../types/classes';
+import type { SrdEquipment } from '../../../types/equipment';
 
 interface EquipmentPackagesProps {
   currentClassName: string;
@@ -50,6 +51,65 @@ export default function EquipmentPackages({ currentClassName, isLevel1 }: Equipm
       result.push({ name: itemName, isPack: false });
     });
     return result;
+  }, []);
+
+  const getOptionItems = useCallback((
+    option: StartingEquipmentOption['options'][0],
+    equipmentData: SrdEquipment[]
+  ): string[] => {
+    // 1. Check new tag-based fields first (priority)
+    if (option.weaponClasses || option.weaponForms || option.weaponProperties) {
+      return equipmentData
+        .filter(eq => {
+          // Must be a weapon
+          if (eq.equipmentCategory !== 'Weapon') return false;
+          
+          // Check weaponClasses
+          if (option.weaponClasses?.length && eq.weaponClass) {
+            if (!option.weaponClasses.includes(eq.weaponClass)) return false;
+          }
+          
+          // Check weaponForms
+          if (option.weaponForms?.length && eq.weaponForm) {
+            if (!option.weaponForms.includes(eq.weaponForm)) return false;
+          }
+          
+          // Check weaponProperties (AND logic - must have ALL properties)
+          if (option.weaponProperties?.length && eq.weaponProperties) {
+            if (!option.weaponProperties.every(p => eq.weaponProperties!.includes(p))) return false;
+          }
+          
+          return true;
+        })
+        .map(eq => eq.name);
+    }
+    
+    // 2. Fall back to legacy weaponCategories (backward compatibility)
+    if (option.weaponCategories && option.weaponCategories.length > 0) {
+      const categorySet = new Set(option.weaponCategories);
+      return equipmentData
+        .filter(e => e.equipmentCategory === 'Weapon' && e.weaponCategory && categorySet.has(e.weaponCategory))
+        .map(e => e.name);
+    }
+    
+    // 3. Check armorCategories
+    if (option.armorCategories && option.armorCategories.length > 0) {
+      const categorySet = new Set(option.armorCategories);
+      return equipmentData
+        .filter(e => e.equipmentCategory === 'Armor' && e.armorCategory && categorySet.has(e.armorCategory))
+        .map(e => e.name);
+    }
+    
+    // 4. Check equipmentCategories
+    if (option.equipmentCategories && option.equipmentCategories.length > 0) {
+      const categorySet = new Set(option.equipmentCategories);
+      return equipmentData
+        .filter(e => e.equipmentCategory && categorySet.has(e.equipmentCategory))
+        .map(e => e.name);
+    }
+    
+    // 5. Fall back to explicit items array
+    return option.items || [];
   }, []);
 
   const handleEquipmentChoice = useCallback((choiceIdx: number, optionIdx: number) => {
@@ -126,18 +186,25 @@ export default function EquipmentPackages({ currentClassName, isLevel1 }: Equipm
     classEquipment.choices.forEach((choice, choiceIdx) => {
       const selectedOptionIdx = equipmentChoices[choiceIdx];
       if (selectedOptionIdx !== undefined && choice.options[selectedOptionIdx]) {
-        const selectionKey = `${choiceIdx}-${selectedOptionIdx}`;
         const option = choice.options[selectedOptionIdx];
+        const optionItems = getOptionItems(option, shopItems);
         
-        const selectableItems = getSelectableItems(option.items, shopItems);
-        const selectedItem = itemSelections[selectionKey];
-        
-        if (selectedItem) {
-          addEquipmentItem(selectedItem);
-        } else if (selectableItems.length > 0) {
-          selectableItems.forEach(item => {
-            addEquipmentItem(item.name);
+        if (option.type === 'bundle') {
+          optionItems.forEach(itemName => {
+            addEquipmentItem(itemName);
           });
+        } else {
+          const selectableItems = getSelectableItems(optionItems, shopItems);
+          const selectionKey = `${choiceIdx}-${selectedOptionIdx}`;
+          const selectedItem = itemSelections[selectionKey];
+          
+          if (selectedItem) {
+            addEquipmentItem(selectedItem);
+          } else if (selectableItems.length > 0) {
+            selectableItems.forEach(item => {
+              addEquipmentItem(item.name);
+            });
+          }
         }
       }
     });
@@ -158,33 +225,40 @@ export default function EquipmentPackages({ currentClassName, isLevel1 }: Equipm
     
     classEquipment.choices.forEach((choice, choiceIdx) => {
       choice.options.forEach((option, optionIdx) => {
-        const selectableItems = getSelectableItems(option.items, shopItems);
+        const optionItems = getOptionItems(option, shopItems);
+        const selectableItems = getSelectableItems(optionItems, shopItems);
         const selectionKey = `${choiceIdx}-${optionIdx}`;
         
         const draftItemNames = draftEquipment.map(e => e.name);
-        const optionItemNames = selectableItems.map(i => i.name);
         
-        const matches = optionItemNames.filter(name => draftItemNames.includes(name));
-        if (matches.length > 0) {
-          newEquipmentChoices[choiceIdx] = optionIdx;
-          if (selectableItems.length > 1) {
-            newItemSelections[selectionKey] = matches[0];
+        if (option.type === 'bundle') {
+          const allBundleItemsPresent = optionItems.every(itemName => 
+            draftItemNames.includes(itemName)
+          );
+          if (allBundleItemsPresent) {
+            newEquipmentChoices[choiceIdx] = optionIdx;
+          }
+        } else {
+          const optionItemNames = selectableItems.map(i => i.name);
+          const matches = optionItemNames.filter(name => draftItemNames.includes(name));
+          if (matches.length > 0) {
+            newEquipmentChoices[choiceIdx] = optionIdx;
+            if (selectableItems.length > 1) {
+              newItemSelections[selectionKey] = matches[0];
+            }
           }
         }
       });
     });
     
-    if (Object.keys(newEquipmentChoices).length > 0) {
-      setEquipmentChoices(prev => {
-        if (Object.keys(prev).length > 0) return prev;
-        return newEquipmentChoices;
-      });
-      setItemSelections(prev => {
-        if (Object.keys(prev).length > 0) return prev;
-        return newItemSelections;
-      });
+    if (Object.keys(newEquipmentChoices).length > 0 && Object.keys(equipmentChoices).length === 0) {
+      const timeoutId = window.setTimeout(() => {
+        setEquipmentChoices(newEquipmentChoices);
+        setItemSelections(newItemSelections);
+      }, 0);
+      return () => window.clearTimeout(timeoutId);
     }
-  }, [classEquipment, shopItems.length, isLevel1, state.draft.equipment, getSelectableItems]);
+  }, [classEquipment, shopItems.length, isLevel1, state.draft.equipment, getOptionItems, getSelectableItems, equipmentChoices]);
 
   // Add equipment to draft when all selections are complete
   const isValid = useMemo(() => {
@@ -196,15 +270,18 @@ export default function EquipmentPackages({ currentClassName, isLevel1 }: Equipm
       if (selectedOptionIdx === undefined) return false;
       
       const option = choice.options[selectedOptionIdx];
-      const selectableItems = getSelectableItems(option.items, shopItems);
       
-      if (selectableItems.length > 0 && !itemSelections[`${choiceIdx}-${selectedOptionIdx}`]) {
-        return false;
+      if (option.type === 'choice') {
+        const optionItems = getOptionItems(option, shopItems);
+        const selectableItems = getSelectableItems(optionItems, shopItems);
+        if (selectableItems.length > 0 && !itemSelections[`${choiceIdx}-${selectedOptionIdx}`]) {
+          return false;
+        }
       }
       
       return true;
     });
-  }, [isLevel1, classEquipment, shopItems.length, equipmentChoices, itemSelections, getSelectableItems]);
+  }, [isLevel1, classEquipment, shopItems, equipmentChoices, itemSelections, getSelectableItems]);
 
   useEffect(() => {
     if (isValid && isLevel1 && classEquipment && shopItems.length > 0) {
@@ -232,8 +309,10 @@ export default function EquipmentPackages({ currentClassName, isLevel1 }: Equipm
               {choice.options.map((option, optionIdx) => {
                 const selectionKey = `${choiceIdx}-${optionIdx}`;
                 const isSelected = equipmentChoices[choiceIdx] === optionIdx;
-                const selectableItems = getSelectableItems(option.items, shopItems);
+                const optionItems = getOptionItems(option, shopItems);
+                const selectableItems = getSelectableItems(optionItems, shopItems);
                 const hasSelectableItems = selectableItems.length > 0;
+                const isBundle = option.type === 'bundle';
 
                 return (
                   <div key={optionIdx}>
@@ -254,7 +333,7 @@ export default function EquipmentPackages({ currentClassName, isLevel1 }: Equipm
                       <span>{option.label}</span>
                     </label>
                     
-                    {isSelected && hasSelectableItems && (
+                    {isSelected && hasSelectableItems && !isBundle && (
                       <div className="ml-6 mt-2">
                         <label className="text-sm text-slate-600 mb-1 block">
                           Select Item:
@@ -277,6 +356,17 @@ export default function EquipmentPackages({ currentClassName, isLevel1 }: Equipm
                           }))}
                           placeholder="Select an item..."
                         />
+                      </div>
+                    )}
+                    
+                    {isSelected && isBundle && (
+                      <div className="ml-6 mt-2 text-sm text-slate-600">
+                        <span className="font-medium">You will receive:</span>
+                        <ul className="list-disc list-inside mt-1">
+                          {optionItems.map((itemName, idx) => (
+                            <li key={idx}>{itemName}</li>
+                          ))}
+                        </ul>
                       </div>
                     )}
                   </div>

@@ -31,7 +31,7 @@ export class CharacterDatabase extends Dexie {
       classes: 'name',
       races: 'id, name',
       spells: 'name, level, school, *classes',
-      equipment: 'name, equipmentCategory, weaponCategory, armorCategory',
+      equipment: 'name, equipmentCategory, weaponCategory, weaponClass, weaponForm, armorCategory',
       feats: '++id, &name, prerequisite, isSRD',
       customStatusEffects: 'id, name, category',
       spellProgressions: '++id, className, isCustom'
