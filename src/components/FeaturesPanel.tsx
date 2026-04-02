@@ -8,12 +8,14 @@ const SOURCE_COLORS: Record<string, string> = {
   race: 'bg-orange-100 text-orange-800',
   class: 'bg-green-100 text-green-800',
   feat: 'bg-purple-100 text-purple-800',
+  background: 'bg-blue-100 text-blue-800',
+  language: 'bg-cyan-100 text-cyan-800',
 };
 
 interface FeatureRowProps {
   name: string;
   description: string;
-  source: 'race' | 'class' | 'feat';
+  source: 'race' | 'class' | 'feat' | 'background' | 'language';
   sourceDetail: string;
 }
 
@@ -38,7 +40,7 @@ function FeatureSection({
   features,
 }: {
   title: string;
-  features: { name: string; description: string; source: 'race' | 'class' | 'feat'; sourceDetail: string }[];
+  features: { name: string; description: string; source: 'race' | 'class' | 'feat' | 'background' | 'language'; sourceDetail: string }[];
 }) {
   if (features.length === 0) return null;
 
@@ -50,6 +52,28 @@ function FeatureSection({
       <div className="space-y-1">
         {features.map((feature, index) => (
           <FeatureRow key={`${feature.source}-${index}`} {...feature} />
+        ))}
+      </div>
+    </div>
+  );
+}
+
+function LanguageSection({ languages }: { languages: string[] }) {
+  if (languages.length === 0) return null;
+
+  return (
+    <div className="mb-3">
+      <h3 className="text-xs font-bold uppercase tracking-wide text-slate-500 mb-2 px-1">
+        Languages
+      </h3>
+      <div className="flex flex-wrap gap-1 px-1">
+        {languages.map(lang => (
+          <span
+            key={lang}
+            className={`px-1.5 py-0.5 rounded text-[10px] ${SOURCE_COLORS['language']}`}
+          >
+            {lang}
+          </span>
         ))}
       </div>
     </div>
@@ -95,12 +119,23 @@ export function FeaturesPanel(_props: FeaturesPanelProps) {
           <div className="text-xs text-slate-400 text-center py-4">Loading...</div>
         ) : (
           <>
+            {features && features.languages.length > 0 && (
+              <LanguageSection languages={features.languages} />
+            )}
+
             {features && features.raceFeatures.features.length > 0 && (
               <FeatureSection
                 title={`${features.raceFeatures.raceName} Features`}
                 features={features.raceFeatures.features.map((f) => ({
                   ...f,
                 }))}
+              />
+            )}
+
+            {features && features.backgroundFeatures.features.length > 0 && (
+              <FeatureSection
+                title={`${features.backgroundFeatures.backgroundName} Features`}
+                features={features.backgroundFeatures.features}
               />
             )}
 
@@ -119,8 +154,10 @@ export function FeaturesPanel(_props: FeaturesPanelProps) {
 
             {features &&
               features.raceFeatures.features.length === 0 &&
+              features.backgroundFeatures.features.length === 0 &&
               features.classFeatures.length === 0 &&
-              features.featFeatures.length === 0 && (
+              features.featFeatures.length === 0 &&
+              features.languages.length === 0 && (
                 <div className="text-xs text-slate-400 text-center py-4">
                   No features
                 </div>

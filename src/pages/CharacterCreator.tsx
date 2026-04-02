@@ -8,10 +8,11 @@ import { calculateSpellEntitlements } from '../utils/spellCalculations';
 import AbilityScoresStep from './builder/steps/AbilityScoresStep';
 import ClassSelectionStep from './builder/steps/ClassSelectionStep';
 import EquipmentFeatsStep from './builder/steps/EquipmentFeatsStep';
-import RaceBackgroundStep from './builder/steps/RaceBackgroundStep';
+import RaceStep from './builder/steps/RaceStep';
 import ProficienciesStep from './builder/steps/ProficienciesStep';
 import ReviewStep from './builder/steps/ReviewStep';
 import SpellSelectionStep from './builder/steps/SpellSelectionStep';
+import BackgroundStep from './builder/steps/BackgroundStep';
 
 interface CharacterCreatorProps {
   mode: 'create' | 'levelup';
@@ -56,19 +57,20 @@ export default function CharacterCreator({ mode }: CharacterCreatorProps) {
   const steps = useMemo<Step[]>(() => {
     if (mode === 'create') {
       const baseSteps = [
-        { id: 'race', label: 'Race & Background', isValid: state.stepValidations['race'] ?? false },
+        { id: 'race', label: 'Race', isValid: state.stepValidations['race'] ?? false },
+        { id: 'background', label: 'Background', isValid: state.stepValidations['background'] ?? false },
         { id: 'abilities', label: 'Ability Scores', isValid: true },
         { id: 'class', label: 'Class', isValid: true },
         { id: 'proficiencies', label: 'Proficiencies', isValid: state.stepValidations['proficiencies'] ?? false },
         { id: 'equipment', label: 'Equipment', isValid: true },
         { id: 'review', label: 'Review', isValid: true },
       ];
-      
+
       if (showSpellSelection) {
         const classIdx = baseSteps.findIndex(s => s.id === 'class');
         baseSteps.splice(classIdx + 1, 0, { id: 'spells', label: 'Spells', isValid: true });
       }
-      
+
       return baseSteps;
     } else {
       const baseSteps = [
@@ -77,12 +79,12 @@ export default function CharacterCreator({ mode }: CharacterCreatorProps) {
         { id: 'equipment', label: 'Equipment', isValid: true },
         { id: 'review', label: 'Review', isValid: true },
       ];
-      
+
       if (showSpellSelection) {
         const classIdx = baseSteps.findIndex(s => s.id === 'class');
         baseSteps.splice(classIdx + 1, 0, { id: 'spells', label: 'Spells', isValid: true });
       }
-      
+
       return baseSteps;
     }
   }, [mode, state.stepValidations, showSpellSelection]);
@@ -117,8 +119,9 @@ export default function CharacterCreator({ mode }: CharacterCreatorProps) {
         />
       </div>
 
-      <div className="mt-8 bg-slate-50 border border-slate-200 rounded-lg p-8 h-[600px]">
-        {steps[state.currentStep]?.id === 'race' && <RaceBackgroundStep />}
+      <div className="mt-8 bg-slate-50 border border-slate-200 rounded-lg p-8 h-[600px] overflow-hidden">
+        {steps[state.currentStep]?.id === 'race' && <RaceStep />}
+        {steps[state.currentStep]?.id === 'background' && <BackgroundStep />}
         {steps[state.currentStep]?.id === 'abilities' && <AbilityScoresStep />}
         {steps[state.currentStep]?.id === 'class' && <ClassSelectionStep />}
         {steps[state.currentStep]?.id === 'spells' && <SpellSelectionStep isVisible={showSpellSelection} />}

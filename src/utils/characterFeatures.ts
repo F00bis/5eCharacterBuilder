@@ -3,15 +3,17 @@ import type { Character, Feat } from '../types';
 export interface DisplayFeature {
   name: string;
   description: string;
-  source: 'race' | 'class' | 'feat';
+  source: 'race' | 'class' | 'feat' | 'background' | 'language';
   sourceDetail: string;
   levelAcquired?: number;
 }
 
 export interface GroupedFeatures {
   raceFeatures: { raceName: string; features: DisplayFeature[] };
+  backgroundFeatures: { backgroundName: string; features: DisplayFeature[] };
   classFeatures: { className: string; features: DisplayFeature[] }[];
   featFeatures: DisplayFeature[];
+  languages: string[];
 }
 
 function mapRaceFeature(
@@ -54,8 +56,10 @@ function mapFeatFeature(feat: Feat): DisplayFeature {
 export async function getCharacterFeatures(character: Character): Promise<GroupedFeatures> {
   const result: GroupedFeatures = {
     raceFeatures: { raceName: '', features: [] },
+    backgroundFeatures: { backgroundName: '', features: [] },
     classFeatures: [],
     featFeatures: [],
+    languages: character.languages || [],
   };
 
   // Get race features
@@ -108,6 +112,30 @@ export async function getCharacterFeatures(character: Character): Promise<Groupe
     }
   } catch {
     // Race not found, skip
+  }
+
+  // Get background features
+  try {
+    const { srdBackgrounds } = await import('../data/srdBackgrounds');
+    const background = srdBackgrounds.find(b => b.name === character.background);
+
+    if (background && background.features) {
+      const bgFeatureList: DisplayFeature[] = [];
+      for (const feature of background.features) {
+        bgFeatureList.push({
+          name: feature.name,
+          description: feature.description,
+          source: 'background',
+          sourceDetail: background.name,
+        });
+      }
+      result.backgroundFeatures = {
+        backgroundName: background.name,
+        features: bgFeatureList,
+      };
+    }
+  } catch {
+    // Background not found, skip
   }
 
   // Get class features (filtered by level)

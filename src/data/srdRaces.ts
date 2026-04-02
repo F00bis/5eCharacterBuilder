@@ -1,5 +1,29 @@
 import type { DndRace } from '../types/races';
 
+const DRACONIC_ANCESTRIES = [
+  'Black', 'Blue', 'Brass', 'Bronze', 'Copper', 'Gold', 'Green', 'Red', 'Silver', 'White'
+];
+
+const ALL_SKILLS = [
+  'athletics', 'acrobatics', 'sleightOfHand', 'stealth', 'arcana', 'history',
+  'investigation', 'medicine', 'nature', 'religion', 'animalHandling', 'insight',
+  'perception', 'survival', 'deception', 'intimidation', 'performance', 'persuasion'
+];
+
+const ALL_LANGUAGES = [
+  'Common', 'Dwarvish', 'Elvish', 'Giant', 'Gnomish', 'Goblin',
+  'Halfling', 'Orc', 'Abyssal', 'Celestial', 'Draconic', 'Deep Speech',
+  'Infernal', 'Primordial', 'Sylvan', 'Undercommon'
+];
+
+const WIZARD_CANTRIPS = [
+  'acid splash', 'blade ward', 'booming blade', 'chill touch', 'control flames',
+  'dancing lights', 'drench', 'fire bolt', 'friends', 'gust', 'infestation',
+  'light', 'mage hand', 'mending', 'message', 'minor illusion', 'mind sliver',
+  'poison spray', 'prestidigitation', 'ray of frost', 'shape water', 'shocking grasp',
+  'sword burst', 'thorn whip', 'toll the dead', 'true strike'
+];
+
 export const srdRaces: DndRace[] = [
   {
     id: 'dwarf',
@@ -74,6 +98,9 @@ export const srdRaces: DndRace[] = [
         features: [
           { name: 'Elf Weapon Training', description: 'You have proficiency with the longsword, shortsword, shortbow, and longbow.' },
           { name: 'Cantrip', description: 'You know one cantrip of your choice from the wizard spell list. Intelligence is your spellcasting ability for it.' }
+        ],
+        choices: [
+          { type: 'cantrip', count: 1, options: WIZARD_CANTRIPS, required: true }
         ]
       },
       {
@@ -165,6 +192,9 @@ export const srdRaces: DndRace[] = [
     additionalLanguages: 1,
     features: [],
     savingThrowFeatures: [],
+    choices: [
+      { type: 'language', count: 1, options: ALL_LANGUAGES, required: true }
+    ],
     subraces: [
       {
         id: 'variant-human',
@@ -176,6 +206,10 @@ export const srdRaces: DndRace[] = [
         ],
         features: [
           { name: 'Skill Versatility', description: 'You gain proficiency in one skill of your choice.' }
+        ],
+        choices: [
+          { type: 'skill', count: 1, options: ALL_SKILLS, required: true },
+          { type: 'feat', count: 1, required: true }
         ]
       }
     ],
@@ -197,6 +231,9 @@ export const srdRaces: DndRace[] = [
       { name: 'Damage Resistance', description: 'You have resistance to the damage type associated with your draconic ancestry.' },
     ],
     savingThrowFeatures: [],
+    choices: [
+      { type: 'draconicAncestry', count: 1, options: DRACONIC_ANCESTRIES, required: true }
+    ],
   },
   {
     id: 'gnome',
@@ -261,6 +298,10 @@ export const srdRaces: DndRace[] = [
     ],
     savingThrowFeatures: [
       { type: 'advantage', description: 'vs charmed' },
+    ],
+    choices: [
+      { type: 'skill', count: 2, options: ALL_SKILLS, required: true },
+      { type: 'language', count: 1, options: ALL_LANGUAGES, required: true }
     ],
   },
   {

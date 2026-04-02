@@ -16,6 +16,9 @@ export interface CharacterBuilderState {
   asiChoices: AsiChoice[];
   stepValidations: Record<string, boolean>;
   useTashasRules: boolean;
+  raceChoices: Record<string, string | string[]>;
+  backgroundChoices: Record<string, string | string[]>;
+  backgroundEquipmentPackage: 'A' | 'B' | null;
 }
 
 export type BuilderAction =
@@ -30,7 +33,12 @@ export type BuilderAction =
   | { type: 'SET_STEP_VALIDATION'; stepId: string; isValid: boolean }
   | { type: 'SET_TASHAS_RULES'; enabled: boolean }
   | { type: 'RESET_VALIDATIONS' }
-  | { type: 'CLEAR_DRAFT' };
+  | { type: 'CLEAR_DRAFT' }
+  | { type: 'SET_RACE_CHOICE'; choiceType: string; value: string | string[] }
+  | { type: 'CLEAR_RACE_CHOICES' }
+  | { type: 'SET_BACKGROUND_CHOICE'; choiceType: string; value: string | string[] }
+  | { type: 'CLEAR_BACKGROUND_CHOICES' }
+  | { type: 'SET_BACKGROUND_EQUIPMENT'; package: 'A' | 'B' };
 
 export const defaultState: CharacterBuilderState = {
   draft: createDefaultCharacter(),
@@ -40,6 +48,9 @@ export const defaultState: CharacterBuilderState = {
   asiChoices: [],
   stepValidations: {},
   useTashasRules: true,
+  raceChoices: {},
+  backgroundChoices: {},
+  backgroundEquipmentPackage: null,
 };
 
 export function characterBuilderReducer(
@@ -109,6 +120,22 @@ export function characterBuilderReducer(
       return { ...state, stepValidations: {} };
     case 'CLEAR_DRAFT':
       return { ...defaultState };
+    case 'SET_RACE_CHOICE':
+      return {
+        ...state,
+        raceChoices: { ...state.raceChoices, [action.choiceType]: action.value }
+      };
+    case 'CLEAR_RACE_CHOICES':
+      return { ...state, raceChoices: {} };
+    case 'SET_BACKGROUND_CHOICE':
+      return {
+        ...state,
+        backgroundChoices: { ...state.backgroundChoices, [action.choiceType]: action.value }
+      };
+    case 'CLEAR_BACKGROUND_CHOICES':
+      return { ...state, backgroundChoices: {} };
+    case 'SET_BACKGROUND_EQUIPMENT':
+      return { ...state, backgroundEquipmentPackage: action.package };
     default:
       return state;
   }

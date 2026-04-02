@@ -16,7 +16,7 @@ export default function ReviewStep() {
   const totalLevel = state.draft.classes?.reduce((sum, c) => sum + c.level, 0) ?? 0;
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 h-full overflow-y-auto pr-4">
       <div className="space-y-2">
         {state.mode === 'create' ? (
           <Input

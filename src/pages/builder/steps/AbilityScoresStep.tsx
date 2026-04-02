@@ -122,7 +122,7 @@ export default function AbilityScoresStep() {
   };
 
   return (
-    <div className="flex flex-col gap-6">
+    <div className="flex flex-col gap-6 h-full overflow-y-auto pr-4">
       {/* Tabs */}
       <div className="flex space-x-1 bg-slate-100 p-1 rounded-lg self-start">
         {(['standard', 'pointBuy', 'manual'] as const).map(tab => (

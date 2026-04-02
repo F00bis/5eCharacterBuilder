@@ -17,6 +17,14 @@ export interface RaceSavingThrowFeature {
   description: string;
 }
 
+export interface RaceChoice {
+  type: 'draconicAncestry' | 'skill' | 'feat' | 'cantrip' | 'language';
+  count: number;
+  options?: string[];
+  source?: string;
+  required?: boolean;
+}
+
 export interface DndSubrace {
   id: string;
   name: string;
@@ -25,6 +33,7 @@ export interface DndSubrace {
   speed?: number;
   features?: RaceFeature[];
   darkvision?: number;
+  choices?: RaceChoice[];
 }
 
 export interface DndRace {
@@ -39,4 +48,5 @@ export interface DndRace {
   savingThrowFeatures: RaceSavingThrowFeature[];
   weaponProficiencies?: string[];
   subraces?: DndSubrace[];
+  choices?: RaceChoice[];
 }

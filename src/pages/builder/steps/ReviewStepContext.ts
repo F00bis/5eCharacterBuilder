@@ -93,6 +93,10 @@ export function getArmorClassForDraft(draft: PartialCharacterDraft & { abilitySc
     feats: (draft.feats ?? []) as Character['feats'],
     statusEffects: [],
     notes: '',
+    languages: [],
+    toolProficiencies: [],
+    raceChoices: {},
+    backgroundChoices: {},
     createdAt: new Date(),
     updatedAt: new Date(),
   };

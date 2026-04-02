@@ -697,6 +697,10 @@ const TEST_CHARACTER: Character = {
     },
   ],
   notes: 'Test character showcasing ability score overrides, skill proficiency/expertise, and complex tooltip breakdowns with multiple feat and equipment bonuses.',
+  languages: ['Common', 'Dwarvish'],
+  toolProficiencies: [{ tool: "Smith's Tools", source: 'Background' }],
+  raceChoices: {},
+  backgroundChoices: {},
   createdAt: new Date(),
   updatedAt: new Date(),
 };

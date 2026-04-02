@@ -125,6 +125,11 @@ export interface RaceStatSelection {
   amount: number;
 }
 
+export interface ToolProficiency {
+  tool: string;
+  source: string;
+}
+
 export interface CharacterBase {
   name: string;
   race: string;
@@ -167,6 +172,10 @@ export interface CharacterBase {
   feats: Feat[];
   statusEffects: StatusEffect[];
   notes: string;
+  languages: string[];
+  toolProficiencies: ToolProficiency[];
+  raceChoices: Record<string, string | string[]>;
+  backgroundChoices: Record<string, string | string[]>;
 }
 
 export interface Character extends CharacterBase {
@@ -223,6 +232,10 @@ export function createDefaultCharacter(): CharacterBase {
     feats: [],
     statusEffects: [],
     notes: '',
+    languages: [],
+    toolProficiencies: [],
+    raceChoices: {},
+    backgroundChoices: {},
   };
 }
 

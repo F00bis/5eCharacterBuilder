@@ -24,3 +24,12 @@ export async function getSpellsByClass(className: string): Promise<DndSpell[]> {
 export async function getSpellNames(): Promise<string[]> {
   return db.spells.toCollection().primaryKeys();
 }
+
+export async function getCantripsByClass(className: string): Promise<DndSpell[]> {
+  const allSpells = await db.spells.toArray();
+  return allSpells.filter(spell => 
+    spell.level === 0 && 
+    spell.classes && 
+    spell.classes.some((c: string) => c.toLowerCase() === className.toLowerCase())
+  );
+}

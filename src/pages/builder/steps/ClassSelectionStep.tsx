@@ -69,8 +69,8 @@ export default function ClassSelectionStep() {
   const featuresWithChoices = classData?.features.filter(f => f.levelAcquired === 1 && f.choices);
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 gap-8 text-left">
-      <div className="space-y-6">
+    <div className="grid grid-cols-1 md:grid-cols-2 gap-8 text-left h-full overflow-hidden">
+      <div className="space-y-6 h-full overflow-y-auto pr-4">
         <div>
           <label className="block text-sm font-medium text-slate-700 mb-1">Select Class</label>
           <select 
@@ -149,8 +149,8 @@ export default function ClassSelectionStep() {
         )}
       </div>
 
-      <div>
-        <div className="bg-white border border-slate-200 rounded-lg shadow-sm p-6 max-h-[60vh] overflow-y-auto">
+      <div className="h-full">
+        <div className="bg-white border border-slate-200 rounded-lg shadow-sm p-6 h-full overflow-y-auto">
           <h2 className="text-xl font-bold border-b pb-2 mb-4">Class Summary</h2>
           
           {!classData ? (
