@@ -3,6 +3,12 @@
 ## Git operations
 Agents are not permitted to use git commands on this project. Human developers must first review the code generated and are the only users permitted to use git commands within the scope of this project.
 
+## TypeScript Compilation
+
+When verifying TypeScript types during development, use `npm run typecheck` instead of `npm run build`. The `typecheck` script runs only TypeScript compilation (`tsc -b`) without the full Vite production build, providing faster feedback on type errors.
+
+Only use `npm run build` when a full production build is required.
+
 ## Implementation Practices
 
 ### Functional Programming
