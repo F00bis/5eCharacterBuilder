@@ -65,43 +65,156 @@ describe('validateRaceStep', () => {
 });
 
 describe('isValidRaceStep', () => {
-  it('returns false when race is undefined', () => {
-    const result = isValidRaceStep(undefined, 'Acolyte', undefined, true, 'strength', 'dexterity', false);
-    expect(result).toBe(false);
+  describe('Tasha\'s Rules enabled', () => {
+    it('returns false when race is undefined', () => {
+      const result = isValidRaceStep(undefined, undefined, true, null, null, {}, [], {}, []);
+      expect(result).toBe(false);
+    });
+
+    it('returns false when race is empty string', () => {
+      const result = isValidRaceStep('', undefined, true, null, null, {}, [], {}, []);
+      expect(result).toBe(false);
+    });
+
+    it('returns false when plus2 is null', () => {
+      const result = isValidRaceStep('Human', undefined, true, null, 'dexterity', {}, [], {}, []);
+      expect(result).toBe(false);
+    });
+
+    it('returns false when plus1 is null', () => {
+      const result = isValidRaceStep('Human', undefined, true, 'strength', null, {}, [], {}, []);
+      expect(result).toBe(false);
+    });
+
+    it('returns false when plus2 and plus1 are the same', () => {
+      const result = isValidRaceStep('Human', undefined, true, 'strength', 'strength', {}, [], {}, []);
+      expect(result).toBe(false);
+    });
+
+    it('returns true when race is selected with valid different plus2 and plus1', () => {
+      const result = isValidRaceStep('Human', undefined, true, 'strength', 'dexterity', {}, [], {}, []);
+      expect(result).toBe(true);
+    });
   });
 
-  it('returns false when background is undefined', () => {
-    const result = isValidRaceStep('Human', undefined, undefined, true, 'strength', 'dexterity', false);
-    expect(result).toBe(false);
+  describe('Tasha\'s Rules disabled (traditional)', () => {
+    it('returns false when not enough flexible selections', () => {
+      const result = isValidRaceStep(
+        'Human',
+        undefined,
+        false,
+        null,
+        null,
+        { 0: 'strength' },
+        [
+          { ability: 'intelligence', amount: 1 },
+          { ability: undefined, amount: 1 },
+          { ability: undefined, amount: 1 },
+        ],
+        {},
+        []
+      );
+      expect(result).toBe(false);
+    });
+
+    it('returns false when duplicate abilities selected', () => {
+      const result = isValidRaceStep(
+        'Human',
+        undefined,
+        false,
+        null,
+        null,
+        { 0: 'strength', 1: 'strength' },
+        [
+          { ability: 'intelligence', amount: 1 },
+          { ability: undefined, amount: 1 },
+          { ability: undefined, amount: 1 },
+        ],
+        {},
+        []
+      );
+      expect(result).toBe(false);
+    });
+
+    it('returns true when all selections are valid', () => {
+      const result = isValidRaceStep(
+        'Human',
+        undefined,
+        false,
+        null,
+        null,
+        { 0: 'strength', 1: 'dexterity' },
+        [
+          { ability: 'intelligence', amount: 1 },
+          { ability: undefined, amount: 1 },
+          { ability: undefined, amount: 1 },
+        ],
+        {},
+        []
+      );
+      expect(result).toBe(true);
+    });
   });
 
-  it('returns false when subrace required but not selected', () => {
-    const result = isValidRaceStep('Dwarf', 'Acolyte', undefined, true, 'strength', 'dexterity', true);
-    expect(result).toBe(false);
-  });
+  describe('required choices', () => {
+    it('returns false when required choice is missing', () => {
+      const result = isValidRaceStep(
+        'Human',
+        undefined,
+        false,
+        null,
+        null,
+        {},
+        [],
+        {},
+        [{ type: 'skill', count: 2 }]
+      );
+      expect(result).toBe(false);
+    });
 
-  it('returns true when subrace not required and Tasha\'s rules have valid selections', () => {
-    const result = isValidRaceStep('Human', 'Acolyte', undefined, true, 'strength', 'dexterity', false);
-    expect(result).toBe(true);
-  });
+    it('returns true when required choice is satisfied', () => {
+      const result = isValidRaceStep(
+        'Human',
+        undefined,
+        false,
+        null,
+        null,
+        {},
+        [],
+        { skill: ['Athletics', 'Acrobatics'] },
+        [{ type: 'skill', count: 2 }]
+      );
+      expect(result).toBe(true);
+    });
 
-  it('returns true for traditional rules with subrace selected', () => {
-    const result = isValidRaceStep('Dwarf', 'Acolyte', 'hill-dwarf', false, null, null, true);
-    expect(result).toBe(true);
-  });
+    it('returns true when required choice has single value', () => {
+      const result = isValidRaceStep(
+        'Human',
+        undefined,
+        false,
+        null,
+        null,
+        {},
+        [],
+        { draconicAncestry: 'red' },
+        [{ type: 'draconicAncestry' }]
+      );
+      expect(result).toBe(true);
+    });
 
-  it('returns false for Tasha\'s rules without plus2', () => {
-    const result = isValidRaceStep('Human', 'Acolyte', undefined, true, null, 'dexterity', false);
-    expect(result).toBe(false);
-  });
-
-  it('returns false for Tasha\'s rules without plus1', () => {
-    const result = isValidRaceStep('Human', 'Acolyte', undefined, true, 'strength', null, false);
-    expect(result).toBe(false);
-  });
-
-  it('returns false for Tasha\'s rules with same ability for plus2 and plus1', () => {
-    const result = isValidRaceStep('Human', 'Acolyte', undefined, true, 'strength', 'strength', false);
-    expect(result).toBe(false);
+    it('returns false when language choice has insufficient count', () => {
+      const result = isValidRaceStep(
+        'Human',
+        undefined,
+        false,
+        null,
+        null,
+        {},
+        [],
+        { language: ['Common'] },
+        [{ type: 'language', count: 2 }]
+      );
+      expect(result).toBe(false);
+    });
   });
 });

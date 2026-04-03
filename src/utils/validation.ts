@@ -38,19 +38,49 @@ export function validateRaceStep(
 
 export function isValidRaceStep(
   race: string | undefined,
-  background: string | undefined,
-  subrace: string | undefined,
+  _subrace: string | undefined,
   useTashasRules: boolean,
   plus2: Ability | null,
   plus1: Ability | null,
-  requiresSubrace: boolean
+  flexibleSelections: Record<number, Ability | null>,
+  baseBonuses: { ability?: Ability; amount: number }[],
+  raceChoices: Record<string, string | string[]>,
+  requiredChoices: { type: string; count?: number }[]
 ): boolean {
-  if (!race || !background) return false;
-
-  if (requiresSubrace && !subrace) return false;
+  if (!race) return false;
 
   if (useTashasRules) {
-    return !!(plus2 && plus1 && plus2 !== plus1);
+    if (!plus2 || !plus1 || plus2 === plus1) return false;
+  } else {
+    const flexibleSlotsCount = baseBonuses.filter(b => !b.ability).length;
+    const selections = Object.values(flexibleSelections).filter((a): a is Ability => a !== null);
+    
+    if (selections.length < flexibleSlotsCount) return false;
+
+    const fixedAbilities = baseBonuses.filter(b => b.ability).map(b => b.ability as Ability);
+    const allSelected = [...fixedAbilities, ...selections];
+    if (new Set(allSelected).size !== allSelected.length) return false;
+  }
+
+  for (const choice of requiredChoices) {
+    const value = raceChoices[choice.type];
+    if (!isRaceChoiceSatisfied(choice, value)) {
+      return false;
+    }
+  }
+
+  return true;
+}
+
+function isRaceChoiceSatisfied(
+  choice: { type: string; count?: number },
+  value: string | string[] | undefined
+): boolean {
+  if (!value) return false;
+
+  if (choice.type === 'skill' || choice.type === 'language') {
+    const arr = Array.isArray(value) ? value : [value];
+    return arr.length >= (choice.count ?? 1);
   }
 
   return true;
