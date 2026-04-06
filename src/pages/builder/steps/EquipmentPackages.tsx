@@ -1,5 +1,5 @@
 import { Combobox } from '@/components/ui/combobox';
-import { TooltipProvider } from '@/components/ui/tooltip';
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useCharacterBuilder } from '../../../contexts/CharacterBuilderContextTypes';
 import { getClassByName } from '../../../db/classes';
@@ -142,6 +142,46 @@ export default function EquipmentPackages({ currentClassName, isLevel1 }: Equipm
     const addEquipmentItem = (itemName: string) => {
       const matchingItem = shopItems.find(i => i.name === itemName);
       if (matchingItem) {
+        if (matchingItem.equipmentCategory === 'Pack' && matchingItem.contents) {
+          matchingItem.contents.forEach(content => {
+            const contentItem = shopItems.find(i => i.name === content.name);
+            if (contentItem) {
+              const item: Equipment = {
+                name: contentItem.name,
+                rarity: 'common',
+                weight: parseFloat(contentItem.weight) || 0,
+                description: contentItem.description,
+                cost: contentItem.cost,
+                quantity: content.quantity || 1,
+                source: 'Starting Equipment'
+              };
+              
+              if (contentItem.weaponCategory) {
+                item.weaponCategory = contentItem.weaponCategory;
+                item.damage = contentItem.damage;
+                item.properties = contentItem.properties;
+                item.mastery = contentItem.mastery;
+                item.equippable = true;
+                item.equipped = false;
+              }
+              
+              if (contentItem.armorCategory) {
+                item.armorCategory = contentItem.armorCategory;
+                item.armorClass = contentItem.armorClass ? parseInt(contentItem.armorClass, 10) : undefined;
+                item.equippable = true;
+                item.equipped = false;
+              }
+              
+              dispatch({
+                type: 'ADD_ITEM_WITH_SOURCE',
+                listName: 'equipment',
+                item
+              });
+            }
+          });
+          return;
+        }
+        
         const item: Equipment = {
           name: matchingItem.name,
           rarity: 'common',
@@ -380,9 +420,33 @@ export default function EquipmentPackages({ currentClassName, isLevel1 }: Equipm
           <div>
             <h3 className="font-semibold mb-3">Fixed Equipment (from class and background)</h3>
             <ul className="list-disc list-inside text-slate-600">
-              {classEquipment.fixedEquipment.map((itemName, idx) => (
-                <li key={idx}>{itemName}</li>
-              ))}
+              {classEquipment.fixedEquipment.map((itemName, idx) => {
+                const packItem = shopItems.find(i => i.name === itemName && i.equipmentCategory === 'Pack');
+                if (packItem?.contents) {
+                  return (
+                    <li key={idx}>
+                      <Tooltip>
+                        <TooltipTrigger asChild>
+                          <span className="cursor-help text-purple-700 underline decoration-dotted">
+                            {itemName}
+                          </span>
+                        </TooltipTrigger>
+                        <TooltipContent side="right" className="w-64">
+                          <div className="font-semibold mb-1">{itemName} contains:</div>
+                          <ul className="text-sm list-disc list-inside">
+                            {packItem.contents.map((content, cIdx) => (
+                              <li key={cIdx}>
+                                {content.quantity && content.quantity > 1 ? `${content.quantity}x ` : ''}{content.name}
+                              </li>
+                            ))}
+                          </ul>
+                        </TooltipContent>
+                      </Tooltip>
+                    </li>
+                  );
+                }
+                return <li key={idx}>{itemName}</li>;
+              })}
             </ul>
           </div>
         )}

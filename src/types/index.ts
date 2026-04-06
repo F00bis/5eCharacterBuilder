@@ -70,6 +70,7 @@ export interface Equipment {
   weight: number;
   description: string;
   cost?: string;
+  quantity?: number;
   attunement?: boolean;
   attuned?: boolean;
   equippable?: boolean;

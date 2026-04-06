@@ -16,6 +16,26 @@ vi.mock('../../../db/equipment', () => ({
     { name: 'Leather Armor', weight: '10', equipmentCategory: 'Armor', armorCategory: 'Light', armorClass: '11', cost: '10 gp' },
     { name: 'Longbow', weight: '2', equipmentCategory: 'Weapon', weaponCategory: 'Martial', damage: '1d8', cost: '50 gp' },
     { name: 'Arrows', weight: '0.5', equipmentCategory: 'Ammo', cost: '1 gp' },
+    { name: "Dungeoneer's Pack", equipmentCategory: 'Pack', cost: '12 gp', weight: '55 lb.', description: 'A Dungeoneer\'s Pack', contents: [
+      { name: 'Backpack' },
+      { name: 'Caltrops' },
+      { name: 'Crowbar' },
+      { name: 'Oil', quantity: 2 },
+      { name: 'Rations', quantity: 10 },
+      { name: 'Rope' },
+      { name: 'Tinderbox' },
+      { name: 'Torch', quantity: 10 },
+      { name: 'Waterskin' }
+    ]},
+    { name: 'Backpack', weight: '5', equipmentCategory: 'Adventuring Gear', cost: '2 gp', description: 'A Backpack holds up to 30 pounds' },
+    { name: 'Caltrops', weight: '2', equipmentCategory: 'Adventuring Gear', cost: '1 gp', description: 'Caltrops' },
+    { name: 'Crowbar', weight: '5', equipmentCategory: 'Adventuring Gear', cost: '2 gp', description: 'A Crowbar' },
+    { name: 'Oil', weight: '1', equipmentCategory: 'Adventuring Gear', cost: '1 sp', description: 'Oil flasks' },
+    { name: 'Rations', weight: '2', equipmentCategory: 'Adventuring Gear', cost: '5 sp', description: 'Days of Rations' },
+    { name: 'Rope', weight: '10', equipmentCategory: 'Adventuring Gear', cost: '1 gp', description: 'Rope' },
+    { name: 'Tinderbox', weight: '1', equipmentCategory: 'Adventuring Gear', cost: '5 sp', description: 'Tinderbox' },
+    { name: 'Torch', weight: '1', equipmentCategory: 'Adventuring Gear', cost: '1 cp', description: 'Torch' },
+    { name: 'Waterskin', weight: '5', equipmentCategory: 'Adventuring Gear', cost: '2 sp', description: 'Waterskin' },
   ]),
 }));
 
@@ -233,5 +253,60 @@ describe('EquipmentPackages', () => {
       expect(screen.getByText('Leather Armor')).toBeInTheDocument();
       expect(screen.getByText('Component Pouch')).toBeInTheDocument();
     });
+  });
+
+  it('expands pack contents into individual items', async () => {
+    const testEquipment: { name: string }[] = [];
+    
+    function TestConsumer() {
+      const { state } = useCharacterBuilder();
+      useEffect(() => {
+        testEquipment.length = 0;
+        testEquipment.push(...state.draft.equipment);
+      }, [state.draft.equipment]);
+      return null;
+    }
+    
+    render(
+      <CharacterBuilderProvider>
+        <EquipmentPackagesWithSetup className="Fighter" />
+        <TestConsumer />
+      </CharacterBuilderProvider>
+    );
+    
+    await waitFor(() => {
+      expect(screen.getByText("Dungeoneer's Pack")).toBeInTheDocument();
+    });
+
+    const chainMailOption = screen.getByRole('radio', { name: '(a) Chain Mail' });
+    chainMailOption.click();
+    
+    const martialWeaponOption = screen.getByRole('radio', { name: '(a) Martial Weapon and Shield' });
+    martialWeaponOption.click();
+    
+    await waitFor(() => {
+      expect(screen.getByText('Select Item:')).toBeInTheDocument();
+    });
+    
+    const selectButton = screen.getByRole('button', { name: /Select an item/i });
+    selectButton.click();
+    
+    await waitFor(() => {
+      expect(screen.getByText('Greataxe (1d12)')).toBeInTheDocument();
+    });
+    
+    const greataxeOption = screen.getByText('Greataxe (1d12)');
+    greataxeOption.click();
+    
+    await waitFor(() => {
+      expect(testEquipment.length).toBeGreaterThan(0);
+    });
+    
+    const itemNames = testEquipment.map(e => e.name);
+    expect(itemNames).toContain('Backpack');
+    expect(itemNames).toContain('Caltrops');
+    expect(itemNames).toContain('Crowbar');
+    expect(itemNames).toContain('Torch');
+    expect(itemNames).not.toContain("Dungeoneer's Pack");
   });
 });

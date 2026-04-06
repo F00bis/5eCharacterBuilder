@@ -1843,7 +1843,19 @@ export const srdEquipment: SrdEquipment[] = [
     equipmentCategory: 'Pack',
     cost: '16 GP',
     weight: '42 lb.',
-    contents: 'Backpack, Ball Bearings, Bell, 10 Candles, Crowbar, Hooded Lantern, 7 flasks of Oil, 5 days of Rations, Rope, Tinderbox, and Waterskin',
+    contents: [
+      { name: 'Backpack' },
+      { name: 'Ball Bearings' },
+      { name: 'Bell' },
+      { name: 'Candles', quantity: 10 },
+      { name: 'Crowbar' },
+      { name: 'Hooded Lantern' },
+      { name: 'Oil', quantity: 7 },
+      { name: 'Rations', quantity: 5 },
+      { name: 'Rope' },
+      { name: 'Tinderbox' },
+      { name: 'Waterskin' }
+    ],
     description: "A Burglar's Pack contains the following items: Backpack, Ball Bearings, Bell, 10 Candles, Crowbar, Hooded Lantern, 7 flasks of Oil, 5 days of Rations, Rope, Tinderbox, and Waterskin.",
     isSRD: true
   },
@@ -1852,7 +1864,19 @@ export const srdEquipment: SrdEquipment[] = [
     equipmentCategory: 'Pack',
     cost: '39 GP',
     weight: '39 lb.',
-    contents: 'Chest, Fine Clothes, Ink, 5 Ink Pens, Lamp, 2 Map or Scroll Cases, 4 flasks of Oil, 5 sheets of Paper, 5 sheets of Parchment, Perfume, and Tinderbox',
+    contents: [
+      { name: 'Chest' },
+      { name: 'Fine Clothes' },
+      { name: 'Ink' },
+      { name: 'Ink Pen', quantity: 5 },
+      { name: 'Lamp' },
+      { name: 'Map or Scroll Case', quantity: 2 },
+      { name: 'Oil', quantity: 4 },
+      { name: 'Paper', quantity: 5 },
+      { name: 'Parchment', quantity: 5 },
+      { name: 'Perfume' },
+      { name: 'Tinderbox' }
+    ],
     description: "A Diplomat's Pack contains the following items: Chest, Fine Clothes, Ink, 5 Ink Pens, Lamp, 2 Map or Scroll Cases, 4 flasks of Oil, 5 sheets of Paper, 5 sheets of Parchment, Perfume, and Tinderbox.",
     isSRD: true
   },
@@ -1861,7 +1885,17 @@ export const srdEquipment: SrdEquipment[] = [
     equipmentCategory: 'Pack',
     cost: '12 GP',
     weight: '55 lb.',
-    contents: 'Backpack, Caltrops, Crowbar, 2 flasks of Oil, 10 days of Rations, Rope, Tinderbox, 10 Torches, and Waterskin',
+    contents: [
+      { name: 'Backpack' },
+      { name: 'Caltrops' },
+      { name: 'Crowbar' },
+      { name: 'Oil', quantity: 2 },
+      { name: 'Rations', quantity: 10 },
+      { name: 'Rope' },
+      { name: 'Tinderbox' },
+      { name: 'Torch', quantity: 10 },
+      { name: 'Waterskin' }
+    ],
     description: "A Dungeoneer's Pack contains the following items: Backpack, Caltrops, Crowbar, 2 flasks of Oil, 10 days of Rations, Rope, Tinderbox, 10 Torches, and Waterskin.",
     isSRD: true
   },
@@ -1870,7 +1904,18 @@ export const srdEquipment: SrdEquipment[] = [
     equipmentCategory: 'Pack',
     cost: '40 GP',
     weight: '58 1/2 lb.',
-    contents: 'Backpack, Bedroll, Bell, Bullseye Lantern, 3 Costumes, Mirror, 8 flasks of Oil, 9 days of Rations, Tinderbox, and Waterskin',
+    contents: [
+      { name: 'Backpack' },
+      { name: 'Bedroll' },
+      { name: 'Bell' },
+      { name: 'Bullseye Lantern' },
+      { name: 'Costume', quantity: 3 },
+      { name: 'Mirror' },
+      { name: 'Oil', quantity: 8 },
+      { name: 'Rations', quantity: 9 },
+      { name: 'Tinderbox' },
+      { name: 'Waterskin' }
+    ],
     description: "An Entertainer's Pack contains the following items: Backpack, Bedroll, Bell, Bullseye Lantern, 3 Costumes, Mirror, 8 flasks of Oil, 9 days of Rations, Tinderbox, and Waterskin.",
     isSRD: true
   },
@@ -1879,7 +1924,16 @@ export const srdEquipment: SrdEquipment[] = [
     equipmentCategory: 'Pack',
     cost: '10 GP',
     weight: '55 lb.',
-    contents: 'Backpack, Bedroll, 2 flasks of Oil, 10 days of Rations, Rope, Tinderbox, 10 Torches, and Waterskin',
+    contents: [
+      { name: 'Backpack' },
+      { name: 'Bedroll' },
+      { name: 'Oil', quantity: 2 },
+      { name: 'Rations', quantity: 10 },
+      { name: 'Rope' },
+      { name: 'Tinderbox' },
+      { name: 'Torch', quantity: 10 },
+      { name: 'Waterskin' }
+    ],
     description: "An Explorer's Pack contains the following items: Backpack, Bedroll, 2 flasks of Oil, 10 days of Rations, Rope, Tinderbox, 10 Torches, and Waterskin.",
     isSRD: true
   },
@@ -1888,7 +1942,15 @@ export const srdEquipment: SrdEquipment[] = [
     equipmentCategory: 'Pack',
     cost: '33 GP',
     weight: '29 lb.',
-    contents: 'Backpack, Blanket, Holy Water, Lamp, 7 days of Rations, Robe, and Tinderbox',
+    contents: [
+      { name: 'Backpack' },
+      { name: 'Blanket' },
+      { name: 'Holy Water' },
+      { name: 'Lamp' },
+      { name: 'Rations', quantity: 7 },
+      { name: 'Robe' },
+      { name: 'Tinderbox' }
+    ],
     description: "A Priest's Pack contains the following items: Backpack, Blanket, Holy Water, Lamp, 7 days of Rations, Robe, and Tinderbox.",
     isSRD: true
   },
@@ -1897,7 +1959,16 @@ export const srdEquipment: SrdEquipment[] = [
     equipmentCategory: 'Pack',
     cost: '40 GP',
     weight: '22 lb.',
-    contents: 'Backpack, Book, Ink, Ink Pen, Lamp, 10 flasks of Oil, 10 sheets of Parchment, and Tinderbox',
+    contents: [
+      { name: 'Backpack' },
+      { name: 'Book' },
+      { name: 'Ink' },
+      { name: 'Ink Pen' },
+      { name: 'Lamp' },
+      { name: 'Oil', quantity: 10 },
+      { name: 'Parchment', quantity: 10 },
+      { name: 'Tinderbox' }
+    ],
     description: "A Scholar's Pack contains the following items: Backpack, Book, Ink, Ink Pen, Lamp, 10 flasks of Oil, 10 sheets of Parchment, and Tinderbox.",
     isSRD: true
   },

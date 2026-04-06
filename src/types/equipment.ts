@@ -33,6 +33,11 @@ export type ArmorCategory = 'Light' | 'Medium' | 'Heavy' | 'Shield';
 
 export type WeaponMastery = 'Cleave' | 'Graze' | 'Nick' | 'Push' | 'Sap' | 'Slow' | 'Topple' | 'Vex';
 
+export interface PackContentsItem {
+  name: string;
+  quantity?: number;
+}
+
 export interface SrdEquipment {
   name: string;
   equipmentCategory: EquipmentCategory;
@@ -77,7 +82,7 @@ export interface SrdEquipment {
   damageThreshold?: number;
 
   // Pack contents
-  contents?: string;
+  contents?: PackContentsItem[];
 
   // Marks this as SRD base data
   isSRD: boolean;
