@@ -4,12 +4,6 @@ import { SkillChoice } from './SkillChoice';
 
 const mockOnChange = vi.fn();
 
-const ALL_SKILLS = [
-  'athletics', 'acrobatics', 'sleightOfHand', 'stealth', 'arcana', 'history',
-  'investigation', 'medicine', 'nature', 'religion', 'animalHandling', 'insight',
-  'perception', 'survival', 'deception', 'intimidation', 'performance', 'persuasion'
-];
-
 describe('SkillChoice', () => {
   beforeEach(() => {
     mockOnChange.mockClear();

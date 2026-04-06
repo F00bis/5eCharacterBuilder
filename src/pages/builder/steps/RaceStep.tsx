@@ -9,8 +9,8 @@ import {
   SkillChoice,
   FeatChoice,
   CantripChoice,
-  LanguageChoice,
 } from './raceChoices';
+import { LanguageSelector } from '@/components/LanguageSelector';
 
 const ABILITIES: Ability[] = ['strength', 'dexterity', 'constitution', 'intelligence', 'wisdom', 'charisma'];
 
@@ -175,16 +175,10 @@ export default function RaceStep() {
     dispatch({ type: 'SET_RACE_CHOICE', choiceType, value });
   };
 
-  const handleLanguageChange = (value: string) => {
-    const currentLanguages = [...(state.draft.languages || [])];
+  const handleLanguageChange = (languages: string[]) => {
     const raceLanguages = selectedRace?.languages || [];
-
-    const additionalLanguages = currentLanguages.filter(l => !raceLanguages.includes(l));
-
-    if (value && !additionalLanguages.includes(value)) {
-      const newLanguages = [...raceLanguages, value];
-      dispatch({ type: 'UPDATE_DRAFT', updates: { languages: newLanguages } });
-    }
+    const additionalLanguages = languages.filter(l => !raceLanguages.includes(l));
+    dispatch({ type: 'UPDATE_DRAFT', updates: { languages: [...raceLanguages, ...additionalLanguages] } });
   };
 
   const renderChoiceComponent = (choice: RaceChoice) => {
@@ -226,19 +220,6 @@ export default function RaceStep() {
             value={(currentValue as string) || ''}
             onChange={(value) => handleRaceChoiceChange(choice.type, value)}
             spellClass="wizard"
-          />
-        );
-
-      case 'language':
-        return (
-          <LanguageChoice
-            key={choice.type}
-            value={(currentValue as string) || ''}
-            onChange={(value) => {
-              handleRaceChoiceChange(choice.type, value);
-              handleLanguageChange(value);
-            }}
-            knownLanguages={state.draft.languages || []}
           />
         );
 
@@ -387,28 +368,31 @@ export default function RaceStep() {
 
         {selectedRace && selectedRace.languages.length > 0 && (
           <div className="bg-slate-50 p-4 rounded-md border border-slate-200">
-            <h3 className="text-sm font-semibold mb-2">Known Languages</h3>
-            <div className="flex flex-wrap gap-2">
-              {selectedRace.languages.map(lang => (
-                <span
-                  key={lang}
-                  className="px-2 py-1 bg-cyan-100 text-cyan-800 rounded text-sm"
-                >
-                  {lang}
-                </span>
-              ))}
-            </div>
-            {additionalLanguageCount > 0 && (
-              <div className="mt-3">
-                <LanguageChoice
-                  value={(state.raceChoices['language'] as string) || ''}
-                  onChange={(value) => {
-                    handleRaceChoiceChange('language', value);
-                    handleLanguageChange(value);
-                  }}
-                  knownLanguages={selectedRace.languages}
-                />
-              </div>
+            {additionalLanguageCount > 0 ? (
+              <LanguageSelector
+                selectedLanguages={(state.raceChoices['language'] as string[]) || []}
+                onChange={(languages) => {
+                  handleRaceChoiceChange('language', languages);
+                  handleLanguageChange(languages);
+                }}
+                maxSelections={additionalLanguageCount}
+                knownLanguages={selectedRace.languages}
+                label="Additional Languages"
+              />
+            ) : (
+              <>
+                <h3 className="text-sm font-semibold mb-2">Known Languages</h3>
+                <div className="flex flex-wrap gap-2">
+                  {selectedRace.languages.map(lang => (
+                    <span
+                      key={lang}
+                      className="px-2 py-1 bg-cyan-100 text-cyan-800 rounded text-sm"
+                    >
+                      {lang}
+                    </span>
+                  ))}
+                </div>
+              </>
             )}
           </div>
         )}

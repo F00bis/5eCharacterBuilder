@@ -1,5 +1,4 @@
 import { render, screen } from '@testing-library/react';
-import '@testing-library/jest-dom';
 import { describe, it, expect, vi } from 'vitest';
 import { InventoryPanel } from './InventoryPanel';
 import { CharacterContext, type CharacterContextValue } from '../contexts/CharacterContext';
@@ -39,6 +38,14 @@ function baseCharacter(overrides: Partial<Character> = {}): Character {
       wisdom: 10,
       charisma: 10,
     },
+    baseAbilityScores: {
+      strength: 10,
+      dexterity: 10,
+      constitution: 10,
+      intelligence: 10,
+      wisdom: 10,
+      charisma: 10,
+    },
     level: 5,
     xp: 3500,
     portrait: null,
@@ -50,11 +57,11 @@ function baseCharacter(overrides: Partial<Character> = {}): Character {
     speed: 30,
     initiative: 0,
     vision: {},
-    deathSaves: { successes: 0, failures: 0 },
+    deathSaves: {successes: 0, failures: 0},
     proficiencyBonus: 3,
     skills: [],
     equipment: [],
-    currency: { cp: 0, sp: 0, ep: 0, gp: 0, pp: 0 },
+    currency: {cp: 0, sp: 0, ep: 0, gp: 0, pp: 0},
     spellSlots: [],
     spells: [],
     statusEffects: [],
@@ -62,6 +69,14 @@ function baseCharacter(overrides: Partial<Character> = {}): Character {
     notes: '',
     createdAt: new Date(),
     updatedAt: new Date(),
+    raceStatSelections: [],
+    featureChoices: {},
+    hpRolls: [],
+    hpBonus: 0,
+    languages: [],
+    toolProficiencies: [],
+    raceChoices: {},
+    backgroundChoices: {},
     ...overrides,
   };
 }

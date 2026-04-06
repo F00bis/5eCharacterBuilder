@@ -1,8 +1,7 @@
-import '@testing-library/jest-dom';
 import { fireEvent, render, screen, waitFor } from '@testing-library/react';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
-import type { CharacterBuilderState } from '../../../contexts/CharacterBuilderContextTypes';
 import { CharacterBuilderProvider } from '../../../contexts/CharacterBuilderProvider';
+import { createDefaultCharacter } from '../../../types';
 import EquipmentFeatsStep from './EquipmentFeatsStep';
 
 vi.mock('../../../db/equipment', () => ({
@@ -60,21 +59,24 @@ vi.mock('../../../db/equipment', () => ({
   ])
 }));
 
-function renderWithInitialState(initialState: Partial<CharacterBuilderState>) {
-  localStorage.setItem('builderDraft_v1', JSON.stringify({
-    draft: {
-      classes: [],
-      baseAbilityScores: {
-        strength: 15, dexterity: 10, constitution: 14,
-        intelligence: 10, wisdom: 10, charisma: 10
-      }
-    },
+function renderWithInitialState(initialState: Record<string, unknown> = {}) {
+  const defaultDraft = createDefaultCharacter();
+  
+  const draftWithOverrides = {
+    ...defaultDraft,
+    ...(initialState.draft as object),
+  };
+  
+  const state = {
+    draft: draftWithOverrides,
     currentStep: 0,
     mode: 'create',
     baseCharacterId: null,
     asiChoices: [],
-    ...initialState
-  }));
+    ...initialState,
+  };
+  
+  localStorage.setItem('builderDraft_v1', JSON.stringify(state));
 }
 
 describe('EquipmentFeatsStep - No Class Selected', () => {

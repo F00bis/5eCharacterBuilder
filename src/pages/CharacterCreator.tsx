@@ -6,13 +6,13 @@ import { useCharacterBuilder } from '../contexts/CharacterBuilderContextTypes';
 import { getCharacterById } from '../db/characters';
 import { calculateSpellEntitlements } from '../utils/spellCalculations';
 import AbilityScoresStep from './builder/steps/AbilityScoresStep';
+import BackgroundStep from './builder/steps/BackgroundStep';
 import ClassSelectionStep from './builder/steps/ClassSelectionStep';
 import EquipmentFeatsStep from './builder/steps/EquipmentFeatsStep';
-import RaceStep from './builder/steps/RaceStep';
 import ProficienciesStep from './builder/steps/ProficienciesStep';
+import RaceStep from './builder/steps/RaceStep';
 import ReviewStep from './builder/steps/ReviewStep';
 import SpellSelectionStep from './builder/steps/SpellSelectionStep';
-import BackgroundStep from './builder/steps/BackgroundStep';
 
 interface CharacterCreatorProps {
   mode: 'create' | 'levelup';
@@ -111,7 +111,7 @@ export default function CharacterCreator({ mode }: CharacterCreatorProps) {
         {mode === 'create' ? 'Create a Character' : 'Level Up Character'}
       </h1>
       
-      <div className="mb-8">
+      <div className="mb-6">
         <Stepper 
           steps={steps} 
           currentStep={state.currentStep} 
@@ -119,7 +119,7 @@ export default function CharacterCreator({ mode }: CharacterCreatorProps) {
         />
       </div>
 
-      <div className="mt-8 bg-slate-50 border border-slate-200 rounded-lg p-8 h-[600px] overflow-hidden">
+      <div className="bg-slate-50 border border-slate-200 rounded-lg p-8 h-140 overflow-hidden">
         {steps[state.currentStep]?.id === 'race' && <RaceStep />}
         {steps[state.currentStep]?.id === 'background' && <BackgroundStep />}
         {steps[state.currentStep]?.id === 'abilities' && <AbilityScoresStep />}

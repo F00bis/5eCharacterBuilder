@@ -1,7 +1,7 @@
 import { useMemo, useEffect } from 'react';
 import { useCharacterBuilder } from '../../../contexts/CharacterBuilderContextTypes';
 import { srdBackgrounds } from '../../../data/srdBackgrounds';
-import { LanguageChoice } from './raceChoices';
+import { LanguageSelector } from '@/components/LanguageSelector';
 
 export default function BackgroundStep() {
   const { state, dispatch } = useCharacterBuilder();
@@ -77,13 +77,14 @@ export default function BackgroundStep() {
     dispatch({ type: 'UPDATE_DRAFT', updates: { background: bg?.name || undefined } });
   };
 
-  const handleLanguageChange = (value: string) => {
-    dispatch({ type: 'SET_BACKGROUND_CHOICE', choiceType: 'language', value });
+  const handleLanguageChange = (languages: string[]) => {
+    dispatch({ type: 'SET_BACKGROUND_CHOICE', choiceType: 'language', value: languages });
     const currentLanguages = [...(state.draft.languages || [])];
-    if (value && !currentLanguages.includes(value)) {
+    const newLanguages = languages.filter(l => !currentLanguages.includes(l));
+    if (newLanguages.length > 0) {
       dispatch({
         type: 'UPDATE_DRAFT',
-        updates: { languages: [...currentLanguages, value] }
+        updates: { languages: [...currentLanguages, ...newLanguages] }
       });
     }
   };
@@ -194,14 +195,12 @@ export default function BackgroundStep() {
 
             {languageCount > 0 && (
               <div className="bg-slate-50 p-4 rounded-md border border-slate-200">
-                <h3 className="text-sm font-semibold mb-3">Languages</h3>
-                <p className="text-xs text-slate-500 mb-2">
-                  Choose {languageCount} additional language{languageCount > 1 ? 's' : ''}
-                </p>
-                <LanguageChoice
-                  value={(state.backgroundChoices['language'] as string) || ''}
+                <LanguageSelector
+                  selectedLanguages={(state.backgroundChoices['language'] as string[]) || []}
                   onChange={handleLanguageChange}
+                  maxSelections={languageCount}
                   knownLanguages={knownLanguages}
+                  label="Additional Languages"
                 />
               </div>
             )}

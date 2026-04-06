@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { createDefaultCharacter, type CharacterBase } from '../types';
-import { BuilderAction, characterBuilderReducer, CharacterBuilderState, defaultState } from './CharacterBuilderContextTypes';
+import { characterBuilderReducer, defaultState } from './CharacterBuilderContextTypes';
+import type { BuilderAction, CharacterBuilderState } from './CharacterBuilderContextTypes';
 
 describe('characterBuilderReducer', () => {
   const initialState: CharacterBuilderState = {

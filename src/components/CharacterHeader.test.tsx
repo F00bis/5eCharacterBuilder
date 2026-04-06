@@ -1,4 +1,3 @@
-import '@testing-library/jest-dom';
 import { fireEvent, render, screen } from '@testing-library/react';
 import { BrowserRouter } from 'react-router-dom';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
@@ -54,6 +53,14 @@ const baseCharacter: Character = {
     wisdom: 10,
     charisma: 10,
   },
+  baseAbilityScores: {
+    strength: 10,
+    dexterity: 10,
+    constitution: 10,
+    intelligence: 10,
+    wisdom: 10,
+    charisma: 10,
+  },
   level: 7,
   xp: 3500,
   portrait: null,
@@ -65,11 +72,11 @@ const baseCharacter: Character = {
   speed: 30,
   initiative: 0,
   vision: {},
-  deathSaves: { successes: 0, failures: 0 },
+  deathSaves: {successes: 0, failures: 0},
   proficiencyBonus: 3,
   skills: [],
   equipment: [],
-  currency: { cp: 0, sp: 0, ep: 0, gp: 0, pp: 0 },
+  currency: {cp: 0, sp: 0, ep: 0, gp: 0, pp: 0},
   spellSlots: [],
   spells: [],
   statusEffects: [],
@@ -78,10 +85,13 @@ const baseCharacter: Character = {
   createdAt: new Date(),
   updatedAt: new Date(),
   raceStatSelections: [],
-  baseAbilityScores: undefined,
-  featureChoices: undefined,
+  featureChoices: {},
   hpRolls: [],
-  hpBonus: 0
+  hpBonus: 0,
+  languages: [],
+  toolProficiencies: [],
+  raceChoices: {},
+  backgroundChoices: {},
 };
 
 describe('CharacterHeader', () => {
