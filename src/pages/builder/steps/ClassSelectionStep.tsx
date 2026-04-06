@@ -66,7 +66,7 @@ export default function ClassSelectionStep() {
     }
   }, [selectedClass, level1HpRoll, featureChoices, saveToDraft, classData]);
 
-  const featuresWithChoices = classData?.features.filter(f => f.levelAcquired === 1 && f.choices);
+  const featuresWithChoices = classData?.features.filter(f => f.levelAcquired === 1 && f.choices && f.name !== 'Expertise');
 
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 gap-8 text-left h-full overflow-hidden">

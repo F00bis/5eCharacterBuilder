@@ -1,22 +1,16 @@
-import { render, screen, fireEvent, act, waitFor } from '@testing-library/react';
-import { describe, it, expect, beforeEach } from 'vitest';
-import ProficienciesStep from './ProficienciesStep';
-import { CharacterBuilderProvider } from '../../../contexts/CharacterBuilderProvider';
+import { act, fireEvent, render, screen, waitFor } from '@testing-library/react';
+import { useEffect } from 'react';
+import { beforeEach, describe, expect, it } from 'vitest';
 import { useCharacterBuilder } from '../../../contexts/CharacterBuilderContextTypes';
-import { useEffect, useState } from 'react';
+import { CharacterBuilderProvider } from '../../../contexts/CharacterBuilderProvider';
+import ProficienciesStep from './ProficienciesStep';
 
 function ProficienciesStepWithSetup({ className }: { className: string }) {
   const { dispatch } = useCharacterBuilder();
-  const [ready, setReady] = useState(false);
   
   useEffect(() => {
     dispatch({ type: 'UPDATE_DRAFT', updates: { classes: [{ className, level: 1 }] } });
-    setReady(true);
   }, [dispatch, className]);
-
-  if (!ready) {
-    return <div>Loading...</div>;
-  }
 
   return <ProficienciesStep />;
 }
