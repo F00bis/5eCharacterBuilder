@@ -1,20 +1,34 @@
 import { LanguageSelector } from '@/components/LanguageSelector';
-import { useEffect, useMemo } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useCharacterBuilder } from '../../../contexts/CharacterBuilderContextTypes';
 import { srdBackgrounds } from '../../../data/srdBackgrounds';
 
 export default function BackgroundStep() {
   const { state, dispatch } = useCharacterBuilder();
+  const [equipmentSelections, setEquipmentSelections] = useState<Record<number, string>>({});
 
   const selectedBg = useMemo(
     () => srdBackgrounds.find(b => b.name === state.draft.background),
     [state.draft.background]
   );
 
+  const currentPackageIdx = state.backgroundEquipmentPackage === 'B' ? 1 : 0;
+  const currentPackage = selectedBg?.equipment?.[currentPackageIdx];
+
+  const equipmentChoices = useMemo(() => {
+    if (!currentPackage) return [];
+    return currentPackage.items
+      .map((item, idx) => ({ item, idx }))
+      .filter(({ item }) => item.options && item.options.length > 0);
+  }, [currentPackage]);
+
+  const allChoicesMade = equipmentChoices.length === 0 || 
+    equipmentChoices.every(({ idx }) => equipmentSelections[idx] !== undefined);
+
   useEffect(() => {
-    const isValid = !!state.draft.background;
+    const isValid = !!state.draft.background && allChoicesMade;
     dispatch({ type: 'SET_STEP_VALIDATION', stepId: 'background', isValid });
-  }, [state.draft.background, dispatch]);
+  }, [state.draft.background, allChoicesMade, dispatch]);
 
   const handleBackgroundChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     const bgId = e.target.value;
@@ -24,6 +38,7 @@ export default function BackgroundStep() {
     dispatch({ type: 'REMOVE_ITEMS_BY_SOURCE', listName: 'equipment', source: 'Background' });
     dispatch({ type: 'REMOVE_ITEMS_BY_SOURCE', listName: 'toolProficiencies', source: 'Background' });
     dispatch({ type: 'CLEAR_BACKGROUND_CHOICES' });
+    setEquipmentSelections({});
 
     if (bg) {
       bg.skillProficiencies.forEach(skill => {
@@ -46,19 +61,8 @@ export default function BackgroundStep() {
 
       if (bg.equipment && bg.equipment.length > 0) {
         const firstPackage = bg.equipment[0];
-        firstPackage.items.forEach(item => {
-          dispatch({
-            type: 'ADD_ITEM_WITH_SOURCE',
-            listName: 'equipment',
-            item: {
-              name: item.name,
-              rarity: 'common',
-              weight: 0,
-              description: '',
-              quantity: item.quantity || 1,
-              source: 'Background'
-            }
-          });
+        firstPackage.items.forEach((item, itemIdx) => {
+          addEquipmentItem(item, itemIdx);
         });
         if (firstPackage.gold) {
           dispatch({
@@ -96,19 +100,8 @@ export default function BackgroundStep() {
     if (selectedBg?.equipment) {
       const selectedPackage = selectedBg.equipment[packageId === 'A' ? 0 : 1];
       if (selectedPackage) {
-        selectedPackage.items.forEach(item => {
-          dispatch({
-            type: 'ADD_ITEM_WITH_SOURCE',
-            listName: 'equipment',
-            item: {
-              name: item.name,
-              rarity: 'common',
-              weight: 0,
-              description: '',
-              quantity: item.quantity || 1,
-              source: 'Background'
-            }
-          });
+        selectedPackage.items.forEach((item, itemIdx) => {
+          addEquipmentItem(item, itemIdx);
         });
         if (selectedPackage.gold) {
           dispatch({
@@ -137,6 +130,31 @@ export default function BackgroundStep() {
 
   const knownLanguages = state.draft.languages || [];
   const languageCount = selectedBg?.languages || 0;
+
+  const addEquipmentItem = (item: { name: string; quantity?: number; options?: string[] }, packageIdx: number) => {
+    const itemName = item.options && item.options.length > 0
+      ? equipmentSelections[packageIdx]
+      : item.name;
+
+    if (!itemName) return;
+
+    dispatch({
+      type: 'ADD_ITEM_WITH_SOURCE',
+      listName: 'equipment',
+      item: {
+        name: itemName,
+        rarity: 'common',
+        weight: 0,
+        description: '',
+        quantity: item.quantity || 1,
+        source: 'Background'
+      }
+    });
+  };
+
+  const handleEquipmentChoiceChange = (packageIdx: number, selection: string) => {
+    setEquipmentSelections(prev => ({ ...prev, [packageIdx]: selection }));
+  };
 
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 gap-8 text-left h-full overflow-hidden">
@@ -189,7 +207,23 @@ export default function BackgroundStep() {
                         <ul className="text-xs text-slate-600 mt-1">
                           {pkg.items.map((item, itemIdx) => (
                             <li key={itemIdx}>
-                              {item.quantity ? `${item.quantity}x ` : ''}{item.name}
+                              {item.options && item.options.length > 0 ? (
+                                <div className="flex items-center gap-2">
+                                  <span>Choose one of:</span>
+                                  <select
+                                    value={equipmentSelections[itemIdx] || ''}
+                                    onChange={(e) => handleEquipmentChoiceChange(itemIdx, e.target.value)}
+                                    className="text-xs border-slate-300 rounded px-1 py-0.5"
+                                  >
+                                    <option value="" disabled>Select...</option>
+                                    {item.options.map(opt => (
+                                      <option key={opt} value={opt}>{opt}</option>
+                                    ))}
+                                  </select>
+                                </div>
+                              ) : (
+                                <span>{item.quantity ? `${item.quantity}x ` : ''}{item.name}</span>
+                              )}
                             </li>
                           ))}
                           {pkg.gold && <li>{pkg.gold} GP</li>}
@@ -262,7 +296,9 @@ export default function BackgroundStep() {
                         <ul className="text-xs text-slate-600 mt-1 ml-2 list-disc">
                           {selectedBg.equipment[0]?.items.map((item, idx) => (
                             <li key={idx}>
-                              {item.quantity ? `${item.quantity}x ` : ''}{item.name}
+                              {item.options && item.options.length > 0
+                                ? equipmentSelections[idx] || '(not selected)'
+                                : `${item.quantity ? `${item.quantity}x ` : ''}${item.name}`}
                             </li>
                           ))}
                           {selectedBg.equipment[0]?.gold && <li>{selectedBg.equipment[0].gold} GP</li>}

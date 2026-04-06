@@ -8,6 +8,7 @@ export interface BackgroundFeature {
 export interface BackgroundEquipment {
   name: string;
   quantity?: number;
+  options?: string[];
 }
 
 export interface BackgroundEquipmentPackage {
@@ -43,7 +44,7 @@ export const srdBackgrounds: DndBackground[] = [
     equipment: [
       {
         items: [
-          { name: 'Prayer book (or prayer wheel)' },
+          { name: 'Prayer book (or prayer wheel)', options: ['Prayer book', 'Prayer wheel'] },
           { name: 'Incense', quantity: 5 },
           { name: 'Vestments' },
           { name: 'Common clothes' },
@@ -91,7 +92,7 @@ export const srdBackgrounds: DndBackground[] = [
     equipment: [
       {
         items: [
-          { name: 'Artisan\'s tools (one of your choice)' },
+          { name: "Artisan's tools (one of your choice)", options: ["Alchemist's Supplies", "Brewer's Supplies", "Calligrapher's Supplies", "Carpenter's Tools", "Cartographer's Tools", "Cobbler's Tools", "Cook's Utensils", "Glassblower's Tools", "Jeweler's Tools", "Leatherworker's Tools", "Mason's Tools", "Painter's Supplies", "Potter's Tools", "Smith's Tools", "Tinker's Tools", "Weaver's Tools", "Woodcarver's Tools"] },
           { name: 'Shovel' },
           { name: 'Iron pot' },
           { name: 'Common clothes' },
@@ -144,7 +145,7 @@ export const srdBackgrounds: DndBackground[] = [
         items: [
           { name: 'Insignia of rank' },
           { name: 'Trophy from a fallen enemy (a dagger, broken blade, or piece of a banner)' },
-          { name: 'Bone dice or deck of cards' },
+          { name: 'Bone dice or deck of cards', options: ['Bone dice', 'Deck of cards'] },
           { name: 'Common clothes' },
           { name: 'Belt pouch' }
         ],
