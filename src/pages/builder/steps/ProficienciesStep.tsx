@@ -5,11 +5,6 @@ import type { Skill, SkillProficiency } from '../../../types';
 import type { DndClass } from '../../../types/classes';
 import { SKILL_ABILITY_MAP, SKILL_DISPLAY_NAMES } from '../../../utils/skills';
 
-interface FreeChoice {
-  id: number;
-  skill: Skill | null;
-}
-
 export default function ProficienciesStep() {
   const { state, dispatch } = useCharacterBuilder();
   const [pendingClass, setPendingClass] = useState<string | null>(null);
@@ -96,14 +91,6 @@ export default function ProficienciesStep() {
     );
   }, [draftSkills]);
 
-  const freeChoiceSkills = useMemo(() => {
-    return draftSkills.filter(
-      (s): s is SkillProficiency => 
-        s !== undefined && 
-        s.source === `Class: ${effectiveClassName}: Free Choice`
-    );
-  }, [draftSkills, effectiveClassName]);
-
   const effectiveClassNameSkills = useMemo(() => {
     return currentClassSkills
       .filter(s => s.source === `Class: ${effectiveClassName}` && s.level !== 'expertise')
@@ -121,18 +108,6 @@ export default function ProficienciesStep() {
   }, [effectiveClassNameSkills, lockedSkills]);
 
   const remainingChoices = skillChoicesCount;
-
-  const freeChoices = useMemo<FreeChoice[]>(() => {
-    const choices: FreeChoice[] = [];
-    for (let i = 0; i < remainingChoices; i++) {
-      const existingSkill = freeChoiceSkills[i];
-      choices.push({
-        id: i,
-        skill: existingSkill?.skill || null
-      });
-    }
-    return choices;
-  }, [remainingChoices, freeChoiceSkills]);
 
   const handleClassChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     const newClass = e.target.value;
@@ -170,31 +145,6 @@ export default function ProficienciesStep() {
     }
   };
 
-  const handleFreeChoiceChange = (index: number, skill: Skill | null) => {
-    const existingChoice = freeChoiceSkills[index];
-    
-    if (existingChoice) {
-      dispatch({
-        type: 'REMOVE_ITEMS_BY_SOURCE',
-        listName: 'skills',
-        source: `Class: ${effectiveClassName}: Free Choice`,
-      });
-    }
-
-    if (skill) {
-      dispatch({
-        type: 'ADD_ITEM_WITH_SOURCE',
-        listName: 'skills',
-        item: {
-          skill,
-          ability: SKILL_ABILITY_MAP[skill],
-          level: 'proficient',
-          source: `Class: ${effectiveClassName}: Free Choice`,
-        },
-      });
-    }
-  };
-
   const handleExpertiseToggle = (skill: Skill) => {
     const skills = draftSkills;
     if (expertiseSelections.includes(skill)) {
@@ -217,27 +167,13 @@ export default function ProficienciesStep() {
     }
   };
 
-  const allSkills: Skill[] = [
-    'athletics', 'acrobatics', 'sleightOfHand', 'stealth',
-    'arcana', 'history', 'investigation', 'medicine', 'nature', 'religion',
-    'animalHandling', 'insight', 'perception', 'survival',
-    'deception', 'intimidation', 'performance', 'persuasion'
-  ];
-
-  const availableFreeChoiceSkills = allSkills.filter(skill => 
-    !effectiveClassNameSkills.includes(skill)
-  );
-
   const isValid = useMemo(() => {
     if (!classData) return false;
     
-    if (userSelectedClassSkills.length < skillChoicesCount) return false;
-    
-    const freeChoicesFilled = freeChoices.every(choice => choice.skill !== null);
-    if (freeChoices.length > 0 && !freeChoicesFilled) return false;
+    if (userSelectedClassSkills.length !== skillChoicesCount) return false;
     
     if (hasExpertise) {
-      if (expertiseSelections.length < expertiseChoicesCount) return false;
+      if (expertiseSelections.length !== expertiseChoicesCount) return false;
     }
     
     return true;
@@ -245,13 +181,11 @@ export default function ProficienciesStep() {
     classData, 
     userSelectedClassSkills.length, 
     skillChoicesCount, 
-    freeChoices, 
     hasExpertise, 
     expertiseSelections.length, 
     expertiseChoicesCount
   ]);
 
-  // Set step validation
   useEffect(() => {
     dispatch({ type: 'SET_STEP_VALIDATION', stepId: 'proficiencies', isValid });
   }, [isValid, dispatch]);
@@ -341,27 +275,22 @@ export default function ProficienciesStep() {
             
             <div className="grid grid-cols-2 md:grid-cols-3 gap-2 mb-4">
               {availableSkillsForClass.map(skill => {
-                const isLocked = lockedSkills.has(skill);
-                const isUserSelected = userSelectedClassSkills.includes(skill);
+                const isUserSelected = effectiveClassNameSkills.includes(skill);
                 
                 return (
                   <button
                     key={skill}
-                    data-state={isLocked ? 'locked' : isUserSelected ? 'selected' : 'available'}
+                    data-state={isUserSelected ? 'selected' : 'available'}
                     onClick={() => handleSkillToggle(skill)}
-                    disabled={isLocked}
                     className={`px-3 py-2 rounded text-sm font-medium transition-colors ${
-                      isLocked 
-                        ? 'bg-slate-200 text-slate-400 cursor-not-allowed'
-                        : isUserSelected 
-                          ? 'bg-green-600 text-white hover:bg-green-700'
-                          : 'bg-slate-100 text-slate-700 hover:bg-slate-200'
+                      isUserSelected 
+                        ? 'bg-green-600 text-white hover:bg-green-700'
+                        : 'bg-slate-100 text-slate-700 hover:bg-slate-200'
                     }`}
                   >
                     <div className="flex items-center justify-between">
                       <span>{SKILL_DISPLAY_NAMES[skill]}</span>
-                      {isLocked && <span className="text-xs opacity-50">Known</span>}
-                      {isUserSelected && !isLocked && <span className="text-xs">✓</span>}
+                      {isUserSelected && <span className="text-xs">✓</span>}
                     </div>
                   </button>
                 );
@@ -369,43 +298,9 @@ export default function ProficienciesStep() {
             </div>
             
             <div className="text-sm text-slate-600">
-              {effectiveClassNameSkills.length}/{remainingChoices} selected
+              {userSelectedClassSkills.length}/{remainingChoices} selected
             </div>
           </div>
-
-          {remainingChoices > 0 && (
-            <div className="bg-white border border-slate-200 rounded-lg p-6">
-              <h3 className="font-semibold text-lg mb-3">
-                Free Choice{remainingChoices > 1 ? 's' : ''} ({remainingChoices})
-              </h3>
-              <p className="text-sm text-slate-500 mb-4">
-                You already know {remainingChoices} class skill{remainingChoices > 1 ? 's' : ''} from your background. Choose any skill{remainingChoices > 1 ? 's' : ''}.
-              </p>
-              
-              <div className="space-y-3">
-                {freeChoices.map((choice, index) => (
-                  <div key={choice.id} className="flex items-center gap-4">
-                    <span className="text-sm font-medium text-slate-600">Choice {index + 1}:</span>
-                    <select
-                      value={choice.skill || ''}
-                      onChange={(e) => handleFreeChoiceChange(index, e.target.value as Skill || null)}
-                      className="flex-1 border-slate-300 rounded-md shadow-sm focus:border-purple-500 focus:ring-purple-500 p-2 border"
-                    >
-                      <option value="">-- Select a Skill --</option>
-                      {availableFreeChoiceSkills.map(skill => (
-                        <option key={skill} value={skill}>
-                          {SKILL_DISPLAY_NAMES[skill]}
-                        </option>
-                      ))}
-                    </select>
-                    {choice.skill && (
-                      <span className="text-green-600 text-sm">✓ Selected</span>
-                    )}
-                  </div>
-                ))}
-              </div>
-            </div>
-          )}
 
           {hasExpertise && (
             <div className="bg-white border border-slate-200 rounded-lg p-6">
@@ -417,7 +312,7 @@ export default function ProficienciesStep() {
               </p>
               
               <div className="expertise-grid grid grid-cols-2 md:grid-cols-3 gap-2 mb-4">
-                {[...effectiveClassNameSkills, ...freeChoices.filter(c => c.skill).map(c => c.skill as Skill)].map(skill => {
+                {effectiveClassNameSkills.map(skill => {
                   const hasExpertiseOnSkill = expertiseSelections.includes(skill);
                   
                   return (
@@ -452,9 +347,6 @@ export default function ProficienciesStep() {
         <h4 className="font-semibold text-green-800 mb-2">Selection Summary</h4>
         <ul className="text-sm text-green-700 space-y-1">
           <li>Class Skills: {userSelectedClassSkills.length}/{remainingChoices}</li>
-          {remainingChoices > 0 && (
-            <li>Free Choices: {freeChoices.filter(c => c.skill).length}/{remainingChoices}</li>
-          )}
           {hasExpertise && (
             <li>Expertise: {expertiseSelections.length}/{expertiseChoicesCount}</li>
           )}
