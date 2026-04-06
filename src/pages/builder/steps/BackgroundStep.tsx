@@ -1,7 +1,7 @@
-import { useMemo, useEffect } from 'react';
+import { LanguageSelector } from '@/components/LanguageSelector';
+import { useEffect, useMemo } from 'react';
 import { useCharacterBuilder } from '../../../contexts/CharacterBuilderContextTypes';
 import { srdBackgrounds } from '../../../data/srdBackgrounds';
-import { LanguageSelector } from '@/components/LanguageSelector';
 
 export default function BackgroundStep() {
   const { state, dispatch } = useCharacterBuilder();
@@ -157,42 +157,6 @@ export default function BackgroundStep() {
 
         {selectedBg && (
           <>
-            <div className="bg-slate-50 p-4 rounded-md border border-slate-200">
-              <p className="text-sm text-slate-600">{selectedBg.description}</p>
-            </div>
-
-            {selectedBg.features && selectedBg.features.length > 0 && (
-              <div className="bg-slate-50 p-4 rounded-md border border-slate-200">
-                <h3 className="text-sm font-semibold mb-3">Features</h3>
-                {selectedBg.features.map(feature => (
-                  <div key={feature.name} className="mb-3 last:mb-0">
-                    <h4 className="text-sm font-medium text-slate-800">{feature.name}</h4>
-                    <p className="text-xs text-slate-600 mt-1">{feature.description}</p>
-                  </div>
-                ))}
-              </div>
-            )}
-
-            <div className="bg-slate-50 p-4 rounded-md border border-slate-200">
-              <h3 className="text-sm font-semibold mb-3">Proficiencies</h3>
-              <div className="space-y-2">
-                <div>
-                  <span className="text-xs font-medium text-slate-700">Skills: </span>
-                  <span className="text-xs text-slate-600">
-                    {selectedBg.skillProficiencies.map(s => s.charAt(0).toUpperCase() + s.slice(1)).join(', ')}
-                  </span>
-                </div>
-                {selectedBg.toolProficiencies && selectedBg.toolProficiencies.length > 0 && (
-                  <div>
-                    <span className="text-xs font-medium text-slate-700">Tools: </span>
-                    <span className="text-xs text-slate-600">
-                      {selectedBg.toolProficiencies.join(', ')}
-                    </span>
-                  </div>
-                )}
-              </div>
-            </div>
-
             {languageCount > 0 && (
               <div className="bg-slate-50 p-4 rounded-md border border-slate-200">
                 <LanguageSelector
@@ -251,73 +215,63 @@ export default function BackgroundStep() {
           {selectedBg && (
             <div>
               <h3 className="font-semibold text-lg text-purple-700">{selectedBg.name}</h3>
-              <p className="text-sm text-slate-600 mt-2 mb-4">{selectedBg.description}</p>
 
-              {selectedBg.features && selectedBg.features.length > 0 && (
-                <div className="mb-4">
-                  <h4 className="text-sm font-semibold text-slate-700 mb-2">Features</h4>
-                  {selectedBg.features.map(feature => (
-                    <div key={feature.name} className="mb-2 p-2 bg-blue-50 rounded">
-                      <span className="font-medium text-slate-800">{feature.name}</span>
-                      <p className="text-xs text-slate-600 mt-1">{feature.description}</p>
+              <div className="mt-4 space-y-3">
+                <div>
+                  <h4 className="text-sm font-semibold text-slate-700">Your Selections</h4>
+                  {selectedBg.equipment && selectedBg.equipment.length > 0 && (
+                    <p className="text-xs text-slate-600 mt-1">
+                      Equipment Package: <span className="font-medium">{state.backgroundEquipmentPackage || 'A'}</span>
+                    </p>
+                  )}
+                  {languageCount > 0 && knownLanguages.length > 0 && (
+                    <p className="text-xs text-slate-600 mt-1">
+                      Languages: {knownLanguages.join(', ')}
+                    </p>
+                  )}
+                </div>
+
+                <div>
+                  <h4 className="text-sm font-semibold text-slate-700">Character Benefits</h4>
+                  <div className="mt-2 space-y-2">
+                    <div>
+                      <span className="text-xs font-medium text-slate-600">Skills: </span>
+                      <div className="flex flex-wrap gap-1 mt-1">
+                        {selectedBg.skillProficiencies.map(skill => (
+                          <span key={skill} className="px-2 py-0.5 bg-green-100 text-green-800 rounded text-xs">
+                            {skill.charAt(0).toUpperCase() + skill.slice(1)}
+                          </span>
+                        ))}
+                      </div>
                     </div>
-                  ))}
-                </div>
-              )}
-
-              <div className="mb-4">
-                <h4 className="text-sm font-semibold text-slate-700 mb-2">Proficiencies</h4>
-                <div className="flex flex-wrap gap-2">
-                  {selectedBg.skillProficiencies.map(skill => (
-                    <span
-                      key={skill}
-                      className="px-2 py-1 bg-green-100 text-green-800 rounded text-xs"
-                    >
-                      {skill.charAt(0).toUpperCase() + skill.slice(1)}
-                    </span>
-                  ))}
-                  {selectedBg.toolProficiencies?.map(tool => (
-                    <span
-                      key={tool}
-                      className="px-2 py-1 bg-blue-100 text-blue-800 rounded text-xs"
-                    >
-                      {tool}
-                    </span>
-                  ))}
-                </div>
-              </div>
-
-              {languageCount > 0 && (
-                <div className="mb-4">
-                  <h4 className="text-sm font-semibold text-slate-700 mb-2">Languages</h4>
-                  <div className="flex flex-wrap gap-2">
-                    {knownLanguages.map(lang => (
-                      <span
-                        key={lang}
-                        className="px-2 py-1 bg-cyan-100 text-cyan-800 rounded text-xs"
-                      >
-                        {lang}
-                      </span>
-                    ))}
+                    {selectedBg.toolProficiencies && selectedBg.toolProficiencies.length > 0 && (
+                      <div>
+                        <span className="text-xs font-medium text-slate-600">Tools: </span>
+                        <div className="flex flex-wrap gap-1 mt-1">
+                          {selectedBg.toolProficiencies.map(tool => (
+                            <span key={tool} className="px-2 py-0.5 bg-blue-100 text-blue-800 rounded text-xs">
+                              {tool}
+                            </span>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+                    {selectedBg.equipment && selectedBg.equipment.length > 0 && (
+                      <div>
+                        <span className="text-xs font-medium text-slate-600">Equipment: </span>
+                        <ul className="text-xs text-slate-600 mt-1 ml-2 list-disc">
+                          {selectedBg.equipment[0]?.items.map((item, idx) => (
+                            <li key={idx}>
+                              {item.quantity ? `${item.quantity}x ` : ''}{item.name}
+                            </li>
+                          ))}
+                          {selectedBg.equipment[0]?.gold && <li>{selectedBg.equipment[0].gold} GP</li>}
+                        </ul>
+                      </div>
+                    )}
                   </div>
                 </div>
-              )}
-
-              {selectedBg.equipment && selectedBg.equipment.length > 0 && (
-                <div>
-                  <h4 className="text-sm font-semibold text-slate-700 mb-2">Equipment</h4>
-                  <ul className="text-sm text-slate-600 space-y-1">
-                    {selectedBg.equipment[0]?.items.map((item, idx) => (
-                      <li key={idx}>
-                        {item.quantity ? `${item.quantity}x ` : ''}{item.name}
-                      </li>
-                    ))}
-                    {selectedBg.equipment[0]?.gold && (
-                      <li>{selectedBg.equipment[0].gold} GP</li>
-                    )}
-                  </ul>
-                </div>
-              )}
+              </div>
             </div>
           )}
         </div>
