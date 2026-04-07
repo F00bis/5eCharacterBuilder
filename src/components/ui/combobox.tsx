@@ -17,6 +17,7 @@ interface ComboboxProps {
   onCreateCustom?: () => void;
   className?: string;
   onOpenChange?: (open: boolean) => void;
+  disabled?: boolean;
 }
 
 function Combobox({
@@ -27,6 +28,7 @@ function Combobox({
   onCreateCustom,
   className,
   onOpenChange,
+  disabled = false,
 }: ComboboxProps) {
   const [open, setOpen] = React.useState(false)
   const [search, setSearch] = React.useState("")
@@ -68,6 +70,7 @@ function Combobox({
         <button
           ref={triggerRef}
           type="button"
+          disabled={disabled}
           className={cn(
             "flex h-10 w-full items-center justify-between rounded-md border border-slate-200 bg-white px-3 py-2 text-sm ring-offset-white placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-purple-700 focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50",
             className

@@ -5,6 +5,7 @@ export interface StartingEquipmentOption {
   label: string;
   options: {
     label: string;
+    count?: number;
     items?: string[];
     type: 'bundle' | 'choice';
     // Legacy fields (backward compatibility)

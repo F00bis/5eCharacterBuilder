@@ -411,7 +411,7 @@ export const srdClasses: DndClass[] = [
           label: 'Choose your weapon:',
           options: [
             { label: '(a) Martial Weapon and Shield', type: 'choice', weaponClasses: ['Martial'] },
-            { label: '(b) Two Martial Weapons', type: 'choice', weaponClasses: ['Martial'] }
+            { label: '(b) Two Martial Weapons', type: 'choice', weaponClasses: ['Martial'], count: 2 }
           ]
         }
       ],
@@ -632,7 +632,7 @@ export const srdClasses: DndClass[] = [
           label: 'Choose your weapon:',
           options: [
             { label: '(a) Martial Weapon and Shield', type: 'choice', weaponClasses: ['Martial'] },
-            { label: '(b) Two Martial Weapons', type: 'choice', weaponClasses: ['Martial'] }
+            { label: '(b) Two Martial Weapons', type: 'choice', weaponClasses: ['Martial'], count: 2 }
           ]
         }
       ],
@@ -735,7 +735,7 @@ export const srdClasses: DndClass[] = [
           label: 'Choose your weapons:',
           options: [
             { label: '(a) Two Shortswords', items: ['Shortsword', 'Shortsword'], type: 'bundle' },
-            { label: '(b) Two Simple Melee Weapons', type: 'choice', weaponClasses: ['Simple'], weaponForms: ['Melee'] }
+            { label: '(b) Two Simple Melee Weapons', type: 'choice', weaponClasses: ['Simple'], weaponForms: ['Melee'], count: 2 }
           ]
         }
       ],

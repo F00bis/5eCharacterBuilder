@@ -1,5 +1,5 @@
-import { Combobox } from '@/components/ui/combobox';
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
+import type { ComboboxOption } from '@/components/ui/combobox';
+import { MultiSelectAutocomplete } from '@/components/ui/multi-select-autocomplete';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useCharacterBuilder } from '../../../contexts/CharacterBuilderContextTypes';
 import { getClassByName } from '../../../db/classes';
@@ -13,16 +13,11 @@ interface EquipmentPackagesProps {
   isLevel1: boolean;
 }
 
-interface SelectableItem {
-  name: string;
-  isPack: boolean;
-}
-
 export default function EquipmentPackages({ currentClassName, isLevel1 }: EquipmentPackagesProps) {
   const { state, dispatch } = useCharacterBuilder();
   const [shopItems, setShopItems] = useState<SrdEquipment[]>([]);
   const [equipmentChoices, setEquipmentChoices] = useState<Record<number, number>>({});
-  const [itemSelections, setItemSelections] = useState<Record<string, string>>({});
+  const [itemSelections, setItemSelections] = useState<Record<string, SrdEquipment[]>>({});
   const [classData, setClassData] = useState<Awaited<ReturnType<typeof getClassByName>>>(undefined);
 
   const classEquipment = useMemo(() => {
@@ -41,75 +36,47 @@ export default function EquipmentPackages({ currentClassName, isLevel1 }: Equipm
     });
   }, []);
 
-  const getSelectableItems = useCallback((items: string[], equipmentData: SrdEquipment[]): SelectableItem[] => {
-    const result: SelectableItem[] = [];
-    items.forEach(itemName => {
-      const exactMatch = equipmentData.find(e => e.name === itemName);
-      if (exactMatch && exactMatch.equipmentCategory === 'Pack') {
-        return; 
-      }
-      result.push({ name: itemName, isPack: false });
-    });
-    return result;
-  }, []);
-
   const getOptionItems = useCallback((
     option: StartingEquipmentOption['options'][0],
     equipmentData: SrdEquipment[]
-  ): string[] => {
-    // 1. Check new tag-based fields first (priority)
+  ): SrdEquipment[] => {
     if (option.weaponClasses || option.weaponForms || option.weaponProperties) {
-      return equipmentData
-        .filter(eq => {
-          // Must be a weapon
-          if (eq.equipmentCategory !== 'Weapon') return false;
-          
-          // Check weaponClasses
-          if (option.weaponClasses?.length && eq.weaponClass) {
-            if (!option.weaponClasses.includes(eq.weaponClass)) return false;
-          }
-          
-          // Check weaponForms
-          if (option.weaponForms?.length && eq.weaponForm) {
-            if (!option.weaponForms.includes(eq.weaponForm)) return false;
-          }
-          
-          // Check weaponProperties (AND logic - must have ALL properties)
-          if (option.weaponProperties?.length && eq.weaponProperties) {
-            if (!option.weaponProperties.every(p => eq.weaponProperties!.includes(p))) return false;
-          }
-          
-          return true;
-        })
-        .map(eq => eq.name);
+      return equipmentData.filter(eq => {
+        if (eq.equipmentCategory !== 'Weapon') return false;
+        
+        if (option.weaponClasses?.length && eq.weaponClass) {
+          if (!option.weaponClasses.includes(eq.weaponClass)) return false;
+        }
+        
+        if (option.weaponForms?.length && eq.weaponForm) {
+          if (!option.weaponForms.includes(eq.weaponForm)) return false;
+        }
+        
+        if (option.weaponProperties?.length && eq.weaponProperties) {
+          if (!option.weaponProperties.every(p => eq.weaponProperties!.includes(p))) return false;
+        }
+        
+        return true;
+      });
     }
     
-    // 2. Fall back to legacy weaponCategories (backward compatibility)
     if (option.weaponCategories && option.weaponCategories.length > 0) {
       const categorySet = new Set(option.weaponCategories);
-      return equipmentData
-        .filter(e => e.equipmentCategory === 'Weapon' && e.weaponCategory && categorySet.has(e.weaponCategory))
-        .map(e => e.name);
+      return equipmentData.filter(e => e.equipmentCategory === 'Weapon' && e.weaponCategory && categorySet.has(e.weaponCategory));
     }
     
-    // 3. Check armorCategories
     if (option.armorCategories && option.armorCategories.length > 0) {
       const categorySet = new Set(option.armorCategories);
-      return equipmentData
-        .filter(e => e.equipmentCategory === 'Armor' && e.armorCategory && categorySet.has(e.armorCategory))
-        .map(e => e.name);
+      return equipmentData.filter(e => e.equipmentCategory === 'Armor' && e.armorCategory && categorySet.has(e.armorCategory));
     }
     
-    // 4. Check equipmentCategories
     if (option.equipmentCategories && option.equipmentCategories.length > 0) {
       const categorySet = new Set(option.equipmentCategories);
-      return equipmentData
-        .filter(e => e.equipmentCategory && categorySet.has(e.equipmentCategory))
-        .map(e => e.name);
+      return equipmentData.filter(e => e.equipmentCategory && categorySet.has(e.equipmentCategory));
     }
     
-    // 5. Fall back to explicit items array
-    return option.items || [];
+    const itemNames = option.items || [];
+    return equipmentData.filter(e => itemNames.includes(e.name));
   }, []);
 
   const handleEquipmentChoice = useCallback((choiceIdx: number, optionIdx: number) => {
@@ -117,7 +84,6 @@ export default function EquipmentPackages({ currentClassName, isLevel1 }: Equipm
       ...prev,
       [choiceIdx]: optionIdx
     }));
-    // Clear item selection when changing choice
     setItemSelections(prev => {
       const newSelections = { ...prev };
       Object.keys(newSelections).forEach(key => {
@@ -129,98 +95,89 @@ export default function EquipmentPackages({ currentClassName, isLevel1 }: Equipm
     });
   }, []);
 
+  const addEquipmentItem = useCallback((item: SrdEquipment) => {
+    if (item.equipmentCategory === 'Pack' && item.contents) {
+      item.contents.forEach(content => {
+        const contentItem = shopItems.find(i => i.name === content.name);
+        if (contentItem) {
+          const equipment: Equipment = {
+            name: contentItem.name,
+            rarity: 'common',
+            weight: parseFloat(contentItem.weight) || 0,
+            description: contentItem.description,
+            cost: contentItem.cost,
+            quantity: content.quantity || 1,
+            source: 'Starting Equipment'
+          };
+          
+          if (contentItem.weaponCategory) {
+            equipment.weaponCategory = contentItem.weaponCategory;
+            equipment.damage = contentItem.damage;
+            equipment.properties = contentItem.properties;
+            equipment.mastery = contentItem.mastery;
+            equipment.equippable = true;
+            equipment.equipped = false;
+          }
+          
+          if (contentItem.armorCategory) {
+            equipment.armorCategory = contentItem.armorCategory;
+            equipment.armorClass = contentItem.armorClass ? parseInt(contentItem.armorClass, 10) : undefined;
+            equipment.equippable = true;
+            equipment.equipped = false;
+          }
+          
+          dispatch({ type: 'ADD_ITEM_WITH_SOURCE', listName: 'equipment', item: equipment });
+        }
+      });
+      return;
+    }
+    
+    const equipment: Equipment = {
+      name: item.name,
+      rarity: 'common',
+      weight: parseFloat(item.weight) || 0,
+      description: item.description,
+      cost: item.cost,
+      source: 'Starting Equipment'
+    };
+    
+    if (item.weaponCategory) {
+      equipment.weaponCategory = item.weaponCategory;
+      equipment.damage = item.damage;
+      equipment.properties = item.properties;
+      equipment.mastery = item.mastery;
+      equipment.equippable = true;
+      equipment.equipped = false;
+    }
+    
+    if (item.armorCategory) {
+      equipment.armorCategory = item.armorCategory;
+      equipment.armorClass = item.armorClass ? parseInt(item.armorClass, 10) : undefined;
+      equipment.equippable = true;
+      equipment.equipped = false;
+    }
+    
+    if (item.equipmentCategory === 'Pack') {
+      equipment.description = item.description;
+    }
+    
+    dispatch({ type: 'ADD_ITEM_WITH_SOURCE', listName: 'equipment', item: equipment });
+  }, [shopItems, dispatch]);
+
   const handleEquipFixedItems = useCallback(() => {
     if (!classEquipment || shopItems.length === 0) return;
     
-    // Clear existing starting equipment before adding new items
     dispatch({
       type: 'REMOVE_ITEMS_BY_SOURCE',
       listName: 'equipment',
       source: 'Starting Equipment'
     });
     
-    const addEquipmentItem = (itemName: string) => {
+    classEquipment.fixedEquipment.forEach(itemName => {
       const matchingItem = shopItems.find(i => i.name === itemName);
       if (matchingItem) {
-        if (matchingItem.equipmentCategory === 'Pack' && matchingItem.contents) {
-          matchingItem.contents.forEach(content => {
-            const contentItem = shopItems.find(i => i.name === content.name);
-            if (contentItem) {
-              const item: Equipment = {
-                name: contentItem.name,
-                rarity: 'common',
-                weight: parseFloat(contentItem.weight) || 0,
-                description: contentItem.description,
-                cost: contentItem.cost,
-                quantity: content.quantity || 1,
-                source: 'Starting Equipment'
-              };
-              
-              if (contentItem.weaponCategory) {
-                item.weaponCategory = contentItem.weaponCategory;
-                item.damage = contentItem.damage;
-                item.properties = contentItem.properties;
-                item.mastery = contentItem.mastery;
-                item.equippable = true;
-                item.equipped = false;
-              }
-              
-              if (contentItem.armorCategory) {
-                item.armorCategory = contentItem.armorCategory;
-                item.armorClass = contentItem.armorClass ? parseInt(contentItem.armorClass, 10) : undefined;
-                item.equippable = true;
-                item.equipped = false;
-              }
-              
-              dispatch({
-                type: 'ADD_ITEM_WITH_SOURCE',
-                listName: 'equipment',
-                item
-              });
-            }
-          });
-          return;
-        }
-        
-        const item: Equipment = {
-          name: matchingItem.name,
-          rarity: 'common',
-          weight: parseFloat(matchingItem.weight) || 0,
-          description: matchingItem.description,
-          cost: matchingItem.cost,
-          source: 'Starting Equipment'
-        };
-        
-        if (matchingItem.weaponCategory) {
-          item.weaponCategory = matchingItem.weaponCategory;
-          item.damage = matchingItem.damage;
-          item.properties = matchingItem.properties;
-          item.mastery = matchingItem.mastery;
-          item.equippable = true;
-          item.equipped = false;
-        }
-        
-        if (matchingItem.armorCategory) {
-          item.armorCategory = matchingItem.armorCategory;
-          item.armorClass = matchingItem.armorClass ? parseInt(matchingItem.armorClass, 10) : undefined;
-          item.equippable = true;
-          item.equipped = false;
-        }
-        
-        if (matchingItem.equipmentCategory === 'Pack') {
-          item.description = matchingItem.description;
-        }
-        
-        dispatch({
-          type: 'ADD_ITEM_WITH_SOURCE',
-          listName: 'equipment',
-          item
-        });
+        addEquipmentItem(matchingItem);
       }
-    };
-    
-    classEquipment.fixedEquipment.forEach(itemName => {
-      addEquipmentItem(itemName);
     });
     
     classEquipment.choices.forEach((choice, choiceIdx) => {
@@ -230,27 +187,16 @@ export default function EquipmentPackages({ currentClassName, isLevel1 }: Equipm
         const optionItems = getOptionItems(option, shopItems);
         
         if (option.type === 'bundle') {
-          optionItems.forEach(itemName => {
-            addEquipmentItem(itemName);
-          });
+          optionItems.forEach(item => addEquipmentItem(item));
         } else {
-          const selectableItems = getSelectableItems(optionItems, shopItems);
           const selectionKey = `${choiceIdx}-${selectedOptionIdx}`;
-          const selectedItem = itemSelections[selectionKey];
-          
-          if (selectedItem) {
-            addEquipmentItem(selectedItem);
-          } else if (selectableItems.length > 0) {
-            selectableItems.forEach(item => {
-              addEquipmentItem(item.name);
-            });
-          }
+          const selectedItems = itemSelections[selectionKey] || [];
+          selectedItems.forEach(item => addEquipmentItem(item));
         }
       }
     });
-  }, [classEquipment, shopItems, dispatch, equipmentChoices, itemSelections, getSelectableItems]);
+  }, [classEquipment, shopItems, dispatch, equipmentChoices, itemSelections, getOptionItems, addEquipmentItem]);
 
-  // Initialize state from draft when navigating back to this step
   useEffect(() => {
     if (!classEquipment || shopItems.length === 0 || !isLevel1) return;
     
@@ -261,31 +207,27 @@ export default function EquipmentPackages({ currentClassName, isLevel1 }: Equipm
     if (draftEquipment.length === 0) return;
     
     const newEquipmentChoices: Record<number, number> = {};
-    const newItemSelections: Record<string, string> = {};
+    const newItemSelections: Record<string, SrdEquipment[]> = {};
     
     classEquipment.choices.forEach((choice, choiceIdx) => {
       choice.options.forEach((option, optionIdx) => {
         const optionItems = getOptionItems(option, shopItems);
-        const selectableItems = getSelectableItems(optionItems, shopItems);
         const selectionKey = `${choiceIdx}-${optionIdx}`;
         
         const draftItemNames = draftEquipment.map(e => e.name);
         
         if (option.type === 'bundle') {
-          const allBundleItemsPresent = optionItems.every(itemName => 
-            draftItemNames.includes(itemName)
+          const allBundleItemsPresent = optionItems.every(item => 
+            draftItemNames.includes(item.name)
           );
           if (allBundleItemsPresent) {
             newEquipmentChoices[choiceIdx] = optionIdx;
           }
         } else {
-          const optionItemNames = selectableItems.map(i => i.name);
-          const matches = optionItemNames.filter(name => draftItemNames.includes(name));
+          const matches = optionItems.filter(item => draftItemNames.includes(item.name));
           if (matches.length > 0) {
             newEquipmentChoices[choiceIdx] = optionIdx;
-            if (selectableItems.length > 1) {
-              newItemSelections[selectionKey] = matches[0];
-            }
+            newItemSelections[selectionKey] = matches;
           }
         }
       });
@@ -298,9 +240,8 @@ export default function EquipmentPackages({ currentClassName, isLevel1 }: Equipm
       }, 0);
       return () => window.clearTimeout(timeoutId);
     }
-  }, [classEquipment, shopItems.length, isLevel1, state.draft.equipment, getOptionItems, getSelectableItems, equipmentChoices]);
+  }, [classEquipment, shopItems.length, isLevel1, state.draft.equipment, getOptionItems, equipmentChoices]);
 
-  // Add equipment to draft when all selections are complete
   const isValid = useMemo(() => {
     if (!isLevel1) return true;
     if (!classEquipment || shopItems.length === 0) return false;
@@ -310,24 +251,86 @@ export default function EquipmentPackages({ currentClassName, isLevel1 }: Equipm
       if (selectedOptionIdx === undefined) return false;
       
       const option = choice.options[selectedOptionIdx];
+      const requiredCount = option.count || 1;
       
       if (option.type === 'choice') {
-        const optionItems = getOptionItems(option, shopItems);
-        const selectableItems = getSelectableItems(optionItems, shopItems);
-        if (selectableItems.length > 0 && !itemSelections[`${choiceIdx}-${selectedOptionIdx}`]) {
+        const selectionKey = `${choiceIdx}-${selectedOptionIdx}`;
+        const selectedItems = itemSelections[selectionKey] || [];
+        if (selectedItems.length < requiredCount) {
           return false;
         }
       }
       
       return true;
     });
-  }, [isLevel1, classEquipment, shopItems, equipmentChoices, itemSelections, getSelectableItems]);
+  }, [isLevel1, classEquipment, shopItems, equipmentChoices, itemSelections]);
 
   useEffect(() => {
     if (isValid && isLevel1 && classEquipment && shopItems.length > 0) {
       handleEquipFixedItems();
     }
   }, [isValid, isLevel1, classEquipment, shopItems.length]);
+
+  const getAvailableOptions = useCallback((optionItems: SrdEquipment[]): ComboboxOption[] => {
+    return optionItems.map(item => {
+      let label = item.name;
+      if (item.weaponCategory && item.damage) {
+        label = `${item.name} (${item.damage})`;
+      } else if (item.cost) {
+        label = `${item.name} (${item.cost})`;
+      }
+      return { value: item.name, label };
+    });
+  }, []);
+
+  const handleAddItem = useCallback((choiceIdx: number, optionIdx: number) => {
+    return (itemName: string) => {
+      const selectionKey = `${choiceIdx}-${optionIdx}`;
+      const option = classEquipment?.choices[choiceIdx].options[optionIdx];
+      const optionItems = option ? getOptionItems(option, shopItems) : [];
+      const item = optionItems.find(i => i.name === itemName);
+      
+      if (item) {
+        setItemSelections(prev => {
+          const current = prev[selectionKey] || [];
+          if (current.some(i => i.name === itemName)) return prev;
+          return { ...prev, [selectionKey]: [...current, item] };
+        });
+      }
+    };
+  }, [classEquipment, shopItems, getOptionItems]);
+
+  const renderEquipmentBadge = useCallback((item: SrdEquipment) => {
+    const onRemove = () => {
+      const currentKey = Object.entries(itemSelections).find(([, items]) => 
+        items.some(i => i.name === item.name)
+      )?.[0];
+      if (currentKey) {
+        setItemSelections(prev => {
+          const current = prev[currentKey] || [];
+          return { ...prev, [currentKey]: current.filter(i => i.name !== item.name) };
+        });
+      }
+    };
+    
+    return (
+      <div className="cursor-pointer">
+        <div className="flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-semibold border bg-slate-100 text-slate-900 border-slate-300">
+          {item.name}
+          <button
+            type="button"
+            onClick={(e) => {
+              e.stopPropagation();
+              onRemove();
+            }}
+            className="ml-1 inline-flex h-3.5 w-3.5 items-center justify-center rounded-full hover:bg-black/10"
+          >
+            ×
+          </button>
+        </div>
+      </div>
+    );
+  }, [itemSelections]);
 
   if (!currentClassName || !classEquipment) {
     return (
@@ -340,117 +343,94 @@ export default function EquipmentPackages({ currentClassName, isLevel1 }: Equipm
   }
 
   return (
-    <TooltipProvider>
-      <div className="bg-white border border-slate-200 rounded-lg p-6 space-y-6">
-        {classEquipment.choices.map((choice, choiceIdx) => (
-          <div key={choiceIdx}>
-            <h3 className="font-semibold mb-3">{choice.label}</h3>
-            <div className="space-y-2">
-              {choice.options.map((option, optionIdx) => {
-                const selectionKey = `${choiceIdx}-${optionIdx}`;
-                const isSelected = equipmentChoices[choiceIdx] === optionIdx;
-                const optionItems = getOptionItems(option, shopItems);
-                const selectableItems = getSelectableItems(optionItems, shopItems);
-                const hasSelectableItems = selectableItems.length > 0;
-                const isBundle = option.type === 'bundle';
+    <div className="bg-white border border-slate-200 rounded-lg p-6 space-y-6">
+      {classEquipment.choices.map((choice, choiceIdx) => (
+        <div key={choiceIdx}>
+          <h3 className="font-semibold mb-3">{choice.label}</h3>
+          <div className="space-y-2">
+            {choice.options.map((option, optionIdx) => {
+              const selectionKey = `${choiceIdx}-${optionIdx}`;
+              const isSelected = equipmentChoices[choiceIdx] === optionIdx;
+              const optionItems = getOptionItems(option, shopItems);
+              const hasSelectableItems = optionItems.length > 0;
+              const isBundle = option.type === 'bundle';
+              const requiredCount = option.count || 1;
+              const selectedItems = itemSelections[selectionKey] || [];
+              const availableOptions = getAvailableOptions(optionItems);
 
-                return (
-                  <div key={optionIdx}>
-                    <label 
-                      className={`flex items-center p-3 rounded-lg border cursor-pointer transition-colors ${
-                        isSelected
-                          ? 'border-purple-500 bg-purple-50'
-                          : 'border-slate-200 hover:border-slate-300'
-                      }`}
-                    >
-                      <input
-                        type="radio"
-                        name={`choice-${choiceIdx}`}
-                        checked={isSelected}
-                        onChange={() => handleEquipmentChoice(choiceIdx, optionIdx)}
-                        className="mr-3"
+              return (
+                <div key={optionIdx}>
+                  <label 
+                    className={`flex items-center p-3 rounded-lg border cursor-pointer transition-colors ${
+                      isSelected
+                        ? 'border-purple-500 bg-purple-50'
+                        : 'border-slate-200 hover:border-slate-300'
+                    }`}
+                  >
+                    <input
+                      type="radio"
+                      name={`choice-${choiceIdx}`}
+                      checked={isSelected}
+                      onChange={() => handleEquipmentChoice(choiceIdx, optionIdx)}
+                      className="mr-3"
+                    />
+                    <span>{option.label}</span>
+                  </label>
+                  
+                  {isSelected && hasSelectableItems && !isBundle && (
+                    <div className="ml-6 mt-2">
+                      <label className="text-sm text-slate-600 mb-1 block">
+                        Select {requiredCount} item{requiredCount > 1 ? 's' : ''}:
+                      </label>
+                      <MultiSelectAutocomplete
+                        selectedItems={selectedItems}
+                        availableOptions={availableOptions}
+                        maxSelections={requiredCount}
+                        onAdd={handleAddItem(choiceIdx, optionIdx)}
+                        renderBadge={renderEquipmentBadge}
+                        placeholder="Select an item..."
+                        disabled={selectedItems.length >= requiredCount}
                       />
-                      <span>{option.label}</span>
-                    </label>
-                    
-                    {isSelected && hasSelectableItems && !isBundle && (
-                      <div className="ml-6 mt-2">
-                        <label className="text-sm text-slate-600 mb-1 block">
-                          Select Item:
-                        </label>
-                        <Combobox
-                          options={selectableItems.map(item => {
-                            const dbItem = shopItems.find(i => i.name === item.name);
-                            let label = item.name;
-                            if (dbItem?.weaponCategory && dbItem?.damage) {
-                              label = `${item.name} (${dbItem.damage})`;
-                            } else if (dbItem?.cost) {
-                              label = `${item.name} (${dbItem.cost})`;
-                            }
-                            return { value: item.name, label };
-                          })}
-                          value={itemSelections[selectionKey] || ''}
-                          onChange={(value) => setItemSelections(prev => ({
-                            ...prev,
-                            [selectionKey]: value
-                          }))}
-                          placeholder="Select an item..."
-                        />
-                      </div>
-                    )}
-                    
-                    {isSelected && isBundle && (
-                      <div className="ml-6 mt-2 text-sm text-slate-600">
-                        <span className="font-medium">You will receive:</span>
-                        <ul className="list-disc list-inside mt-1">
-                          {optionItems.map((itemName, idx) => (
-                            <li key={idx}>{itemName}</li>
-                          ))}
-                        </ul>
-                      </div>
-                    )}
-                  </div>
+                    </div>
+                  )}
+                  
+                  {isSelected && isBundle && (
+                    <div className="ml-6 mt-2 text-sm text-slate-600">
+                      <span className="font-medium">You will receive:</span>
+                      <ul className="list-disc list-inside mt-1">
+                        {optionItems.map((item, idx) => (
+                          <li key={idx}>{item.name}</li>
+                        ))}
+                      </ul>
+                    </div>
+                  )}
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      ))}
+      
+      {classEquipment.fixedEquipment.length > 0 && (
+        <div>
+          <h3 className="font-semibold mb-3">Fixed Equipment (from class and background)</h3>
+          <ul className="list-disc list-inside text-slate-600">
+            {classEquipment.fixedEquipment.map((itemName, idx) => {
+              const packItem = shopItems.find(i => i.name === itemName && i.equipmentCategory === 'Pack');
+              if (packItem?.contents) {
+                return (
+                  <li key={idx}>
+                    <span className="text-purple-700 underline decoration-dotted cursor-help">
+                      {itemName}
+                    </span>
+                  </li>
                 );
-              })}
-            </div>
-          </div>
-        ))}
-        
-        {classEquipment.fixedEquipment.length > 0 && (
-          <div>
-            <h3 className="font-semibold mb-3">Fixed Equipment (from class and background)</h3>
-            <ul className="list-disc list-inside text-slate-600">
-              {classEquipment.fixedEquipment.map((itemName, idx) => {
-                const packItem = shopItems.find(i => i.name === itemName && i.equipmentCategory === 'Pack');
-                if (packItem?.contents) {
-                  return (
-                    <li key={idx}>
-                      <Tooltip>
-                        <TooltipTrigger asChild>
-                          <span className="cursor-help text-purple-700 underline decoration-dotted">
-                            {itemName}
-                          </span>
-                        </TooltipTrigger>
-                        <TooltipContent side="right" className="w-64">
-                          <div className="font-semibold mb-1">{itemName} contains:</div>
-                          <ul className="text-sm list-disc list-inside">
-                            {packItem.contents.map((content, cIdx) => (
-                              <li key={cIdx}>
-                                {content.quantity && content.quantity > 1 ? `${content.quantity}x ` : ''}{content.name}
-                              </li>
-                            ))}
-                          </ul>
-                        </TooltipContent>
-                      </Tooltip>
-                    </li>
-                  );
-                }
-                return <li key={idx}>{itemName}</li>;
-              })}
-            </ul>
-          </div>
-        )}
-      </div>
-    </TooltipProvider>
+              }
+              return <li key={idx}>{itemName}</li>;
+            })}
+          </ul>
+        </div>
+      )}
+    </div>
   );
 }

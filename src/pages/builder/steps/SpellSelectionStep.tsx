@@ -1,10 +1,9 @@
-import { useCallback, useEffect, useState, useMemo } from 'react';
+import { useCallback, useEffect, useState, useMemo, useRef } from 'react';
 import { useCharacterBuilder } from '../../../contexts/CharacterBuilderContextTypes';
 import { srdSpells } from '../../../data/srdSpells';
 import { calculateSpellEntitlements, getMaxAccessibleSpellLevel, getSpellListForClass, loadSpellProgressions } from '../../../utils/spellCalculations';
-import { Combobox, type ComboboxOption } from '@/components/ui/combobox';
-import { Badge } from '@/components/ui/badge';
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
+import { MultiSelectAutocomplete } from '@/components/ui/multi-select-autocomplete';
+import type { ComboboxOption } from '@/components/ui/combobox';
 import type { SpellSchool } from '@/types/spells';
 
 interface SpellSelectionStepProps {
@@ -30,12 +29,12 @@ export default function SpellSelectionStep({ isVisible }: SpellSelectionStepProp
   const { state, dispatch } = useCharacterBuilder();
   const { classes, subclass } = state.draft;
 
-  const [isLoading, setIsLoading] = useState(true);
+  const isLoadedRef = useRef(false);
 
   useEffect(() => {
-    if (isVisible) {
-      setIsLoading(true);
-      loadSpellProgressions().then(() => setIsLoading(false));
+    if (isVisible && !isLoadedRef.current) {
+      isLoadedRef.current = true;
+      loadSpellProgressions();
     }
   }, [isVisible]);
 
@@ -49,7 +48,6 @@ export default function SpellSelectionStep({ isVisible }: SpellSelectionStepProp
 
   const [selectedCantrips, setSelectedCantrips] = useState<typeof srdSpells[0][]>([]);
   const [selectedSpells, setSelectedSpells] = useState<typeof srdSpells[0][]>([]);
-  const [preparedSpells, setPreparedSpells] = useState<Set<string>>(new Set());
 
   const classNames = useMemo(() => {
     return (classes || []).map(c => c.className);
@@ -115,22 +113,10 @@ export default function SpellSelectionStep({ isVisible }: SpellSelectionStepProp
     setSelectedSpells(prev => prev.filter(s => s.name !== spellName));
   }, []);
 
-  const handleTogglePrepared = useCallback((spellName: string) => {
-    setPreparedSpells(prev => {
-      const newSet = new Set(prev);
-      if (newSet.has(spellName)) {
-        newSet.delete(spellName);
-      } else {
-        newSet.add(spellName);
-      }
-      return newSet;
-    });
-  }, []);
-
   const saveToDraft = useCallback(() => {
     const characterSpells = [
       ...selectedCantrips.map(s => ({ ...s, prepared: false, source: 'Class' })),
-      ...selectedSpells.map(s => ({ ...s, prepared: preparedSpells.has(s.name), source: 'Class' })),
+      ...selectedSpells.map(s => ({ ...s, prepared: false, source: 'Class' })),
     ];
     dispatch({
       type: 'UPDATE_DRAFT',
@@ -138,7 +124,7 @@ export default function SpellSelectionStep({ isVisible }: SpellSelectionStepProp
         spells: characterSpells,
       },
     });
-  }, [selectedCantrips, selectedSpells, preparedSpells, dispatch]);
+  }, [selectedCantrips, selectedSpells, dispatch]);
 
   useEffect(() => {
     if (isVisible && entitlements) {
@@ -150,116 +136,94 @@ export default function SpellSelectionStep({ isVisible }: SpellSelectionStepProp
     return null;
   }
 
-  if (isLoading) {
-    return (
-      <div className="flex items-center justify-center p-8">
-        <span className="text-slate-500">Loading spell data...</span>
-      </div>
-    );
-  }
-
   const canAddCantrips = selectedCantrips.length < entitlements.cantripsKnown;
   const canAddSpells = selectedSpells.length < entitlements.spellsKnown;
 
   return (
-    <TooltipProvider delayDuration={200}>
-      <div className="space-y-6 h-full overflow-y-auto pr-4">
-        {entitlements.warlockPactSlots && (
-          <div className="bg-purple-50 border border-purple-200 rounded-lg p-4">
-            <h3 className="font-semibold text-purple-900">Pact Magic</h3>
-            <p className="text-sm text-purple-700">
-              Pact Magic Slots: {entitlements.warlockPactSlots.slots} (Level {entitlements.warlockPactSlots.slotLevel})
+    <div className="space-y-6 h-full overflow-y-auto pr-4">
+      {entitlements.warlockPactSlots && (
+        <div className="bg-purple-50 border border-purple-200 rounded-lg p-4">
+          <h3 className="font-semibold text-purple-900">Pact Magic</h3>
+          <p className="text-sm text-purple-700">
+            Pact Magic Slots: {entitlements.warlockPactSlots.slots} (Level {entitlements.warlockPactSlots.slotLevel})
+          </p>
+          {entitlements.mysticArcanum && entitlements.mysticArcanum.length > 0 && (
+            <p className="text-sm text-purple-700 mt-1">
+              Mystic Arcanum: {entitlements.mysticArcanum.map(l => `Level ${l}`).join(', ')}
             </p>
-            {entitlements.mysticArcanum && entitlements.mysticArcanum.length > 0 && (
-              <p className="text-sm text-purple-700 mt-1">
-                Mystic Arcanum: {entitlements.mysticArcanum.map(l => `Level ${l}`).join(', ')}
-              </p>
-            )}
-          </div>
-        )}
-
-        <div>
-          <h3 className="text-lg font-semibold mb-3">
-            Cantrips {canAddCantrips && <span className="text-sm font-normal text-slate-500">(Select {entitlements.cantripsKnown - selectedCantrips.length} more)</span>}
-          </h3>
-          
-          {selectedCantrips.length > 0 && (
-            <div className="flex flex-wrap gap-2 mb-3">
-              {selectedCantrips.map(spell => (
-                <Tooltip key={spell.name}>
-                  <TooltipTrigger asChild>
-                    <Badge 
-                      className={`cursor-pointer ${getSchoolColor(spell.school)}`}
-                      onRemove={() => handleRemoveCantrip(spell.name)}
-                    >
-                      {spell.name}
-                    </Badge>
-                  </TooltipTrigger>
-                  <TooltipContent side="top" className="max-w-80">
-                    <div className="font-semibold">{spell.name}</div>
-                    <div className="text-xs text-slate-600">Cantrip - {spell.school}</div>
-                    <div className="text-xs text-slate-600 mt-1">{spell.description}</div>
-                  </TooltipContent>
-                </Tooltip>
-              ))}
-            </div>
-          )}
-
-          {canAddCantrips && (
-            <Combobox
-              options={availableCantrips}
-              value=""
-              onChange={handleAddCantrip}
-              placeholder="Select cantrip..."
-            />
           )}
         </div>
+      )}
 
-        <div>
-          <h3 className="text-lg font-semibold mb-3">
-            Spells {canAddSpells && <span className="text-sm font-normal text-slate-500">(Select {entitlements.spellsKnown - selectedSpells.length} more)</span>}
-          </h3>
-          
-          {selectedSpells.length > 0 && (
-            <div className="flex flex-wrap gap-2 mb-3">
-              {selectedSpells.map(spell => (
-                <Tooltip key={spell.name}>
-                  <TooltipTrigger asChild>
-                    <Badge 
-                      className={`cursor-pointer ${entitlements.canPrepare && preparedSpells.has(spell.name) ? 'ring-2 ring-purple-500 ' : ''}${getSchoolColor(spell.school)}`}
-                      onRemove={() => handleRemoveSpell(spell.name)}
-                      onClick={entitlements.canPrepare ? () => handleTogglePrepared(spell.name) : undefined}
-                    >
-                      {spell.name}
-                      {entitlements.canPrepare && preparedSpells.has(spell.name) && " ★"}
-                    </Badge>
-                  </TooltipTrigger>
-                  <TooltipContent side="top" className="max-w-80">
-                    <div className="font-semibold">{spell.name}</div>
-                    <div className="text-xs text-slate-600">Level {spell.level} - {spell.school}</div>
-                    <div className="text-xs text-slate-600 mt-1">{spell.description}</div>
-                  </TooltipContent>
-                </Tooltip>
-              ))}
+      <div>
+        <h3 className="text-lg font-semibold mb-3">
+          Cantrips {canAddCantrips && <span className="text-sm font-normal text-slate-500">(Select {entitlements.cantripsKnown - selectedCantrips.length} more)</span>}
+        </h3>
+        
+        <MultiSelectAutocomplete
+          selectedItems={selectedCantrips}
+          availableOptions={availableCantrips}
+          maxSelections={entitlements.cantripsKnown}
+          onAdd={handleAddCantrip}
+          renderBadge={(spell) => (
+            <div className="cursor-pointer">
+              <div className="flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-semibold border bg-slate-100 text-slate-900 border-slate-300">
+                {spell.name}
+                <button
+                  type="button"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    handleRemoveCantrip(spell.name);
+                  }}
+                  className="ml-1 inline-flex h-3.5 w-3.5 items-center justify-center rounded-full hover:bg-black/10"
+                >
+                  ×
+                </button>
+              </div>
             </div>
           )}
-
-          {canAddSpells && (
-            <Combobox
-              options={availableSpells}
-              value=""
-              onChange={handleAddSpell}
-              placeholder="Select spell..."
-            />
-          )}
-        </div>
-
-        {entitlements.canPrepare && entitlements.preparedSpellsMax && (
-          <div className="text-sm text-slate-600">
-            Prepared Spells: {preparedSpells.size} / {entitlements.preparedSpellsMax} (reference only)
-          </div>
-        )}
+          placeholder="Select cantrip..."
+          disabled={!canAddCantrips}
+        />
       </div>
-    </TooltipProvider>
+
+      <div>
+        <h3 className="text-lg font-semibold mb-3">
+          Spells {canAddSpells && <span className="text-sm font-normal text-slate-500">(Select {entitlements.spellsKnown - selectedSpells.length} more)</span>}
+        </h3>
+        
+        <MultiSelectAutocomplete
+          selectedItems={selectedSpells}
+          availableOptions={availableSpells}
+          maxSelections={entitlements.spellsKnown}
+          onAdd={handleAddSpell}
+          renderBadge={(spell) => (
+            <div className="cursor-pointer">
+              <div className={`flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-semibold border ${getSchoolColor(spell.school)}`}>
+                {spell.name}
+                <button
+                  type="button"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    handleRemoveSpell(spell.name);
+                  }}
+                  className="ml-1 inline-flex h-3.5 w-3.5 items-center justify-center rounded-full hover:bg-black/10"
+                >
+                  ×
+                </button>
+              </div>
+            </div>
+          )}
+          placeholder="Select spell..."
+          disabled={!canAddSpells}
+        />
+      </div>
+
+      {entitlements.canPrepare && entitlements.preparedSpellsMax && (
+        <div className="text-sm text-slate-600">
+          Prepared Spells: 0 / {entitlements.preparedSpellsMax} (reference only)
+        </div>
+      )}
+    </div>
   );
 }
