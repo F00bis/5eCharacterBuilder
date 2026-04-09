@@ -124,6 +124,7 @@ export function useReviewStep() {
 
     const character: Character = {
       ...draft,
+      level: totalLevel,
       abilityScores,
       maxHp: calculatedMaxHp,
       ac: acBreakdown.total,
