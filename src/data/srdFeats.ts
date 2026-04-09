@@ -111,7 +111,14 @@ export const srdFeats: SrdFeat[] = [
     prerequisites: 'The ability to cast at least one spell',
     statModifiers: {},
     isHalfFeat: false,
-    isSRD: true
+    isSRD: true,
+    choices: [{
+      id: 'damageType',
+      kind: 'damage-type',
+      label: 'Damage Type',
+      count: 1,
+      options: ['acid', 'cold', 'fire', 'lightning', 'thunder'],
+    }],
   },
   {
     id: 'featGrappler',
@@ -229,7 +236,37 @@ export const srdFeats: SrdFeat[] = [
     prerequisites: '',
     statModifiers: {},
     isHalfFeat: false,
-    isSRD: true
+    isSRD: true,
+    choices: [
+      {
+        id: 'spellList',
+        kind: 'spell-list',
+        label: 'Spell List',
+        count: 1,
+        options: ['Bard', 'Cleric', 'Druid', 'Sorcerer', 'Warlock', 'Wizard'],
+      },
+      {
+        id: 'spellcastingAbility',
+        kind: 'spellcasting-ability',
+        label: 'Spellcasting Ability',
+        count: 1,
+        options: ['intelligence', 'wisdom', 'charisma'],
+      },
+      {
+        id: 'cantrips',
+        kind: 'cantrip',
+        label: 'Cantrips',
+        count: 2,
+        linkedTo: 'spellList',
+      },
+      {
+        id: 'spell',
+        kind: 'spell',
+        label: 'Level 1 Spell',
+        count: 1,
+        linkedTo: 'spellList',
+      },
+    ],
   },
   {
     id: 'martialAdept',
@@ -238,7 +275,13 @@ export const srdFeats: SrdFeat[] = [
     prerequisites: '',
     statModifiers: {},
     isHalfFeat: false,
-    isSRD: true
+    isSRD: true,
+    choices: [{
+      id: 'maneuvers',
+      kind: 'maneuver',
+      label: 'Maneuvers',
+      count: 2,
+    }],
   },
   {
     id: 'mediumArmorMaster',
@@ -336,7 +379,14 @@ export const srdFeats: SrdFeat[] = [
     isHalfFeat: true,
     halfFeatChoiceAbility: 'constitution',
     asiOptions: ['strength', 'dexterity', 'constitution', 'intelligence', 'wisdom', 'charisma'],
-    isSRD: true
+    isSRD: true,
+    choices: [{
+      id: 'savingThrow',
+      kind: 'saving-throw',
+      label: 'Saving Throw Proficiency',
+      count: 1,
+      linkedTo: 'asi',
+    }],
   },
   {
     id: 'ritualCaster',
@@ -345,7 +395,23 @@ export const srdFeats: SrdFeat[] = [
     prerequisites: 'Intelligence or Wisdom 13 or higher',
     statModifiers: {},
     isHalfFeat: false,
-    isSRD: true
+    isSRD: true,
+    choices: [
+      {
+        id: 'spellList',
+        kind: 'spell-list',
+        label: 'Class Spell List',
+        count: 1,
+        options: ['Bard', 'Cleric', 'Druid', 'Sorcerer', 'Warlock', 'Wizard'],
+      },
+      {
+        id: 'ritualSpells',
+        kind: 'spell',
+        label: 'Ritual Spells (Level 1)',
+        count: 2,
+        linkedTo: 'spellList',
+      },
+    ],
   },
   {
     id: 'savageAttacker',
@@ -392,7 +458,21 @@ export const srdFeats: SrdFeat[] = [
     isHalfFeat: true,
     halfFeatChoiceAbility: 'charisma',
     asiOptions: ['strength', 'dexterity', 'constitution', 'intelligence', 'wisdom', 'charisma'],
-    isSRD: true
+    isSRD: true,
+    choices: [
+      {
+        id: 'skillProficiency',
+        kind: 'skill-proficiency',
+        label: 'Skill Proficiency',
+        count: 1,
+      },
+      {
+        id: 'skillExpertise',
+        kind: 'skill-expertise',
+        label: 'Skill Expertise',
+        count: 1,
+      },
+    ],
   },
   {
     id: 'slayer',
@@ -410,7 +490,13 @@ export const srdFeats: SrdFeat[] = [
     prerequisites: 'The ability to cast at least one spell',
     statModifiers: {},
     isHalfFeat: false,
-    isSRD: true
+    isSRD: true,
+    choices: [{
+      id: 'cantrip',
+      kind: 'cantrip',
+      label: 'Cantrip (requires attack roll)',
+      count: 1,
+    }],
   },
   {
     id: 'sprinter',
@@ -459,7 +545,13 @@ export const srdFeats: SrdFeat[] = [
     isHalfFeat: true,
     halfFeatChoiceAbility: 'strength',
     asiOptions: ['strength', 'dexterity'],
-    isSRD: true
+    isSRD: true,
+    choices: [{
+      id: 'weapons',
+      kind: 'weapon-proficiency',
+      label: 'Weapon Proficiencies',
+      count: 4,
+    }],
   }
 ];
 

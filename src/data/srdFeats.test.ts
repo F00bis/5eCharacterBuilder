@@ -79,3 +79,88 @@ describe('srdFeats data integrity', () => {
     }
   });
 });
+
+describe('srdFeats choices data integrity', () => {
+  it('Elemental Adept has a damage-type choice with 5 options', () => {
+    const feat = srdFeats.find(f => f.name === 'Elemental Adept');
+    expect(feat?.choices).toHaveLength(1);
+    expect(feat?.choices?.[0].kind).toBe('damage-type');
+    expect(feat?.choices?.[0].options).toHaveLength(5);
+  });
+
+  it('Resilient has a saving-throw choice linked to asi', () => {
+    const feat = srdFeats.find(f => f.name === 'Resilient');
+    expect(feat?.choices).toHaveLength(1);
+    expect(feat?.choices?.[0].kind).toBe('saving-throw');
+    expect(feat?.choices?.[0].linkedTo).toBe('asi');
+  });
+
+  it('Skill Expert has skill-proficiency and skill-expertise choices', () => {
+    const feat = srdFeats.find(f => f.name === 'Skill Expert');
+    expect(feat?.choices).toHaveLength(2);
+    expect(feat?.choices?.[0].kind).toBe('skill-proficiency');
+    expect(feat?.choices?.[1].kind).toBe('skill-expertise');
+  });
+
+  it('Magic Initiate has 4 choices: spell-list, spellcasting-ability, cantrips, spell', () => {
+    const feat = srdFeats.find(f => f.name === 'Magic Initiate');
+    expect(feat?.choices).toHaveLength(4);
+    const kinds = feat?.choices?.map(c => c.kind);
+    expect(kinds).toContain('spell-list');
+    expect(kinds).toContain('spellcasting-ability');
+    expect(kinds).toContain('cantrip');
+    expect(kinds).toContain('spell');
+  });
+
+  it('Weapon Master has a weapon-proficiency choice with count 4', () => {
+    const feat = srdFeats.find(f => f.name === 'Weapon Master');
+    expect(feat?.choices).toHaveLength(1);
+    expect(feat?.choices?.[0].kind).toBe('weapon-proficiency');
+    expect(feat?.choices?.[0].count).toBe(4);
+  });
+
+  it('Martial Adept has a maneuver choice with count 2', () => {
+    const feat = srdFeats.find(f => f.name === 'Martial Adept');
+    expect(feat?.choices).toHaveLength(1);
+    expect(feat?.choices?.[0].kind).toBe('maneuver');
+    expect(feat?.choices?.[0].count).toBe(2);
+  });
+
+  it('all choices have valid kind values', () => {
+    const validKinds = [
+      'ability', 'skill-proficiency', 'skill-expertise', 'saving-throw',
+      'damage-type', 'spell-list', 'cantrip', 'spell',
+      'weapon-proficiency', 'tool-proficiency', 'spellcasting-ability', 'maneuver',
+    ];
+    for (const feat of srdFeats) {
+      if (feat.choices) {
+        for (const choice of feat.choices) {
+          expect(validKinds, `${feat.name} choice '${choice.id}' has invalid kind '${choice.kind}'`).toContain(choice.kind);
+        }
+      }
+    }
+  });
+
+  it('all choices have count >= 1', () => {
+    for (const feat of srdFeats) {
+      if (feat.choices) {
+        for (const choice of feat.choices) {
+          expect(choice.count, `${feat.name} choice '${choice.id}' has count < 1`).toBeGreaterThanOrEqual(1);
+        }
+      }
+    }
+  });
+
+  it('linkedTo references exist within the same feat choices', () => {
+    for (const feat of srdFeats) {
+      if (feat.choices) {
+        for (const choice of feat.choices) {
+          if (choice.linkedTo && choice.linkedTo !== 'asi') {
+            const targetExists = feat.choices.some(c => c.id === choice.linkedTo);
+            expect(targetExists, `${feat.name} choice '${choice.id}' linkedTo '${choice.linkedTo}' not found`).toBe(true);
+          }
+        }
+      }
+    }
+  });
+});

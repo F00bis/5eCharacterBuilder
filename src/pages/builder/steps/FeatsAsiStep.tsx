@@ -11,6 +11,7 @@ import { calculateFeatEntitlements } from '../../../utils/featEntitlements';
 import { characterMeetsFeatPrerequisites } from '../../../utils/featPrerequisites';
 import { resolveFeat } from '../../../utils/featResolver';
 import { useAsiLevelsByClass } from '../../../utils/useAsiLevelsByClass';
+import FeatChoiceResolver from './FeatChoiceResolver';
 
 type ChoiceMode = 'asi' | 'feat';
 
@@ -23,6 +24,7 @@ interface EntitlementChoice {
   asiAbility2: Ability;
   asiAmount2: number;
   featAsiChoice: Ability | '';
+  featSelections: Record<string, string | string[]>;
 }
 
 const ABILITY_OPTIONS: ComboboxOption[] = [
@@ -66,6 +68,7 @@ export default function FeatsAsiStep() {
           asiAbility2: existing.asiBonuses?.[1]?.ability || 'dexterity',
           asiAmount2: existing.asiBonuses?.[1]?.amount || 1,
           featAsiChoice: (existing.featSelections?.asi as Ability) || '',
+          featSelections: existing.featSelections || {},
         });
       } else {
         newChoices.set(entitlement.source, {
@@ -77,6 +80,7 @@ export default function FeatsAsiStep() {
           asiAbility2: 'dexterity',
           asiAmount2: 1,
           featAsiChoice: '',
+          featSelections: {},
         });
       }
     }
@@ -137,6 +141,23 @@ export default function FeatsAsiStep() {
           if (selectedFeat?.asiOptions && selectedFeat.asiOptions.length > 1) {
             if (!choice.featAsiChoice) return false;
           }
+
+          if (selectedFeat?.choices) {
+            const srdFeat = selectedFeat as unknown as SrdFeat;
+            for (const choiceDef of srdFeat.choices || []) {
+              if (choiceDef.linkedTo === 'asi') continue;
+
+              const selection = choice.featSelections?.[choiceDef.id];
+              if (!selection) return false;
+
+              if (choiceDef.count === 1) {
+                if (typeof selection !== 'string' || !selection) return false;
+              } else {
+                if (!Array.isArray(selection) || selection.length !== choiceDef.count) return false;
+                if (selection.some(v => !v)) return false;
+              }
+            }
+          }
         }
       } else if (entitlement.type === 'feat-or-asi') {
         if (choice.mode === 'asi') {
@@ -152,6 +173,23 @@ export default function FeatsAsiStep() {
           const selectedFeat = allFeats.find(f => f.name === choice.featName);
           if (selectedFeat?.asiOptions && selectedFeat.asiOptions.length > 1) {
             if (!choice.featAsiChoice) return false;
+          }
+
+          if (selectedFeat?.choices) {
+            const srdFeat = selectedFeat as unknown as SrdFeat;
+            for (const choiceDef of srdFeat.choices || []) {
+              if (choiceDef.linkedTo === 'asi') continue;
+
+              const selection = choice.featSelections?.[choiceDef.id];
+              if (!selection) return false;
+
+              if (choiceDef.count === 1) {
+                if (typeof selection !== 'string' || !selection) return false;
+              } else {
+                if (!Array.isArray(selection) || selection.length !== choiceDef.count) return false;
+                if (selection.some(v => !v)) return false;
+              }
+            }
           }
         }
       }
@@ -196,7 +234,7 @@ export default function FeatsAsiStep() {
     
     const newChoice = { ...currentChoice, ...updates };
     
-    const featSelections: Record<string, string | string[]> = {};
+    const featSelections: Record<string, string | string[]> = { ...newChoice.featSelections };
     if (newChoice.featAsiChoice) {
       featSelections.asi = newChoice.featAsiChoice;
     }
@@ -223,7 +261,24 @@ export default function FeatsAsiStep() {
   };
 
   const handleFeatSelect = (source: string, featName: string) => {
-    handleChoiceChange(source, { featName, featAsiChoice: '' });
+    handleChoiceChange(source, { featName, featAsiChoice: '', featSelections: {} });
+  };
+
+  const handleFeatAsiChange = (source: string, ability: Ability) => {
+    const currentChoice = choices.get(source);
+    if (!currentChoice) return;
+    const newFeatSelections = { ...currentChoice.featSelections, asi: ability };
+    handleChoiceChange(source, { featAsiChoice: ability, featSelections: newFeatSelections });
+  };
+
+  const handleFeatSelectionChange = (source: string, choiceId: string, value: string | string[]) => {
+    const currentChoice = choices.get(source);
+    if (!currentChoice) return;
+
+    const currentSelections = currentChoice.featSelections ?? {};
+    const newSelections = { ...currentSelections, [choiceId]: value };
+
+    handleChoiceChange(source, { featSelections: newSelections });
   };
 
   const handleAsiChange = (
@@ -231,10 +286,6 @@ export default function FeatsAsiStep() {
     updates: { asiAbility1?: Ability; asiAmount1?: number; asiAbility2?: Ability; asiAmount2?: number }
   ) => {
     handleChoiceChange(source, updates);
-  };
-
-  const handleFeatAsiChange = (source: string, ability: Ability) => {
-    handleChoiceChange(source, { featAsiChoice: ability });
   };
 
   const abilityOptions = ABILITY_OPTIONS;
@@ -298,38 +349,22 @@ export default function FeatsAsiStep() {
                   />
                   {choice.featName && (() => {
                     const selectedFeat = allFeats.find(f => f.name === choice.featName);
-                    if (!selectedFeat?.asiOptions || selectedFeat.asiOptions.length === 0) return null;
+                    if (!selectedFeat?.asiOptions && !selectedFeat?.choices) return null;
 
-                    if (selectedFeat.asiOptions.length === 1) {
-                      return (
-                        <div className="mt-3">
-                          <label className="block text-sm font-medium text-slate-700 mb-1">
-                            Ability Score Increase
-                          </label>
-                          <p className="text-sm text-slate-600">
-                            +1 {selectedFeat.asiOptions[0].charAt(0).toUpperCase() + selectedFeat.asiOptions[0].slice(1)}
-                          </p>
-                        </div>
-                      );
-                    }
-
-                    const asiOptions: ComboboxOption[] = selectedFeat.asiOptions.map(ability => ({
-                      value: ability,
-                      label: ability.charAt(0).toUpperCase() + ability.slice(1),
-                    }));
+                    const srdFeat = selectedFeat as unknown as SrdFeat;
+                    const choices = srdFeat.choices;
 
                     return (
-                      <div className="mt-3">
-                        <label className="block text-sm font-medium text-slate-700 mb-1">
-                          Ability Score Increase (+1)
-                        </label>
-                        <Combobox
-                          options={asiOptions}
-                          value={choice.featAsiChoice}
-                          onChange={(value) => handleFeatAsiChange(entitlement.source, value as Ability)}
-                          placeholder="Choose ability..."
-                        />
-                      </div>
+                      <FeatChoiceResolver
+                        asiOptions={selectedFeat.asiOptions}
+                        choices={choices}
+                        currentSelections={choice.featSelections}
+                        asiChoice={choice.featAsiChoice}
+                        onAsiChange={(ability) => handleFeatAsiChange(entitlement.source, ability)}
+                        onSelectionChange={(choiceId, value) =>
+                          handleFeatSelectionChange(entitlement.source, choiceId, value)
+                        }
+                      />
                     );
                   })()}
                 </div>
@@ -432,6 +467,40 @@ export default function FeatsAsiStep() {
                   })()}
                 </div>
               )}
+              {(() => {
+                const srdFeat = selectedFeatInPanel as unknown as SrdFeat;
+                if (!srdFeat.choices) return null;
+
+                const choice = Array.from(choices.values()).find(
+                  c => c.featName === selectedFeatInPanel.name
+                );
+                if (!choice) return null;
+
+                return (
+                  <div className="mt-3 space-y-1">
+                    {srdFeat.choices.map(choiceDef => {
+                      if (choiceDef.linkedTo === 'asi') {
+                        return choice.featAsiChoice ? (
+                          <p key={choiceDef.id} className="text-sm text-slate-600">
+                            <span className="font-medium">{choiceDef.label}:</span>{' '}
+                            {choice.featAsiChoice.charAt(0).toUpperCase() + choice.featAsiChoice.slice(1)} (auto)
+                          </p>
+                        ) : null;
+                      }
+
+                      const selection = choice.featSelections?.[choiceDef.id];
+                      if (!selection) return null;
+
+                      const displayValue = Array.isArray(selection) ? selection.join(', ') : selection;
+                      return (
+                        <p key={choiceDef.id} className="text-sm text-slate-600">
+                          <span className="font-medium">{choiceDef.label}:</span> {displayValue}
+                        </p>
+                      );
+                    })}
+                  </div>
+                );
+              })()}
             </div>
           )}
         </div>

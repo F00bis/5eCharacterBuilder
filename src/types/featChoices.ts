@@ -19,4 +19,9 @@ export interface FeatChoiceDefinition {
   count: number;
   options?: string[];
   linkedTo?: string;
+  filter?: {
+    requiresAttackRoll?: boolean;
+    ritual?: boolean;
+    spellLevel?: number;
+  };
 }
