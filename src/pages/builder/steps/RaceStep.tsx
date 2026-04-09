@@ -7,7 +7,6 @@ import { isValidRaceStep } from '../../../utils/validation';
 import {
   DraconicAncestryChoice,
   SkillChoice,
-  FeatChoice,
   CantripChoice,
 } from './raceChoices';
 import { LanguageSelector } from '@/components/LanguageSelector';
@@ -23,13 +22,13 @@ function getAllRequiredChoices(
   const choices: RaceChoice[] = [];
 
   if (race.choices) {
-    choices.push(...race.choices.filter(c => c.required));
+    choices.push(...race.choices.filter(c => c.required && c.type !== 'feat' && c.type !== 'language'));
   }
 
   if (subraceId) {
     const subrace = race.subraces?.find(sr => sr.id === subraceId);
     if (subrace?.choices) {
-      choices.push(...subrace.choices.filter(c => c.required));
+      choices.push(...subrace.choices.filter(c => c.required && c.type !== 'feat' && c.type !== 'language'));
     }
   }
 
@@ -53,6 +52,8 @@ export default function RaceStep() {
   const baseBonuses = useMemo(() => 
     selectedSubrace?.abilityScoreIncreases ?? selectedRace?.abilityScoreIncreases ?? [],
   [selectedRace, selectedSubrace]);
+
+  const additionalLanguageCount = selectedRace?.additionalLanguages ?? 0;
 
   const hasSubraces = selectedRace?.subraces && selectedRace.subraces.length > 0;
 
@@ -104,10 +105,11 @@ export default function RaceStep() {
       flexibleSelections,
       baseBonuses,
       state.raceChoices,
-      requiredChoices
+      requiredChoices,
+      additionalLanguageCount
     );
     dispatch({ type: 'SET_STEP_VALIDATION', stepId: 'race', isValid });
-  }, [state.draft.race, state.draft.subrace, useTashasRules, plus2, plus1, flexibleSelections, baseBonuses, state.raceChoices, requiredChoices, dispatch]);
+  }, [state.draft.race, state.draft.subrace, useTashasRules, plus2, plus1, flexibleSelections, baseBonuses, state.raceChoices, requiredChoices, additionalLanguageCount, dispatch]);
 
   // Update effect to sync selections when rules toggle or bonuses change
   useEffect(() => {
@@ -194,21 +196,12 @@ export default function RaceStep() {
           />
         );
 
-      case 'skill':
+case 'skill':
         return (
           <SkillChoice
             key={choice.type}
             value={Array.isArray(currentValue) ? currentValue : []}
             count={choice.count}
-            onChange={(value) => handleRaceChoiceChange(choice.type, value)}
-          />
-        );
-
-      case 'feat':
-        return (
-          <FeatChoice
-            key={choice.type}
-            value={(currentValue as string) || ''}
             onChange={(value) => handleRaceChoiceChange(choice.type, value)}
           />
         );
@@ -227,8 +220,6 @@ export default function RaceStep() {
         return null;
     }
   };
-
-  const additionalLanguageCount = selectedRace?.additionalLanguages || 0;
 
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 gap-8 text-left h-full overflow-hidden">
@@ -369,16 +360,21 @@ export default function RaceStep() {
         {selectedRace && selectedRace.languages.length > 0 && (
           <div className="bg-slate-50 p-4 rounded-md border border-slate-200">
             {additionalLanguageCount > 0 ? (
-              <LanguageSelector
-                selectedLanguages={(state.raceChoices['language'] as string[]) || []}
-                onChange={(languages) => {
-                  handleRaceChoiceChange('language', languages);
-                  handleLanguageChange(languages);
-                }}
-                maxSelections={additionalLanguageCount}
-                knownLanguages={selectedRace.languages}
-                label="Additional Languages"
-              />
+              <div>
+                <h3 className="text-sm font-semibold text-slate-700 mb-2">
+                  Additional Languages <span className="text-red-500">*</span>
+                </h3>
+                <LanguageSelector
+                  selectedLanguages={(state.raceChoices['language'] as string[]) || []}
+                  onChange={(languages) => {
+                    handleRaceChoiceChange('language', languages);
+                    handleLanguageChange(languages);
+                  }}
+                  maxSelections={additionalLanguageCount}
+                  knownLanguages={selectedRace.languages}
+                  label="Additional Languages"
+                />
+              </div>
             ) : (
               <>
                 <h3 className="text-sm font-semibold mb-2">Known Languages</h3>

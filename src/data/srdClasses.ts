@@ -8,6 +8,7 @@ export const srdClasses: DndClass[] = [
     savingThrows: ['strength', 'constitution'],
     skillProficienciesChoices: 2,
     skillOptions: ['animalHandling', 'athletics', 'intimidation', 'nature', 'perception', 'survival'],
+    asiLevels: [4, 8, 12, 16, 19],
     multiclassing: {
       prerequisites: [{ ability: 'strength', min: 13 }],
       proficienciesGained: {
@@ -121,6 +122,7 @@ export const srdClasses: DndClass[] = [
     savingThrows: ['dexterity', 'charisma'],
     skillProficienciesChoices: 3,
     skillOptions: ['acrobatics', 'animalHandling', 'arcana', 'athletics', 'deception', 'history', 'insight', 'intimidation', 'investigation', 'medicine', 'nature', 'perception', 'performance', 'persuasion', 'religion', 'sleightOfHand', 'stealth', 'survival'],
+    asiLevels: [4, 8, 12, 16, 19],
     multiclassing: {
       prerequisites: [{ ability: 'charisma', min: 13 }],
       proficienciesGained: {
@@ -214,6 +216,7 @@ export const srdClasses: DndClass[] = [
     savingThrows: ['wisdom', 'charisma'],
     skillProficienciesChoices: 2,
     skillOptions: ['history', 'insight', 'medicine', 'persuasion', 'religion'],
+    asiLevels: [4, 8, 12, 16, 19],
     multiclassing: {
       prerequisites: [{ ability: 'wisdom', min: 13 }],
       proficienciesGained: {
@@ -277,6 +280,7 @@ export const srdClasses: DndClass[] = [
     savingThrows: ['intelligence', 'wisdom'],
     skillProficienciesChoices: 2,
     skillOptions: ['arcana', 'animalHandling', 'insight', 'medicine', 'nature', 'perception', 'religion', 'survival'],
+    asiLevels: [4, 8, 12, 16, 19],
     multiclassing: {
       prerequisites: [{ ability: 'wisdom', min: 13 }],
       proficienciesGained: {
@@ -350,6 +354,7 @@ export const srdClasses: DndClass[] = [
     savingThrows: ['strength', 'constitution'],
     skillProficienciesChoices: 2,
     skillOptions: ['acrobatics', 'animalHandling', 'athletics', 'history', 'insight', 'intimidation', 'perception', 'survival'],
+    asiLevels: [4, 6, 8, 12, 14, 16, 19],
     multiclassing: {
       prerequisites: [{ ability: 'strength', min: 13 }],
       proficienciesGained: {
@@ -425,6 +430,7 @@ export const srdClasses: DndClass[] = [
     savingThrows: ['strength', 'dexterity'],
     skillProficienciesChoices: 1,
     skillOptions: ['acrobatics', 'athletics', 'history', 'insight', 'religion', 'stealth'],
+    asiLevels: [4, 8, 12, 16, 19],
     multiclassing: {
       prerequisites: [{ ability: 'dexterity', min: 13 }, { ability: 'wisdom', min: 13 }],
       proficienciesGained: {
@@ -551,6 +557,7 @@ export const srdClasses: DndClass[] = [
     savingThrows: ['wisdom', 'charisma'],
     skillProficienciesChoices: 2,
     skillOptions: ['athletics', 'insight', 'intimidation', 'medicine', 'persuasion', 'religion'],
+    asiLevels: [4, 8, 12, 16, 19],
     spellcastingAbility: 'charisma',
     spellPrepType: 'prepared',
     multiclassing: {
@@ -646,6 +653,7 @@ export const srdClasses: DndClass[] = [
     savingThrows: ['strength', 'dexterity'],
     skillProficienciesChoices: 3,
     skillOptions: ['animalHandling', 'athletics', 'insight', 'investigation', 'nature', 'perception', 'stealth', 'survival'],
+    asiLevels: [4, 8, 12, 16, 19],
     multiclassing: {
       prerequisites: [{ ability: 'dexterity', min: 13 }, { ability: 'wisdom', min: 13 }],
       proficienciesGained: {
@@ -751,6 +759,7 @@ export const srdClasses: DndClass[] = [
     savingThrows: ['dexterity', 'intelligence'],
     skillProficienciesChoices: 4,
     skillOptions: ['acrobatics', 'athletics', 'deception', 'insight', 'intimidation', 'investigation', 'perception', 'performance', 'persuasion', 'sleightOfHand', 'stealth'],
+    asiLevels: [4, 8, 10, 12, 16, 19],
     multiclassing: {
       prerequisites: [{ ability: 'dexterity', min: 13 }],
       proficienciesGained: {
@@ -850,6 +859,7 @@ export const srdClasses: DndClass[] = [
     savingThrows: ['constitution', 'charisma'],
     skillProficienciesChoices: 2,
     skillOptions: ['arcana', 'deception', 'insight', 'intimidation', 'persuasion', 'religion'],
+    asiLevels: [4, 8, 12, 16, 19],
     spellcastingAbility: 'charisma',
     spellPrepType: 'known',
     multiclassing: {
@@ -911,6 +921,7 @@ export const srdClasses: DndClass[] = [
     savingThrows: ['wisdom', 'charisma'],
     skillProficienciesChoices: 2,
     skillOptions: ['arcana', 'deception', 'history', 'intimidation', 'investigation', 'nature', 'religion'],
+    asiLevels: [4, 8, 12, 16, 19],
     spellcastingAbility: 'charisma',
     spellPrepType: 'known',
     multiclassing: {
@@ -981,6 +992,7 @@ export const srdClasses: DndClass[] = [
     savingThrows: ['intelligence', 'wisdom'],
     skillProficienciesChoices: 2,
     skillOptions: ['arcana', 'history', 'insight', 'investigation', 'medicine', 'religion'],
+    asiLevels: [4, 8, 12, 16, 19],
     spellcastingAbility: 'intelligence',
     spellPrepType: 'known',
     multiclassing: {

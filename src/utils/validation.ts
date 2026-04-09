@@ -45,7 +45,8 @@ export function isValidRaceStep(
   flexibleSelections: Record<number, Ability | null>,
   baseBonuses: { ability?: Ability; amount: number }[],
   raceChoices: Record<string, string | string[]>,
-  requiredChoices: { type: string; count?: number }[]
+  requiredChoices: { type: string; count?: number }[],
+  additionalLanguages: number
 ): boolean {
   if (!race) return false;
 
@@ -65,6 +66,13 @@ export function isValidRaceStep(
   for (const choice of requiredChoices) {
     const value = raceChoices[choice.type];
     if (!isRaceChoiceSatisfied(choice, value)) {
+      return false;
+    }
+  }
+
+  if (additionalLanguages > 0) {
+    const selectedLanguages = raceChoices['language'];
+    if (!selectedLanguages || !Array.isArray(selectedLanguages) || selectedLanguages.length < additionalLanguages) {
       return false;
     }
   }

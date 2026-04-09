@@ -8,12 +8,22 @@ export interface AsiChoice {
   bonuses: { ability: Ability; amount: number }[];
 }
 
+export type FeatChoiceType = 'feat' | 'asi';
+
+export interface FeatChoice {
+  source: string;
+  type: FeatChoiceType;
+  featName?: string;
+  asiBonuses?: { ability: Ability; amount: number }[];
+}
+
 export interface CharacterBuilderState {
   draft: CharacterBase;
   currentStep: number;
   mode: 'create' | 'levelup';
   baseCharacterId: number | null;
   asiChoices: AsiChoice[];
+  featChoices: FeatChoice[];
   stepValidations: Record<string, boolean>;
   useTashasRules: boolean;
   raceChoices: Record<string, string | string[]>;
@@ -30,6 +40,9 @@ export type BuilderAction =
   | { type: 'REMOVE_ITEMS_BY_SOURCE'; listName: keyof CharacterBase; source: string }
   | { type: 'ADD_ASI_CHOICE'; choice: AsiChoice }
   | { type: 'REMOVE_ASI_CHOICE'; level: number }
+  | { type: 'SET_FEAT_CHOICE'; choice: FeatChoice }
+  | { type: 'REMOVE_FEAT_CHOICE'; source: string }
+  | { type: 'CLEAR_FEAT_CHOICES' }
   | { type: 'SET_STEP_VALIDATION'; stepId: string; isValid: boolean }
   | { type: 'SET_TASHAS_RULES'; enabled: boolean }
   | { type: 'RESET_VALIDATIONS' }
@@ -46,6 +59,7 @@ export const defaultState: CharacterBuilderState = {
   mode: 'create',
   baseCharacterId: null,
   asiChoices: [],
+  featChoices: [],
   stepValidations: {},
   useTashasRules: true,
   raceChoices: {},
@@ -109,6 +123,19 @@ export function characterBuilderReducer(
     }
     case 'REMOVE_ASI_CHOICE':
       return { ...state, asiChoices: state.asiChoices.filter(c => c.level !== action.level) };
+    case 'SET_FEAT_CHOICE': {
+      const existingIndex = state.featChoices.findIndex(c => c.source === action.choice.source);
+      if (existingIndex >= 0) {
+        const updated = [...state.featChoices];
+        updated[existingIndex] = action.choice;
+        return { ...state, featChoices: updated };
+      }
+      return { ...state, featChoices: [...state.featChoices, action.choice] };
+    }
+    case 'REMOVE_FEAT_CHOICE':
+      return { ...state, featChoices: state.featChoices.filter(c => c.source !== action.source) };
+    case 'CLEAR_FEAT_CHOICES':
+      return { ...state, featChoices: [] };
     case 'SET_STEP_VALIDATION':
       return {
         ...state,

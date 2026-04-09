@@ -101,6 +101,7 @@ describe('getCharacterFeatures', () => {
       savingThrows: ['strength' as const, 'constitution' as const],
       skillProficienciesChoices: 2,
       skillOptions: ['athletics', 'acrobatics'],
+      asiLevels: [4, 6, 8, 12, 14, 16, 19],
       features: [
         {
           name: 'Fighting Style',
@@ -150,6 +151,7 @@ describe('getCharacterFeatures', () => {
       savingThrows: ['strength' as const, 'constitution' as const],
       skillProficienciesChoices: 2,
       skillOptions: ['athletics', 'acrobatics'],
+      asiLevels: [4, 6, 8, 12, 14, 16, 19],
       features: [
         {
           name: 'Fighting Style',
@@ -203,6 +205,7 @@ describe('getCharacterFeatures', () => {
       savingThrows: ['strength' as const, 'constitution' as const],
       skillProficienciesChoices: 2,
       skillOptions: ['athletics', 'acrobatics'],
+      asiLevels: [4, 6, 8, 12, 14, 16, 19],
       features: [
         {
           name: 'Fighting Style',
@@ -260,6 +263,7 @@ describe('getCharacterFeatures', () => {
       savingThrows: ['strength' as const, 'constitution' as const],
       skillProficienciesChoices: 2,
       skillOptions: ['athletics', 'acrobatics'],
+      asiLevels: [4, 6, 8, 12, 14, 16, 19],
       features: [
         {
           name: 'Fighting Style',

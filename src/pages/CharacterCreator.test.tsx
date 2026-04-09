@@ -1,12 +1,19 @@
 import { render, screen } from '@testing-library/react';
-import { describe, it, expect, vi } from 'vitest';
-import { MemoryRouter, Routes, Route } from 'react-router-dom';
-import CharacterCreator from './CharacterCreator';
+import { MemoryRouter, Route, Routes } from 'react-router-dom';
+import { describe, expect, it, vi } from 'vitest';
 import { CharacterBuilderProvider } from '../contexts/CharacterBuilderProvider';
+import CharacterCreator from './CharacterCreator';
 
 // Simple mock components for Stepper and internal steps to be implemented later
 vi.mock('../components/ui/stepper', () => ({
   default: () => <div data-testid="mock-stepper">Stepper</div>
+}));
+
+vi.mock('../db/classes', () => ({
+  getAllClasses: vi.fn().mockResolvedValue([]),
+  getClassByName: vi.fn().mockResolvedValue(undefined),
+  getClassNames: vi.fn().mockResolvedValue([]),
+  getAsiLevelsByClass: vi.fn().mockResolvedValue({}),
 }));
 
 describe('CharacterCreator', () => {

@@ -67,32 +67,32 @@ describe('validateRaceStep', () => {
 describe('isValidRaceStep', () => {
   describe('Tasha\'s Rules enabled', () => {
     it('returns false when race is undefined', () => {
-      const result = isValidRaceStep(undefined, undefined, true, null, null, {}, [], {}, []);
+      const result = isValidRaceStep(undefined, undefined, true, null, null, {}, [], {}, [], 0);
       expect(result).toBe(false);
     });
 
     it('returns false when race is empty string', () => {
-      const result = isValidRaceStep('', undefined, true, null, null, {}, [], {}, []);
+      const result = isValidRaceStep('', undefined, true, null, null, {}, [], {}, [], 0);
       expect(result).toBe(false);
     });
 
     it('returns false when plus2 is null', () => {
-      const result = isValidRaceStep('Human', undefined, true, null, 'dexterity', {}, [], {}, []);
+      const result = isValidRaceStep('Human', undefined, true, null, 'dexterity', {}, [], {}, [], 0);
       expect(result).toBe(false);
     });
 
     it('returns false when plus1 is null', () => {
-      const result = isValidRaceStep('Human', undefined, true, 'strength', null, {}, [], {}, []);
+      const result = isValidRaceStep('Human', undefined, true, 'strength', null, {}, [], {}, [], 0);
       expect(result).toBe(false);
     });
 
     it('returns false when plus2 and plus1 are the same', () => {
-      const result = isValidRaceStep('Human', undefined, true, 'strength', 'strength', {}, [], {}, []);
+      const result = isValidRaceStep('Human', undefined, true, 'strength', 'strength', {}, [], {}, [], 0);
       expect(result).toBe(false);
     });
 
     it('returns true when race is selected with valid different plus2 and plus1', () => {
-      const result = isValidRaceStep('Human', undefined, true, 'strength', 'dexterity', {}, [], {}, []);
+      const result = isValidRaceStep('Human', undefined, true, 'strength', 'dexterity', {}, [], {}, [], 0);
       expect(result).toBe(true);
     });
   });
@@ -112,7 +112,8 @@ describe('isValidRaceStep', () => {
           { ability: undefined, amount: 1 },
         ],
         {},
-        []
+        [],
+        0
       );
       expect(result).toBe(false);
     });
@@ -131,7 +132,8 @@ describe('isValidRaceStep', () => {
           { ability: undefined, amount: 1 },
         ],
         {},
-        []
+        [],
+        0
       );
       expect(result).toBe(false);
     });
@@ -150,7 +152,8 @@ describe('isValidRaceStep', () => {
           { ability: undefined, amount: 1 },
         ],
         {},
-        []
+        [],
+        0
       );
       expect(result).toBe(true);
     });
@@ -167,7 +170,8 @@ describe('isValidRaceStep', () => {
         {},
         [],
         {},
-        [{ type: 'skill', count: 2 }]
+        [{ type: 'skill', count: 2 }],
+        0
       );
       expect(result).toBe(false);
     });
@@ -182,7 +186,8 @@ describe('isValidRaceStep', () => {
         {},
         [],
         { skill: ['Athletics', 'Acrobatics'] },
-        [{ type: 'skill', count: 2 }]
+        [{ type: 'skill', count: 2 }],
+        0
       );
       expect(result).toBe(true);
     });
@@ -197,7 +202,8 @@ describe('isValidRaceStep', () => {
         {},
         [],
         { draconicAncestry: 'red' },
-        [{ type: 'draconicAncestry' }]
+        [{ type: 'draconicAncestry' }],
+        0
       );
       expect(result).toBe(true);
     });
@@ -212,7 +218,8 @@ describe('isValidRaceStep', () => {
         {},
         [],
         { language: ['Common'] },
-        [{ type: 'language', count: 2 }]
+        [{ type: 'language', count: 2 }],
+        0
       );
       expect(result).toBe(false);
     });

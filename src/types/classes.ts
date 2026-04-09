@@ -1,5 +1,5 @@
+import type { ArmorCategory, EquipmentCategory, WeaponCategory, WeaponClass, WeaponForm, WeaponProperty } from './equipment';
 import type { Ability } from './index';
-import type { WeaponCategory, ArmorCategory, EquipmentCategory, WeaponClass, WeaponForm, WeaponProperty } from './equipment';
 
 export interface StartingEquipmentOption {
   label: string;
@@ -71,6 +71,7 @@ export interface DndClass {
   skillProficienciesChoices: number;
   skillOptions: string[];
   features: ClassFeature[];
+  asiLevels: number[];
   resources?: ResourceDefinition[];
   spellcastingAbility?: Ability;
   spellPrepType?: 'prepared' | 'known';
