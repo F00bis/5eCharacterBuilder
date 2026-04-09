@@ -15,6 +15,7 @@ export interface FeatChoice {
   type: FeatChoiceType;
   featName?: string;
   asiBonuses?: { ability: Ability; amount: number }[];
+  featSelections?: Record<string, string | string[]>;
 }
 
 export interface CharacterBuilderState {
