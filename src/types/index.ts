@@ -113,6 +113,7 @@ export interface Feat {
   skillModifiers?: Partial<Record<Skill, number>>;
   savingThrowProficiencies?: Partial<Record<Ability, ProficiencyLevel>>;
   actions?: FeatureAction[];
+  resolvedChoices?: Record<string, string | string[]>;
 }
 
 export interface ClassEntry {
