@@ -1,4 +1,5 @@
 import type { Ability, Skill, ProficiencyLevel } from '../types';
+import type { FeatChoiceDefinition } from '../types/featChoices';
 
 export interface SrdFeat {
   id: string;
@@ -10,6 +11,8 @@ export interface SrdFeat {
   savingThrowProficiencies?: Partial<Record<Ability, ProficiencyLevel>>;
   isHalfFeat: boolean;
   halfFeatChoiceAbility?: Ability;
+  asiOptions?: Ability[];
+  choices?: FeatChoiceDefinition[];
   isSRD: boolean;
 }
 
@@ -31,6 +34,7 @@ export const srdFeats: SrdFeat[] = [
     statModifiers: {},
     isHalfFeat: true,
     halfFeatChoiceAbility: 'strength',
+    asiOptions: ['strength', 'dexterity'],
     isSRD: true
   },
   {
@@ -41,6 +45,7 @@ export const srdFeats: SrdFeat[] = [
     statModifiers: {},
     isHalfFeat: true,
     halfFeatChoiceAbility: 'charisma',
+    asiOptions: ['charisma'],
     isSRD: true
   },
   {
@@ -96,6 +101,7 @@ export const srdFeats: SrdFeat[] = [
     statModifiers: {},
     isHalfFeat: true,
     halfFeatChoiceAbility: 'constitution',
+    asiOptions: ['constitution'],
     isSRD: true
   },
   {
@@ -142,6 +148,7 @@ export const srdFeats: SrdFeat[] = [
     statModifiers: {},
     isHalfFeat: true,
     halfFeatChoiceAbility: 'strength',
+    asiOptions: ['strength'],
     isSRD: true
   },
   {
@@ -152,6 +159,7 @@ export const srdFeats: SrdFeat[] = [
     statModifiers: {},
     isHalfFeat: true,
     halfFeatChoiceAbility: 'strength',
+    asiOptions: ['strength'],
     isSRD: true
   },
   {
@@ -171,6 +179,7 @@ export const srdFeats: SrdFeat[] = [
     statModifiers: {},
     isHalfFeat: true,
     halfFeatChoiceAbility: 'intelligence',
+    asiOptions: ['intelligence'],
     isSRD: true
   },
   {
@@ -181,6 +190,7 @@ export const srdFeats: SrdFeat[] = [
     statModifiers: {},
     isHalfFeat: true,
     halfFeatChoiceAbility: 'dexterity',
+    asiOptions: ['strength', 'dexterity'],
     isSRD: true
   },
   {
@@ -191,6 +201,7 @@ export const srdFeats: SrdFeat[] = [
     statModifiers: {},
     isHalfFeat: true,
     halfFeatChoiceAbility: 'intelligence',
+    asiOptions: ['intelligence'],
     isSRD: true
   },
   {
@@ -255,6 +266,7 @@ export const srdFeats: SrdFeat[] = [
     statModifiers: {},
     isHalfFeat: true,
     halfFeatChoiceAbility: 'dexterity',
+    asiOptions: ['strength', 'dexterity'],
     isSRD: true
   },
   {
@@ -274,6 +286,7 @@ export const srdFeats: SrdFeat[] = [
     statModifiers: {},
     isHalfFeat: true,
     halfFeatChoiceAbility: 'wisdom',
+    asiOptions: ['intelligence', 'wisdom'],
     isSRD: true
   },
   {
@@ -284,6 +297,7 @@ export const srdFeats: SrdFeat[] = [
     statModifiers: {},
     isHalfFeat: true,
     halfFeatChoiceAbility: 'strength',
+    asiOptions: ['strength', 'dexterity'],
     isSRD: true
   },
   {
@@ -321,6 +335,7 @@ export const srdFeats: SrdFeat[] = [
     statModifiers: {},
     isHalfFeat: true,
     halfFeatChoiceAbility: 'constitution',
+    asiOptions: ['strength', 'dexterity', 'constitution', 'intelligence', 'wisdom', 'charisma'],
     isSRD: true
   },
   {
@@ -376,6 +391,7 @@ export const srdFeats: SrdFeat[] = [
     statModifiers: {},
     isHalfFeat: true,
     halfFeatChoiceAbility: 'charisma',
+    asiOptions: ['strength', 'dexterity', 'constitution', 'intelligence', 'wisdom', 'charisma'],
     isSRD: true
   },
   {
@@ -413,6 +429,7 @@ export const srdFeats: SrdFeat[] = [
     statModifiers: {},
     isHalfFeat: true,
     halfFeatChoiceAbility: 'strength',
+    asiOptions: ['strength', 'dexterity'],
     isSRD: true
   },
   {
@@ -441,6 +458,7 @@ export const srdFeats: SrdFeat[] = [
     statModifiers: {},
     isHalfFeat: true,
     halfFeatChoiceAbility: 'strength',
+    asiOptions: ['strength', 'dexterity'],
     isSRD: true
   }
 ];

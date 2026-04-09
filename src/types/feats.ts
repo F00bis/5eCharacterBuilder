@@ -1,4 +1,5 @@
 import type { Ability, Skill, ProficiencyLevel } from './index';
+import type { FeatChoiceDefinition } from './featChoices';
 
 export interface Feat {
   id?: number;
@@ -10,6 +11,8 @@ export interface Feat {
   savingThrowProficiencies?: Partial<Record<Ability, ProficiencyLevel>>;
   isHalfFeat: boolean;
   halfFeatChoiceAbility?: Ability;
+  asiOptions?: Ability[];
+  choices?: FeatChoiceDefinition[];
   isSRD: boolean;
 }
 
