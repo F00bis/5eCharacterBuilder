@@ -50,6 +50,8 @@ export interface ClassFeature {
   choices?: {
     count: number;
     options: string[];
+    optionDetails?: Record<string, string>;
+    optionSources?: Record<string, string>;
   };
   effects?: {
     abilityScores?: Partial<Record<Ability, number>>;

@@ -230,7 +230,19 @@ export const srdClasses: DndClass[] = [
         name: 'Divine Domain',
         description: 'Choose one domain related to your deity. At 1st level, you choose one domain related to your deity. Each domain is detailed at the end of this class description. Your choice grants you domain spells and other features when you choose it at 1st level. It also grants you additional benefits at 2nd, 5th, 8th, and 11th levels.',
         levelAcquired: 1,
-        choices: { count: 1, options: ['Knowledge Domain', 'Life Domain', 'Light Domain', 'Nature Domain', 'Tempest Domain', 'Trickery Domain', 'War Domain'] }
+        choices: {
+          count: 1,
+          options: ['Knowledge Domain', 'Life Domain', 'Light Domain', 'Nature Domain', 'Tempest Domain', 'Trickery Domain', 'War Domain'],
+          optionDetails: {
+            'Knowledge Domain': 'Gain deeper command of lore, skills, and languages while channeling divine insight.',
+            'Life Domain': 'Focus on restorative miracles with stronger healing magic and heavy armor training.',
+            'Light Domain': 'Wield radiant power that burns darkness and protects allies with blinding light.',
+            'Nature Domain': 'Blend divine power with the natural world, including druidic magic and resilient defenses.',
+            'Tempest Domain': 'Command storm and thunder magic while fighting with martial and heavy armor proficiencies.',
+            'Trickery Domain': 'Use stealth, illusions, and deception-focused blessings to outmaneuver enemies.',
+            'War Domain': 'Fight as a battle priest with martial training and combat-focused divine features.'
+          }
+        }
       },
       {
         name: 'Channel Divinity',
@@ -367,7 +379,18 @@ export const srdClasses: DndClass[] = [
         name: 'Fighting Style',
         description: 'You adopt a particular style of fighting as your specialty. You adopt a particular style of fighting as your specialty. You can\'t take a Fighting Style option more than once, even if you later get to choose again.',
         levelAcquired: 1,
-        choices: { count: 1, options: ['Archery', 'Defense', 'Dueling', 'Great Weapon Fighting', 'Protection', 'Two-Weapon Fighting'] }
+        choices: {
+          count: 1,
+          options: ['Archery', 'Defense', 'Dueling', 'Great Weapon Fighting', 'Protection', 'Two-Weapon Fighting'],
+          optionDetails: {
+            'Archery': 'You gain a +2 bonus to attack rolls you make with ranged weapons.',
+            'Defense': 'While you are wearing armor, you gain a +1 bonus to AC.',
+            'Dueling': 'When wielding a melee weapon in one hand and no other weapons, you gain a +2 bonus to damage rolls.',
+            'Great Weapon Fighting': 'When you roll a 1 or 2 on weapon damage with a two-handed or versatile weapon used in two hands, you can reroll the die.',
+            'Protection': 'While wielding a shield, you can use your reaction to impose disadvantage on an attack against an ally within 5 feet.',
+            'Two-Weapon Fighting': 'When fighting with two weapons, you can add your ability modifier to the damage of the off-hand attack.'
+          }
+        }
       },
       {
         name: 'Second Wind',
@@ -667,13 +690,44 @@ export const srdClasses: DndClass[] = [
         name: 'Favored Enemy',
         description: 'You have significant experience studying, tracking, and combating a particular type of enemy. Beginning at 1st level, you have significant experience studying, tracking, and combating a particular type of enemy. Choose a type of favored enemy: aberrations, beasts, celestials, constructs, dragons, elementals, fey, fiends, giants, monstrosities, oozes, plants, or undead. You have advantage on Wisdom (Survival) checks to track your favored enemies, as well as on Intelligence checks to recall information about them.',
         levelAcquired: 1,
-        choices: { count: 1, options: ['Aberrations', 'Beasts', 'Celestials', 'Constructs', 'Dragons', 'Elementals', 'Fey', 'Fiends', 'Giants', 'Monstrosities', 'Oozes', 'Plants', 'Undead'] }
+        choices: {
+          count: 1,
+          options: ['Aberrations', 'Beasts', 'Celestials', 'Constructs', 'Dragons', 'Elementals', 'Fey', 'Fiends', 'Giants', 'Monstrosities', 'Oozes', 'Plants', 'Undead'],
+          optionDetails: {
+            'Aberrations': 'You are trained to track aberrations and recall useful lore about them.',
+            'Beasts': 'You are trained to track beasts and recall useful lore about them.',
+            'Celestials': 'You are trained to track celestials and recall useful lore about them.',
+            'Constructs': 'You are trained to track constructs and recall useful lore about them.',
+            'Dragons': 'You are trained to track dragons and recall useful lore about them.',
+            'Elementals': 'You are trained to track elementals and recall useful lore about them.',
+            'Fey': 'You are trained to track fey and recall useful lore about them.',
+            'Fiends': 'You are trained to track fiends and recall useful lore about them.',
+            'Giants': 'You are trained to track giants and recall useful lore about them.',
+            'Monstrosities': 'You are trained to track monstrosities and recall useful lore about them.',
+            'Oozes': 'You are trained to track oozes and recall useful lore about them.',
+            'Plants': 'You are trained to track dangerous plants and recall useful lore about them.',
+            'Undead': 'You are trained to track undead and recall useful lore about them.'
+          }
+        }
       },
       {
         name: 'Natural Explorer',
         description: 'You are particularly familiar with one type of natural environment. You are particularly familiar with one type of natural environment and are adept at traveling and surviving in such regions. Choose one type of terrain: arctic, coast, desert, forest, grassland, hill, mountain, or swamp. When you make an Intelligence or Wisdom check related to your favored terrain, your proficiency bonus is doubled if you are using any of your trained skills.',
         levelAcquired: 1,
-        choices: { count: 1, options: ['Arctic', 'Coast', 'Desert', 'Forest', 'Grassland', 'Hill', 'Mountain', 'Swamp'] }
+        choices: {
+          count: 1,
+          options: ['Arctic', 'Coast', 'Desert', 'Forest', 'Grassland', 'Hill', 'Mountain', 'Swamp'],
+          optionDetails: {
+            'Arctic': 'You are especially effective navigating and surviving arctic terrain, with stronger exploration checks there.',
+            'Coast': 'You are especially effective navigating and surviving coastal terrain, with stronger exploration checks there.',
+            'Desert': 'You are especially effective navigating and surviving desert terrain, with stronger exploration checks there.',
+            'Forest': 'You are especially effective navigating and surviving forest terrain, with stronger exploration checks there.',
+            'Grassland': 'You are especially effective navigating and surviving grassland terrain, with stronger exploration checks there.',
+            'Hill': 'You are especially effective navigating and surviving hill terrain, with stronger exploration checks there.',
+            'Mountain': 'You are especially effective navigating and surviving mountain terrain, with stronger exploration checks there.',
+            'Swamp': 'You are especially effective navigating and surviving swamp terrain, with stronger exploration checks there.'
+          }
+        }
       },
       {
         name: 'Fighting Style',
@@ -773,7 +827,24 @@ export const srdClasses: DndClass[] = [
         name: 'Expertise',
         description: 'Choose two of your skill proficiencies, or one of your skill proficiencies and your proficiency with thieves\' tools. At 1st level, choose two of your skill proficiencies, or one of your skill proficiencies and your proficiency with thieves\' tools. Your proficiency bonus is doubled for any ability check that uses either of these skills. At 6th level, you can choose another two skills (or thieves\' tools) to gain this benefit.',
         levelAcquired: 1,
-        choices: { count: 2, options: ['acrobatics', 'athletics', 'deception', 'insight', 'intimidation', 'investigation', 'perception', 'performance', 'persuasion', 'sleightOfHand', 'stealth', 'thieves tools'] }
+        choices: {
+          count: 2,
+          options: ['acrobatics', 'athletics', 'deception', 'insight', 'intimidation', 'investigation', 'perception', 'performance', 'persuasion', 'sleightOfHand', 'stealth', 'thieves tools'],
+          optionDetails: {
+            acrobatics: 'Your proficiency bonus is doubled for ability checks you make using Acrobatics.',
+            athletics: 'Your proficiency bonus is doubled for ability checks you make using Athletics.',
+            deception: 'Your proficiency bonus is doubled for ability checks you make using Deception.',
+            insight: 'Your proficiency bonus is doubled for ability checks you make using Insight.',
+            intimidation: 'Your proficiency bonus is doubled for ability checks you make using Intimidation.',
+            investigation: 'Your proficiency bonus is doubled for ability checks you make using Investigation.',
+            perception: 'Your proficiency bonus is doubled for ability checks you make using Perception.',
+            performance: 'Your proficiency bonus is doubled for ability checks you make using Performance.',
+            persuasion: 'Your proficiency bonus is doubled for ability checks you make using Persuasion.',
+            sleightOfHand: 'Your proficiency bonus is doubled for ability checks you make using Sleight of Hand.',
+            stealth: 'Your proficiency bonus is doubled for ability checks you make using Stealth.',
+            'thieves tools': 'Your proficiency bonus is doubled for ability checks you make using thieves\' tools.'
+          }
+        }
       },
       {
         name: 'Sneak Attack',
@@ -876,7 +947,14 @@ export const srdClasses: DndClass[] = [
         name: 'Sorcerous Origin',
         description: 'Choose a sorcerous origin that describes the source of your magical power. Choose a sorcerous origin, which describes the source of your innate magical power: Draconic Bloodline or Wild Magic, both detailed at the end of the class description. Your choice grants you features when you choose it at 1st level and again at 6th, 14th, and 18th level.',
         levelAcquired: 1,
-        choices: { count: 1, options: ['Draconic Bloodline', 'Wild Magic'] }
+        choices: {
+          count: 1,
+          options: ['Draconic Bloodline', 'Wild Magic'],
+          optionDetails: {
+            'Draconic Bloodline': 'Your magic is tied to draconic ancestry, improving durability and empowering dragon-themed spells.',
+            'Wild Magic': 'Your magic is unpredictable, producing surges of chaotic arcane effects as you cast spells.'
+          }
+        }
       },
       {
         name: 'Font of Magic',
@@ -936,7 +1014,15 @@ export const srdClasses: DndClass[] = [
         name: 'Otherworldly Patron',
         description: 'You have struck a bargain with an otherworldly being. You have struck a bargain with an otherworldly being of your choice: the Archfey, the Fiend, or the Great Old One, each detailed at the end of the class description. Your choice grants you features at 1st level and again at 6th, 10th, and 14th level.',
         levelAcquired: 1,
-        choices: { count: 1, options: ['The Archfey', 'The Fiend', 'The Great Old One'] }
+        choices: {
+          count: 1,
+          options: ['The Archfey', 'The Fiend', 'The Great Old One'],
+          optionDetails: {
+            'The Archfey': 'Your patron grants fey trickery and control effects that charm, beguile, or reposition foes.',
+            'The Fiend': 'Your patron grants infernal resilience and aggressive magic centered on destructive power.',
+            'The Great Old One': 'Your patron grants alien mental influence, including telepathic and mind-bending abilities.'
+          }
+        }
       },
       {
         name: 'Pact Magic',
