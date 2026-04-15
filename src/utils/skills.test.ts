@@ -11,6 +11,15 @@ function baseCharacter(overrides: Partial<Character> = {}): Character {
     background: 'Soldier',
     alignment: 'Neutral',
     classes: [{ className: 'Fighter', level: 5 }],
+    raceStatSelections: [],
+    baseAbilityScores: {
+      strength: 10,
+      dexterity: 10,
+      constitution: 10,
+      intelligence: 10,
+      wisdom: 10,
+      charisma: 10,
+    },
     abilityScores: {
       strength: 10,
       dexterity: 10,
@@ -19,9 +28,12 @@ function baseCharacter(overrides: Partial<Character> = {}): Character {
       wisdom: 10,
       charisma: 10,
     },
+    featureChoices: {},
+    hpRolls: [],
     level: 5,
     xp: 3500,
     portrait: null,
+    hpBonus: 0,
     hp: 40,
     maxHp: 40,
     currentHp: 40,
@@ -30,11 +42,11 @@ function baseCharacter(overrides: Partial<Character> = {}): Character {
     speed: 30,
     initiative: 0,
     vision: {},
-    deathSaves: { successes: 0, failures: 0 },
+    deathSaves: {successes: 0, failures: 0},
     proficiencyBonus: 3,
     skills: [],
     equipment: [],
-    currency: { cp: 0, sp: 0, ep: 0, gp: 0, pp: 0 },
+    currency: {cp: 0, sp: 0, ep: 0, gp: 0, pp: 0},
     spellSlots: [],
     spells: [],
     statusEffects: [],
@@ -42,6 +54,10 @@ function baseCharacter(overrides: Partial<Character> = {}): Character {
     notes: '',
     createdAt: new Date(),
     updatedAt: new Date(),
+    languages: [],
+    toolProficiencies: [],
+    raceChoices: {},
+    backgroundChoices: {},
     ...overrides,
   };
 }
@@ -49,8 +65,16 @@ function baseCharacter(overrides: Partial<Character> = {}): Character {
 describe('getSkillBreakdown', () => {
   it('calculates skill bonus with no proficiency (just ability modifier)', () => {
     const character = baseCharacter({
-      abilityScores: {
+      baseAbilityScores: {
         strength: 16, // +3 modifier
+        dexterity: 10,
+        constitution: 10,
+        intelligence: 10,
+        wisdom: 10,
+        charisma: 10,
+      },
+      abilityScores: {
+        strength: 16,
         dexterity: 10,
         constitution: 10,
         intelligence: 10,
@@ -80,8 +104,16 @@ describe('getSkillBreakdown', () => {
 
   it('adds proficiency bonus when proficient', () => {
     const character = baseCharacter({
-      abilityScores: {
+      baseAbilityScores: {
         strength: 14, // +2 modifier
+        dexterity: 10,
+        constitution: 10,
+        intelligence: 10,
+        wisdom: 10,
+        charisma: 10,
+      },
+      abilityScores: {
+        strength: 14,
         dexterity: 10,
         constitution: 10,
         intelligence: 10,
@@ -109,9 +141,17 @@ describe('getSkillBreakdown', () => {
 
   it('doubles proficiency bonus with expertise', () => {
     const character = baseCharacter({
-      abilityScores: {
+      baseAbilityScores: {
         strength: 10,
         dexterity: 16, // +3 modifier
+        constitution: 10,
+        intelligence: 10,
+        wisdom: 10,
+        charisma: 10,
+      },
+      abilityScores: {
+        strength: 10,
+        dexterity: 16,
         constitution: 10,
         intelligence: 10,
         wisdom: 10,
@@ -138,9 +178,17 @@ describe('getSkillBreakdown', () => {
 
   it('adds feat skill modifiers', () => {
     const character = baseCharacter({
-      abilityScores: {
+      baseAbilityScores: {
         strength: 10,
         dexterity: 14, // +2 modifier
+        constitution: 10,
+        intelligence: 10,
+        wisdom: 10,
+        charisma: 10,
+      },
+      abilityScores: {
+        strength: 10,
+        dexterity: 14,
         constitution: 10,
         intelligence: 10,
         wisdom: 10,
@@ -173,9 +221,17 @@ describe('getSkillBreakdown', () => {
 
   it('adds equipment skill modifiers', () => {
     const character = baseCharacter({
-      abilityScores: {
+      baseAbilityScores: {
         strength: 10,
         dexterity: 14, // +2 modifier
+        constitution: 10,
+        intelligence: 10,
+        wisdom: 10,
+        charisma: 10,
+      },
+      abilityScores: {
+        strength: 10,
+        dexterity: 14,
         constitution: 10,
         intelligence: 10,
         wisdom: 10,
@@ -208,9 +264,17 @@ describe('getSkillBreakdown', () => {
 
   it('stacks all bonus sources correctly', () => {
     const character = baseCharacter({
-      abilityScores: {
+      baseAbilityScores: {
         strength: 10,
         dexterity: 18, // +4 modifier
+        constitution: 10,
+        intelligence: 10,
+        wisdom: 10,
+        charisma: 10,
+      },
+      abilityScores: {
+        strength: 10,
+        dexterity: 18,
         constitution: 10,
         intelligence: 10,
         wisdom: 10,
@@ -251,9 +315,17 @@ describe('getSkillBreakdown', () => {
 
   it('handles multiple feat bonuses to the same skill', () => {
     const character = baseCharacter({
-      abilityScores: {
+      baseAbilityScores: {
         strength: 10,
         dexterity: 14, // +2 modifier
+        constitution: 10,
+        intelligence: 10,
+        wisdom: 10,
+        charisma: 10,
+      },
+      abilityScores: {
+        strength: 10,
+        dexterity: 14,
         constitution: 10,
         intelligence: 10,
         wisdom: 10,
@@ -285,9 +357,17 @@ describe('getSkillBreakdown', () => {
 
   it('handles multiple equipment bonuses to the same skill', () => {
     const character = baseCharacter({
-      abilityScores: {
+      baseAbilityScores: {
         strength: 10,
         dexterity: 14, // +2 modifier
+        constitution: 10,
+        intelligence: 10,
+        wisdom: 10,
+        charisma: 10,
+      },
+      abilityScores: {
+        strength: 10,
+        dexterity: 14,
         constitution: 10,
         intelligence: 10,
         wisdom: 10,
@@ -323,11 +403,19 @@ describe('getSkillBreakdown', () => {
 
   it('handles negative ability modifiers', () => {
     const character = baseCharacter({
-      abilityScores: {
+      baseAbilityScores: {
         strength: 10,
         dexterity: 10,
         constitution: 10,
         intelligence: 8, // -1 modifier
+        wisdom: 10,
+        charisma: 10,
+      },
+      abilityScores: {
+        strength: 10,
+        dexterity: 10,
+        constitution: 10,
+        intelligence: 8,
         wisdom: 10,
         charisma: 10,
       },
@@ -388,9 +476,17 @@ describe('getAllSkillBreakdowns', () => {
 
   it('correctly calculates bonuses for proficient skills', () => {
     const character = baseCharacter({
-      abilityScores: {
+      baseAbilityScores: {
         strength: 16, // +3
         dexterity: 14, // +2
+        constitution: 10,
+        intelligence: 10,
+        wisdom: 10,
+        charisma: 10,
+      },
+      abilityScores: {
+        strength: 16,
+        dexterity: 14,
         constitution: 10,
         intelligence: 10,
         wisdom: 10,

@@ -1,4 +1,30 @@
+import type { ArmorCategory, EquipmentCategory, WeaponCategory, WeaponClass, WeaponForm, WeaponProperty } from './equipment';
 import type { Ability } from './index';
+
+export interface StartingEquipmentOption {
+  label: string;
+  options: {
+    label: string;
+    count?: number;
+    items?: string[];
+    type: 'bundle' | 'choice';
+    // Legacy fields (backward compatibility)
+    weaponCategories?: WeaponCategory[];
+    armorCategories?: ArmorCategory[];
+    equipmentCategories?: EquipmentCategory[];
+    // New tag-based query fields
+    weaponClasses?: WeaponClass[];
+    weaponForms?: WeaponForm[];
+    weaponProperties?: WeaponProperty[];
+  }[];
+}
+
+export interface StartingEquipment {
+  startingGoldFormula: string;
+  startingGoldAverage: number;
+  choices: StartingEquipmentOption[];
+  fixedEquipment: string[];
+}
 
 export type ActionType = 'action' | 'bonus-action' | 'reaction';
 
@@ -21,6 +47,12 @@ export interface ClassFeature {
   description: string;
   levelAcquired: number;
   actions?: FeatureAction[];
+  choices?: {
+    count: number;
+    options: string[];
+    optionDetails?: Record<string, string>;
+    optionSources?: Record<string, string>;
+  };
   effects?: {
     abilityScores?: Partial<Record<Ability, number>>;
     ac?: number;
@@ -41,8 +73,18 @@ export interface DndClass {
   skillProficienciesChoices: number;
   skillOptions: string[];
   features: ClassFeature[];
+  asiLevels: number[];
   resources?: ResourceDefinition[];
   spellcastingAbility?: Ability;
-  spellsKnownPerLevel?: number[];
-  slotsPerLevel?: number[];
+  spellPrepType?: 'prepared' | 'known';
+  startingEquipment: StartingEquipment;
+  multiclassing?: {
+    prerequisites: { ability: Ability; min: number }[];
+    proficienciesGained: {
+      armor?: string[];
+      weapons?: string[];
+      tools?: string[];
+      skills?: number;
+    };
+  };
 }

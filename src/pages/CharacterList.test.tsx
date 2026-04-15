@@ -88,7 +88,7 @@ describe('CharacterList', () => {
     expect((images[1] as HTMLImageElement).src).toContain('custom-url.png');
   });
 
-  it('navigates to character view on click', async () => {
+it('navigates to character view on click', async () => {
     vi.mocked(dbChars.getAllCharacters).mockResolvedValue(mockCharacters);
     renderCharacterList();
 
@@ -98,6 +98,18 @@ describe('CharacterList', () => {
 
     fireEvent.click(screen.getByText('Gimli'));
     expect(mockNavigate).toHaveBeenCalledWith('/characters/1');
+  });
+
+  it('navigates to create character page on create new button click', async () => {
+    vi.mocked(dbChars.getAllCharacters).mockResolvedValue(mockCharacters);
+    renderCharacterList();
+
+    await waitFor(() => {
+      expect(screen.getByText('Create New')).toBeInTheDocument();
+    });
+
+    fireEvent.click(screen.getByText('Create New'));
+    expect(mockNavigate).toHaveBeenCalledWith('/characters/new');
   });
 
   it('opens delete dialog and deletes character', async () => {

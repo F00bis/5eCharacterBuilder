@@ -37,8 +37,8 @@ export function CharacterList() {
     }
   };
 
-  const handleCreateNew = () => {
-    alert('Coming soon!');
+const handleCreateNew = () => {
+    navigate('/characters/new');
   };
 
   const confirmDelete = async () => {

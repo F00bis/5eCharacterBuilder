@@ -1,6 +1,10 @@
 import type { Character } from '../types';
 import { db } from './index';
 
+export function addCharacter(character: Character): Promise<number> {
+  return db.characters.add(character) as Promise<number>;
+}
+
 export function getCharacterById(id: number): Promise<Character | undefined> {
   return db.characters.get(id);
 }

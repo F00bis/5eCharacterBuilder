@@ -1,13 +1,18 @@
 import Dexie, { type Table } from 'dexie';
 import { srdClasses } from '../data/srdClasses';
 import { srdEquipment } from '../data/srdEquipment';
+import { srdFeats } from '../data/srdFeats';
 import { srdRaces } from '../data/srdRaces';
 import { srdSpells } from '../data/srdSpells';
-import type { Character, Equipment, StatusEffect } from '../types';
+import type { Character, StatusEffect } from '../types';
 import type { DndClass } from '../types/classes';
-import type { DndRace } from '../types/races';
 import type { SrdEquipment } from '../types/equipment';
+import type { Feat } from '../types/feats';
+import type { DndRace } from '../types/races';
 import type { DndSpell } from '../types/spells';
+import { DEFAULT_SPELL_PROGRESSIONS, type SpellProgression } from './spellProgressions';
+
+export type { SpellProgression } from './spellProgressions';
 
 export class CharacterDatabase extends Dexie {
   characters!: Table<Character>;
@@ -15,127 +20,56 @@ export class CharacterDatabase extends Dexie {
   races!: Table<DndRace, string>;
   spells!: Table<DndSpell, string>;
   equipment!: Table<SrdEquipment, string>;
+  feats!: Table<Feat, number>;
   customStatusEffects!: Table<StatusEffect, string>;
+  spellProgressions!: Table<SpellProgression, number>;
 
   constructor() {
     super('5eCharacterBuilder');
-    this.version(1).stores({
-      characters: '++id, name, race, level, createdAt',
-      classes: 'name',
-      races: 'id, name',
-      spells: 'name, level, school, *classes',
-      equipment: 'name, equipmentCategory, weaponCategory, armorCategory'
-    });
-    this.version(2).stores({
+
+    const storeSchema = {
       characters: '++id, name, race, level, xp, createdAt',
       classes: 'name',
       races: 'id, name',
       spells: 'name, level, school, *classes',
-      equipment: 'name, equipmentCategory, weaponCategory, armorCategory'
-    }).upgrade(tx => {
-      return tx.table('characters').toCollection().modify(character => {
-        if (character.xp === undefined) {
-          character.xp = 0;
-        }
-        if (character.portrait === undefined) {
-          character.portrait = null;
-        }
-      });
+      equipment: 'name, equipmentCategory, weaponCategory, weaponClass, weaponForm, armorCategory',
+      feats: '++id, &name, prerequisite, isSRD',
+      customStatusEffects: 'id, name, category',
+      spellProgressions: '++id, className, isCustom',
+    };
+
+    this.version(10).stores(storeSchema);
+
+    const SRD_ASI_LEVELS: Record<string, number[]> = {
+      Barbarian: [4, 8, 12, 16, 19],
+      Bard: [4, 8, 12, 16, 19],
+      Cleric: [4, 8, 12, 16, 19],
+      Druid: [4, 8, 12, 16, 19],
+      Fighter: [4, 6, 8, 12, 14, 16, 19],
+      Monk: [4, 8, 12, 16, 19],
+      Paladin: [4, 8, 12, 16, 19],
+      Ranger: [4, 8, 12, 16, 19],
+      Rogue: [4, 8, 10, 12, 16, 19],
+      Sorcerer: [4, 8, 12, 16, 19],
+      Warlock: [4, 8, 12, 16, 19],
+      Wizard: [4, 8, 12, 16, 19],
+    };
+
+    this.version(11).stores(storeSchema).upgrade(async tx => {
+      const classes = await tx.table('classes').toArray();
+      const updates = classes
+        .filter((cls: DndClass) => !cls.asiLevels || cls.asiLevels.length === 0)
+        .map((cls: DndClass) => ({
+          name: cls.name,
+          changes: {
+            asiLevels: SRD_ASI_LEVELS[cls.name] ?? [4, 8, 12, 16, 19],
+          },
+        }));
+      for (const update of updates) {
+        await tx.table('classes').update(update.name, update.changes);
+      }
     });
-    this.version(3).stores({
-      characters: '++id, name, race, level, xp, createdAt',
-      classes: 'name',
-      races: 'id, name',
-      spells: 'name, level, school, *classes',
-      equipment: 'name, equipmentCategory, weaponCategory, armorCategory'
-    }).upgrade(tx => {
-      return tx.table('characters').toCollection().modify(character => {
-        if (character.statusEffects === undefined) {
-          character.statusEffects = [];
-        }
-      });
-    });
-    this.version(4).stores({
-      characters: '++id, name, race, level, xp, createdAt',
-      classes: 'name',
-      races: 'id, name',
-      spells: 'name, level, school, *classes',
-      equipment: 'name, equipmentCategory, weaponCategory, armorCategory',
-      customStatusEffects: 'id, name, category'
-    });
-    this.version(5).stores({
-      characters: '++id, name, race, level, xp, createdAt',
-      classes: 'name',
-      races: 'id, name',
-      spells: 'name, level, school, *classes',
-      equipment: 'name, equipmentCategory, weaponCategory, armorCategory',
-      customStatusEffects: 'id, name, category'
-    }).upgrade(tx => {
-      return tx.table('characters').toCollection().modify(character => {
-        if (character.initiative === undefined) {
-          character.initiative = 0;
-        }
-        if (character.vision === undefined) {
-          character.vision = {};
-        }
-        if (character.deathSaves === undefined) {
-          character.deathSaves = { successes: 0, failures: 0 };
-        }
-      });
-    });
-    this.version(6).stores({
-      characters: '++id, name, race, level, xp, createdAt',
-      classes: 'name',
-      races: 'id, name',
-      spells: 'name, level, school, *classes',
-      equipment: 'name, equipmentCategory, weaponCategory, armorCategory',
-      customStatusEffects: 'id, name, category'
-    }).upgrade(async tx => {
-      await tx.table('spells').clear();
-      await tx.table('spells').bulkAdd(srdSpells);
-    });
-    this.version(7).stores({
-      characters: '++id, name, race, level, xp, createdAt',
-      classes: 'name',
-      races: 'id, name',
-      spells: 'name, level, school, *classes',
-      equipment: 'name, equipmentCategory, weaponCategory, armorCategory',
-      customStatusEffects: 'id, name, category'
-    }).upgrade(async tx => {
-      await tx.table('spells').clear();
-      await tx.table('spells').bulkAdd(srdSpells);
-    });
-    this.version(8).stores({
-      characters: '++id, name, race, level, xp, createdAt',
-      classes: 'name',
-      races: 'id, name',
-      spells: 'name, level, school, *classes',
-      equipment: 'name, equipmentCategory, weaponCategory, armorCategory',
-      customStatusEffects: 'id, name, category'
-    }).upgrade(tx => {
-      return tx.table('characters').toCollection().modify(character => {
-        if (character.currency === undefined) {
-          character.currency = { cp: 0, sp: 0, ep: 0, gp: 0, pp: 0 };
-        }
-        if (character.equipment) {
-          character.equipment = character.equipment.map((item: Equipment) => {
-            const hasStatEffects = 
-              item.weaponCategory || 
-              item.armorCategory || 
-              item.abilityOverride || 
-              item.statModifiers || 
-              item.skillModifiers || 
-              item.savingThrowModifiers ||
-              item.armorClass;
-            
-            if (hasStatEffects) {
-              return { ...item, equippable: true, equipped: item.equipped !== false };
-            }
-            return { ...item, equippable: false };
-          });
-        }
-      });
-    });
+
     this.on('populate', tx => {
       tx.table('classes').bulkAdd(srdClasses);
       
@@ -147,6 +81,9 @@ export class CharacterDatabase extends Dexie {
       
       tx.table('spells').bulkAdd(srdSpells);
       tx.table('equipment').bulkAdd(srdEquipment);
+      tx.table('feats').bulkAdd(srdFeats);
+      
+      tx.table('spellProgressions').bulkAdd(DEFAULT_SPELL_PROGRESSIONS);
     });
   }
 }

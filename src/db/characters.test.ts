@@ -1,5 +1,5 @@
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
-import { getCharacterById, updateCharacter, getAllCharacters, deleteCharacter } from './characters';
+import { getCharacterById, updateCharacter, getAllCharacters, deleteCharacter, addCharacter } from './characters';
 import { db } from './index';
 import type { Character } from '../types';
 
@@ -10,6 +10,7 @@ vi.mock('./index', () => ({
       update: vi.fn(),
       toArray: vi.fn(),
       delete: vi.fn(),
+      add: vi.fn(),
     },
   },
 }));
@@ -33,6 +34,16 @@ describe('characters db', () => {
 
     expect(db.characters.get).toHaveBeenCalledWith(1);
     expect(result).toEqual(mockChar);
+  });
+
+  it('addCharacter calls db.characters.add and returns id', async () => {
+    const mockChar = { name: 'Test Character' } as Character;
+    vi.mocked(db.characters.add).mockResolvedValue(42);
+
+    const result = await addCharacter(mockChar);
+
+    expect(db.characters.add).toHaveBeenCalledWith(mockChar);
+    expect(result).toBe(42);
   });
 
   it('updateCharacter calls db.characters.update with updatedAt', async () => {

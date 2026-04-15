@@ -2,6 +2,17 @@ import type { Character } from '../types';
 import { getModifier } from './abilityScores';
 import { db } from '../db';
 
+export function calculateMaxHp(character: Character): number {
+  const hpRollsTotal = character.hpRolls
+    ? character.hpRolls.reduce((a, b) => a + b, 0)
+    : character.maxHp ?? 0;
+  const totalLevel = character.classes
+    ? character.classes.reduce((sum, c) => sum + c.level, 0)
+    : 1;
+  const conMod = getModifier(character.abilityScores.constitution);
+  return hpRollsTotal + (conMod * totalLevel) + (character.hpBonus ?? 0);
+}
+
 export interface BreakdownSource {
   name: string;
   type: 'base' | 'race' | 'feat' | 'equipment' | 'class' | 'other';
@@ -84,12 +95,25 @@ export async function getSpeedBreakdown(character: Character): Promise<StatBreak
   try {
     const race = await db.races.get(character.race.toLowerCase());
     if (race) {
-      raceBaseSpeed = race.speed;
-      sources.push({
-        name: `${race.name} Base`,
-        type: 'race',
-        value: raceBaseSpeed,
-      });
+      const subrace = character.subrace 
+        ? race.subraces?.find(sr => sr.id === character.subrace)
+        : undefined;
+      
+      if (subrace?.speed !== undefined) {
+        raceBaseSpeed = subrace.speed;
+        sources.push({
+          name: `${race.name} (${subrace.name}) Base`,
+          type: 'race',
+          value: raceBaseSpeed,
+        });
+      } else {
+        raceBaseSpeed = race.speed;
+        sources.push({
+          name: `${race.name} Base`,
+          type: 'race',
+          value: raceBaseSpeed,
+        });
+      }
     } else {
       sources.push({
         name: 'Base Speed',
@@ -170,18 +194,31 @@ export async function getVisionBreakdown(character: Character): Promise<VisionBr
     try {
       const race = await db.races.get(character.race.toLowerCase());
       if (race) {
-        const feature = race.features.find(f => 
-          f.name.toLowerCase().includes(type)
-        );
-        if (feature) {
-          const match = feature.description.match(/(\d+)\s*feet/);
-          if (match) {
-            raceValue = parseInt(match[1], 10);
-            sources.push({
-              name: `${race.name} ${type === 'darkvision' ? 'Darkvision' : type === 'blindsight' ? 'Blindsight' : 'Truesight'}`,
-              type: 'race',
-              value: raceValue,
-            });
+        const subrace = character.subrace 
+          ? race.subraces?.find(sr => sr.id === character.subrace)
+          : undefined;
+
+        if (type === 'darkvision' && subrace?.darkvision !== undefined) {
+          raceValue = subrace.darkvision;
+          sources.push({
+            name: `${race.name} (${subrace.name}) Darkvision`,
+            type: 'race',
+            value: raceValue,
+          });
+        } else {
+          const feature = race.features.find(f => 
+            f.name.toLowerCase().includes(type)
+          );
+          if (feature) {
+            const match = feature.description.match(/(\d+)\s*feet/);
+            if (match) {
+              raceValue = parseInt(match[1], 10);
+              sources.push({
+                name: `${race.name} ${type === 'darkvision' ? 'Darkvision' : type === 'blindsight' ? 'Blindsight' : 'Truesight'}`,
+                type: 'race',
+                value: raceValue,
+              });
+            }
           }
         }
       }

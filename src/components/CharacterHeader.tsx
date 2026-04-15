@@ -1,4 +1,4 @@
-import { ArrowLeft } from 'lucide-react';
+import { ArrowLeft, ArrowUp } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
@@ -207,7 +207,7 @@ export function CharacterHeader(_props: CharacterHeaderProps) {
               <InfoRow label="Race" value={character.race} />
               <InfoRow label="Background" value={character.background} />
 
-              <div className="flex flex-col gap-0.5">
+<div className="flex flex-col gap-0.5">
                 <Label>Class</Label>
                 <div className="text-sm text-slate-700 font-medium flex items-center gap-0.5">
                   <span>Level {character.level} {getPrimaryClass()}</span>
@@ -224,6 +224,18 @@ export function CharacterHeader(_props: CharacterHeaderProps) {
                     </Tooltip>
                   )}
                 </div>
+              </div>
+
+              <div className="flex items-end">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => navigate(`/characters/${character.id}/level-up`)}
+                  className="gap-1"
+                >
+                  <ArrowUp className="w-3 h-3" />
+                  Level Up
+                </Button>
               </div>
 
               <InfoRow label="Alignment" value={character.alignment} />

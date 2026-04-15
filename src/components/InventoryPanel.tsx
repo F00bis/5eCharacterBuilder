@@ -83,7 +83,13 @@ function EditableField({ value, onSave, displayClass = '', inputClass = '', type
   );
 }
 
-function EncumbranceBar({ weight, capacity }: { weight: number; capacity: number }) {
+interface EncumbranceBarProps {
+  weight: number;
+  capacity: number;
+  onWeightEdit: (weight: number) => void;
+}
+
+function EncumbranceBar({ weight, capacity, onWeightEdit }: EncumbranceBarProps) {
   const { ratio, isOverloaded } = getEncumbranceStatus(weight, capacity);
   
   let colorClass = 'bg-green-500';
@@ -95,7 +101,7 @@ function EncumbranceBar({ weight, capacity }: { weight: number; capacity: number
   
   const handleWeightSave = (value: string) => {
     const numValue = parseInt(value) || 0;
-    onWeightEditRef.current?.(numValue);
+    onWeightEdit(numValue);
   };
   
   return (
@@ -119,10 +125,16 @@ function EncumbranceBar({ weight, capacity }: { weight: number; capacity: number
   );
 }
 
-function AttunementDisplay({ attuned, max }: { attuned: number; max: number }) {
+interface AttunementDisplayProps {
+  attuned: number;
+  max: number;
+  onAttunedEdit: (attuned: number) => void;
+}
+
+function AttunementDisplay({ attuned, max, onAttunedEdit }: AttunementDisplayProps) {
   const handleAttunedSave = (value: string) => {
     const numValue = parseInt(value) || 0;
-    onAttunedEditRef.current?.(numValue);
+    onAttunedEdit(numValue);
   };
   
   return (
@@ -140,10 +152,6 @@ function AttunementDisplay({ attuned, max }: { attuned: number; max: number }) {
     </div>
   );
 }
-
-let onWeightEditRef: React.MutableRefObject<((weight: number) => void) | null>;
-let onAttunedEditRef: React.MutableRefObject<((attuned: number) => void) | null>;
-let onCurrencyEditRef: React.MutableRefObject<((currency: Currency) => void) | null>;
 
 function EquipmentItem({ 
   item, 
@@ -234,15 +242,13 @@ function EquipmentSection({
   );
 }
 
-function CurrencyField({ 
-  label, 
-  value, 
-  onSave 
-}: { 
-  label: string; 
-  value: number; 
+interface CurrencyFieldProps {
+  label: string;
+  value: number;
   onSave: (value: string) => void;
-}) {
+}
+
+function CurrencyField({ label, value, onSave }: CurrencyFieldProps) {
   return (
     <label className="flex items-center gap-1">
       <span>{label}:</span>
@@ -258,10 +264,15 @@ function CurrencyField({
   );
 }
 
-function CurrencyDisplay({ currency }: { currency: Currency }) {
+interface CurrencyDisplayProps {
+  currency: Currency;
+  onCurrencyEdit: (currency: Currency) => void;
+}
+
+function CurrencyDisplay({ currency, onCurrencyEdit }: CurrencyDisplayProps) {
   const handleCurrencySave = (field: keyof Currency) => (value: string) => {
     const numValue = parseInt(value) || 0;
-    onCurrencyEditRef.current?.({ ...currency, [field]: numValue });
+    onCurrencyEdit({ ...currency, [field]: numValue });
   };
   
   return (
@@ -280,10 +291,6 @@ function CurrencyDisplay({ currency }: { currency: Currency }) {
 
 export function InventoryPanel() {
   const { character, update } = useCharacter();
-  
-  onWeightEditRef = useRef<((weight: number) => void) | null>(null);
-  onAttunedEditRef = useRef<((attuned: number) => void) | null>(null);
-  onCurrencyEditRef = useRef<((currency: Currency) => void) | null>(null);
   
   const [manualWeight, setManualWeight] = useState<number | undefined>(undefined);
   const [manualAttuned, setManualAttuned] = useState<number | undefined>(undefined);
@@ -308,22 +315,24 @@ export function InventoryPanel() {
   const sortedNonEquippable = [...nonEquippable].sort((a, b) => a.name.localeCompare(b.name));
   
   const handleToggleEquip = async (item: EquipmentType) => {
+    const idx = character.equipment.indexOf(item);
+    if (idx === -1) return;
     const newEquipped = !item.equipped;
-    const updatedEquipment = character.equipment.map(e => 
-      e.name === item.name ? { ...e, equipped: newEquipped } : e
+    const updatedEquipment = character.equipment.map((e, i) => 
+      i === idx ? { ...e, equipped: newEquipped } : e
     );
     await update({ equipment: updatedEquipment });
   };
   
-  onWeightEditRef.current = (weight: number) => {
+  const handleWeightEdit = (weight: number) => {
     setManualWeight(weight);
   };
   
-  onAttunedEditRef.current = (attuned: number) => {
+  const handleAttunedEdit = (attuned: number) => {
     setManualAttuned(attuned);
   };
   
-  onCurrencyEditRef.current = async (currency: Currency) => {
+  const handleCurrencyEdit = async (currency: Currency) => {
     await update({ currency });
   };
   
@@ -333,8 +342,8 @@ export function InventoryPanel() {
         <h3 className="text-[10px] font-bold uppercase tracking-wide text-slate-500 mb-2">Inventory</h3>
         
         <div className="flex items-center justify-between mb-2">
-          <EncumbranceBar weight={displayWeight} capacity={capacity} />
-          <AttunementDisplay attuned={displayAttuned} max={3} />
+          <EncumbranceBar weight={displayWeight} capacity={capacity} onWeightEdit={handleWeightEdit} />
+          <AttunementDisplay attuned={displayAttuned} max={3} onAttunedEdit={handleAttunedEdit} />
         </div>
         
         <div className="flex-1 overflow-y-auto">
@@ -350,7 +359,7 @@ export function InventoryPanel() {
           />
         </div>
         
-        <CurrencyDisplay currency={character.currency} />
+        <CurrencyDisplay currency={character.currency} onCurrencyEdit={handleCurrencyEdit} />
       </Card>
     </TooltipProvider>
   );

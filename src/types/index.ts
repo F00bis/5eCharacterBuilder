@@ -1,7 +1,7 @@
 export type Ability = 'strength' | 'dexterity' | 'constitution' | 'intelligence' | 'wisdom' | 'charisma';
 
-import type { WeaponCategory, WeaponMastery } from './equipment';
 import type { FeatureAction } from './classes';
+import type { WeaponCategory, WeaponMastery, WeaponClass, WeaponForm, WeaponProperty } from './equipment';
 import type { DndSpell } from './spells';
 
 export type Skill =
@@ -60,6 +60,7 @@ export interface SkillProficiency {
   skill: Skill;
   ability: Ability;
   level: ProficiencyLevel;
+  source?: string;
 }
 
 export interface Equipment {
@@ -69,6 +70,7 @@ export interface Equipment {
   weight: number;
   description: string;
   cost?: string;
+  quantity?: number;
   attunement?: boolean;
   attuned?: boolean;
   equippable?: boolean;
@@ -79,10 +81,16 @@ export interface Equipment {
   armorCategory?: 'Light' | 'Medium' | 'Heavy' | 'Shield';
   armorClass?: number;
   equipped?: boolean;
+  // Legacy weapon category (backward compatibility)
   weaponCategory?: WeaponCategory;
+  // New weapon tagging system
+  weaponClass?: WeaponClass;
+  weaponForm?: WeaponForm;
+  weaponProperties?: WeaponProperty[];
   damage?: string;
   properties?: string[];
   mastery?: WeaponMastery;
+  source?: string;
 }
 
 export interface SpellSlot {
@@ -94,6 +102,7 @@ export interface SpellSlot {
 export interface CharacterSpell extends DndSpell {
   id?: number;
   prepared: boolean;
+  source?: string;
 }
 
 export interface Feat {
@@ -104,6 +113,7 @@ export interface Feat {
   skillModifiers?: Partial<Record<Skill, number>>;
   savingThrowProficiencies?: Partial<Record<Ability, ProficiencyLevel>>;
   actions?: FeatureAction[];
+  resolvedChoices?: Record<string, string | string[]>;
 }
 
 export interface ClassEntry {
@@ -112,18 +122,46 @@ export interface ClassEntry {
   level: number;
 }
 
-export interface Character {
-  id?: number;
+export interface RaceStatSelection {
+  ability: Ability;
+  amount: number;
+}
+
+export interface ToolProficiency {
+  tool: string;
+  source: string;
+}
+
+export interface PersistedFeatChoice {
+  source: string;
+  type: 'feat' | 'asi';
+  featName?: string;
+  asiBonuses?: { ability: Ability; amount: number }[];
+  featSelections?: Record<string, string | string[]>;
+}
+
+export type ExpertiseChoiceStore = Record<string, Skill[]>;
+export type MetamagicChoiceStore = Record<string, string[]>;
+export type InvocationChoiceStore = Record<string, string[]>;
+export type MysticArcanumChoiceStore = Record<string, string>;
+
+export interface CharacterBase {
   name: string;
   race: string;
   subrace?: string;
   background: string;
   alignment: string;
   classes: ClassEntry[];
+  subclass?: string;
+  raceStatSelections: RaceStatSelection[];
+  baseAbilityScores: AbilityScores;
   abilityScores: AbilityScores;
+  featureChoices: Record<string, string | string[]>;
+  hpRolls: number[];
   level: number;
   xp: number;
   portrait: string | null;
+  hpBonus: number;
   hp: number;
   maxHp: number;
   currentHp: number;
@@ -149,10 +187,83 @@ export interface Character {
   feats: Feat[];
   statusEffects: StatusEffect[];
   notes: string;
+  languages: string[];
+  toolProficiencies: ToolProficiency[];
+  raceChoices: Record<string, string | string[]>;
+  backgroundChoices: Record<string, string | string[]>;
+  featChoices?: PersistedFeatChoice[];
+  expertiseChoices?: ExpertiseChoiceStore;
+  metamagicChoices?: MetamagicChoiceStore;
+  invocationChoices?: InvocationChoiceStore;
+  mysticArcanumChoices?: MysticArcanumChoiceStore;
+}
+
+export interface Character extends CharacterBase {
+  id?: number;
   createdAt: Date;
   updatedAt: Date;
 }
 
+export function createDefaultCharacter(): CharacterBase {
+  return {
+    name: '',
+    race: '',
+    background: '',
+    alignment: '',
+    classes: [],
+    raceStatSelections: [],
+    baseAbilityScores: {
+      strength: 10,
+      dexterity: 10,
+      constitution: 10,
+      intelligence: 10,
+      wisdom: 10,
+      charisma: 10,
+    },
+    abilityScores: {
+      strength: 10,
+      dexterity: 10,
+      constitution: 10,
+      intelligence: 10,
+      wisdom: 10,
+      charisma: 10,
+    },
+    featureChoices: {},
+    hpRolls: [],
+    level: 0,
+    xp: 0,
+    portrait: null,
+    hpBonus: 0,
+    hp: 0,
+    maxHp: 0,
+    currentHp: 0,
+    tempHp: 0,
+    ac: 10,
+    speed: 30,
+    initiative: 0,
+    vision: {},
+    deathSaves: { successes: 0, failures: 0 },
+    proficiencyBonus: 2,
+    skills: [],
+    equipment: [],
+    currency: { cp: 0, sp: 0, ep: 0, gp: 0, pp: 0 },
+    spellSlots: [],
+    spells: [],
+    feats: [],
+    statusEffects: [],
+    notes: '',
+    languages: [],
+    toolProficiencies: [],
+    raceChoices: {},
+    backgroundChoices: {},
+    featChoices: [],
+    expertiseChoices: {},
+    metamagicChoices: {},
+    invocationChoices: {},
+    mysticArcanumChoices: {},
+  };
+}
+
+export type { ActionType, FeatureAction, ResourceDefinition } from './classes';
+export type { ArmorCategory, EquipmentCategory, SrdEquipment, WeaponCategory, WeaponMastery } from './equipment';
 export type { DndSpell, SpellSchool } from './spells';
-export type { SrdEquipment, EquipmentCategory, WeaponCategory, ArmorCategory, WeaponMastery } from './equipment';
-export type { ResourceDefinition, FeatureAction, ActionType } from './classes';

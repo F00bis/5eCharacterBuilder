@@ -14,7 +14,7 @@ const TEST_CHARACTER: Character = {
     { className: 'Cleric', level: 1 },
     { className: 'Paladin', level: 1 },
   ],
-  abilityScores: {
+  baseAbilityScores: {
     strength: 15,
     dexterity: 12,
     constitution: 14,
@@ -22,6 +22,24 @@ const TEST_CHARACTER: Character = {
     wisdom: 13,
     charisma: 10,
   },
+  raceStatSelections: [
+    { ability: 'strength', amount: 2 },
+    { ability: 'charisma', amount: 1 }
+  ],
+  abilityScores: {
+    strength: 17,
+    dexterity: 12,
+    constitution: 14,
+    intelligence: 8,
+    wisdom: 13,
+    charisma: 11,
+  },
+  featureChoices: {
+    'fighter-1-fighting-style': 'Defense',
+    'cleric-1-divine-domain': 'Life Domain',
+  },
+  hpRolls: [10, 6, 6, 6, 4, 4, 5, 5, 6],
+  hpBonus: 0,
   level: 9,
   xp: 56000,
   portrait: null,
@@ -679,6 +697,10 @@ const TEST_CHARACTER: Character = {
     },
   ],
   notes: 'Test character showcasing ability score overrides, skill proficiency/expertise, and complex tooltip breakdowns with multiple feat and equipment bonuses.',
+  languages: ['Common', 'Dwarvish'],
+  toolProficiencies: [{ tool: "Smith's Tools", source: 'Background' }],
+  raceChoices: {},
+  backgroundChoices: {},
   createdAt: new Date(),
   updatedAt: new Date(),
 };

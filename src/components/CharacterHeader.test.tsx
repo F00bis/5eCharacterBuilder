@@ -1,10 +1,18 @@
-import '@testing-library/jest-dom';
 import { fireEvent, render, screen } from '@testing-library/react';
 import { BrowserRouter } from 'react-router-dom';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { CharacterContext, type CharacterContextValue } from '../contexts/CharacterContext';
 import type { Character } from '../types';
 import { CharacterHeader } from './CharacterHeader';
+
+const mockNavigate = vi.fn();
+vi.mock('react-router-dom', async () => {
+  const actual = await vi.importActual('react-router-dom');
+  return {
+    ...actual,
+    useNavigate: () => mockNavigate,
+  };
+});
 
 function renderWithCharacter(
   ui: React.ReactElement,
@@ -45,6 +53,14 @@ const baseCharacter: Character = {
     wisdom: 10,
     charisma: 10,
   },
+  baseAbilityScores: {
+    strength: 10,
+    dexterity: 10,
+    constitution: 10,
+    intelligence: 10,
+    wisdom: 10,
+    charisma: 10,
+  },
   level: 7,
   xp: 3500,
   portrait: null,
@@ -56,11 +72,11 @@ const baseCharacter: Character = {
   speed: 30,
   initiative: 0,
   vision: {},
-  deathSaves: { successes: 0, failures: 0 },
+  deathSaves: {successes: 0, failures: 0},
   proficiencyBonus: 3,
   skills: [],
   equipment: [],
-  currency: { cp: 0, sp: 0, ep: 0, gp: 0, pp: 0 },
+  currency: {cp: 0, sp: 0, ep: 0, gp: 0, pp: 0},
   spellSlots: [],
   spells: [],
   statusEffects: [],
@@ -68,6 +84,14 @@ const baseCharacter: Character = {
   notes: '',
   createdAt: new Date(),
   updatedAt: new Date(),
+  raceStatSelections: [],
+  featureChoices: {},
+  hpRolls: [],
+  hpBonus: 0,
+  languages: [],
+  toolProficiencies: [],
+  raceChoices: {},
+  backgroundChoices: {},
 };
 
 describe('CharacterHeader', () => {
@@ -223,10 +247,20 @@ describe('CharacterHeader', () => {
     expect(screen.getByText(/Level 7 Fighter/)).toBeInTheDocument();
   });
 
-  it('shows tooltip for XP to next level', () => {
+it('shows tooltip for XP to next level', () => {
     renderWithCharacter(<CharacterHeader />, baseCharacter, mockOnUpdate);
 
     const xpElement = screen.getByText(/3,500/);
     expect(xpElement).toBeInTheDocument();
+  });
+
+  it('shows level up button and navigates to level-up page', () => {
+    renderWithCharacter(<CharacterHeader />, baseCharacter, mockOnUpdate);
+
+    const levelUpButton = screen.getByText('Level Up');
+    expect(levelUpButton).toBeInTheDocument();
+
+    fireEvent.click(levelUpButton);
+    expect(mockNavigate).toHaveBeenCalledWith('/characters/1/level-up');
   });
 });

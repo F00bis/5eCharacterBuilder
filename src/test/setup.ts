@@ -1,2 +1,2 @@
-import '@testing-library/jest-dom/vitest';
-import 'fake-indexeddb/auto';
+/// <reference types="vitest/globals" />
+import '@testing-library/jest-dom/vitest'

@@ -8,6 +8,14 @@ export const srdClasses: DndClass[] = [
     savingThrows: ['strength', 'constitution'],
     skillProficienciesChoices: 2,
     skillOptions: ['animalHandling', 'athletics', 'intimidation', 'nature', 'perception', 'survival'],
+    asiLevels: [4, 8, 12, 16, 19],
+    multiclassing: {
+      prerequisites: [{ ability: 'strength', min: 13 }],
+      proficienciesGained: {
+        armor: ['Light', 'Medium', 'Shield'],
+        weapons: ['Simple', 'Martial']
+      }
+    },
     features: [
       {
         name: 'Rage',
@@ -38,7 +46,15 @@ export const srdClasses: DndClass[] = [
       {
         name: 'Primal Path',
         description: 'Choose a path that shapes the nature of your rage. At 3rd level, you choose a path that shapes the nature of your rage. Choose either the Berserker or the Totem Warrior, both detailed at the end of the class description. Your choice grants you features at 3rd level and again at 6th, 10th, and 14th levels.',
-        levelAcquired: 3
+        levelAcquired: 3,
+        choices: {
+          count: 1,
+          options: ['Path of the Berserker', 'Path of the Totem Warrior'],
+          optionDetails: {
+            'Path of the Berserker': 'Embrace relentless fury with aggressive rage features like Frenzy and intimidating presence.',
+            'Path of the Totem Warrior': 'Channel spiritual totem power to gain versatile, nature-themed benefits tied to animal spirits.'
+          }
+        }
       },
       {
         name: 'Ability Score Improvement',
@@ -83,7 +99,28 @@ export const srdClasses: DndClass[] = [
           abilityScores: { strength: 4, constitution: 4 }
         }
       }
-    ]
+    ],
+    startingEquipment: {
+      startingGoldFormula: '2d4 * 10',
+      startingGoldAverage: 50,
+      choices: [
+        {
+          label: 'Choose your weapons:',
+          options: [
+            { label: '(a) Greataxe', items: ['Greataxe'], type: 'bundle' },
+            { label: '(b) Martial Melee Weapon', type: 'choice', weaponClasses: ['Martial'], weaponForms: ['Melee'] }
+          ]
+        },
+        {
+          label: 'Choose your secondary weapons:',
+          options: [
+            { label: '(a) Two Handaxes', items: ['Handaxe', 'Handaxe'], type: 'bundle' },
+            { label: '(b) Simple Weapon', type: 'choice', weaponClasses: ['Simple'] }
+          ]
+        }
+      ],
+      fixedEquipment: ['Explorer\'s Pack', 'Javelin']
+    }
   },
   {
     name: 'Bard',
@@ -92,7 +129,17 @@ export const srdClasses: DndClass[] = [
     savingThrows: ['dexterity', 'charisma'],
     skillProficienciesChoices: 3,
     skillOptions: ['acrobatics', 'animalHandling', 'arcana', 'athletics', 'deception', 'history', 'insight', 'intimidation', 'investigation', 'medicine', 'nature', 'perception', 'performance', 'persuasion', 'religion', 'sleightOfHand', 'stealth', 'survival'],
+    asiLevels: [4, 8, 12, 16, 19],
+    multiclassing: {
+      prerequisites: [{ ability: 'charisma', min: 13 }],
+      proficienciesGained: {
+        armor: ['Light'],
+        skills: 1,
+        weapons: ['Simple', 'hand crossbow', 'longsword', 'rapier', 'shortsword']
+      }
+    },
     spellcastingAbility: 'charisma',
+    spellPrepType: 'known',
     features: [
       {
         name: 'Bardic Inspiration',
@@ -112,7 +159,15 @@ export const srdClasses: DndClass[] = [
       {
         name: 'Bard College',
         description: 'Choose a college that represents your musical training. At 3rd level, you choose a college that inspires and informs your casting. Choose the College of Lore or the College of Valor, both detailed at the end of the class description. Your choice grants you features at 3rd level and again at 6th and 14th levels.',
-        levelAcquired: 3
+        levelAcquired: 3,
+        choices: {
+          count: 1,
+          options: ['College of Lore', 'College of Valor'],
+          optionDetails: {
+            'College of Lore': 'Master broad knowledge and magical versatility, with extra skills and flexible spell options.',
+            'College of Valor': 'Inspire allies from the front line with martial training and combat-focused bard features.'
+          }
+        }
       },
       {
         name: 'Expertise',
@@ -145,7 +200,28 @@ export const srdClasses: DndClass[] = [
         levelAcquired: 20
       }
     ],
-    slotsPerLevel: [2, 3, 4, 4, 4, 4, 5, 5, 5, 5, 6, 6, 6, 6, 7, 7, 7, 7, 8, 8]
+    startingEquipment: {
+      startingGoldFormula: '5d4 * 10',
+      startingGoldAverage: 125,
+      choices: [
+        {
+          label: 'Choose your weapon:',
+          options: [
+            { label: '(a) Rapier', items: ['Rapier'], type: 'bundle' },
+            { label: '(b) Longsword', items: ['Longsword'], type: 'bundle' },
+            { label: '(c) Simple Weapon', type: 'choice', weaponClasses: ['Simple'] }
+          ]
+        },
+        {
+          label: 'Choose your instrument:',
+          options: [
+            { label: '(a) Lute', items: ['Lute'], type: 'bundle' },
+            { label: '(b) Other Musical Instrument', type: 'choice', equipmentCategories: ['Musical Instrument'] }
+          ]
+        }
+      ],
+      fixedEquipment: ['Leather Armor', 'Dagger']
+    }
   },
   {
     name: 'Cleric',
@@ -154,12 +230,33 @@ export const srdClasses: DndClass[] = [
     savingThrows: ['wisdom', 'charisma'],
     skillProficienciesChoices: 2,
     skillOptions: ['history', 'insight', 'medicine', 'persuasion', 'religion'],
+    asiLevels: [4, 8, 12, 16, 19],
+    multiclassing: {
+      prerequisites: [{ ability: 'wisdom', min: 13 }],
+      proficienciesGained: {
+        armor: ['Light', 'Medium', 'Shield']
+      }
+    },
     spellcastingAbility: 'wisdom',
+    spellPrepType: 'prepared',
     features: [
       {
         name: 'Divine Domain',
         description: 'Choose one domain related to your deity. At 1st level, you choose one domain related to your deity. Each domain is detailed at the end of this class description. Your choice grants you domain spells and other features when you choose it at 1st level. It also grants you additional benefits at 2nd, 5th, 8th, and 11th levels.',
-        levelAcquired: 1
+        levelAcquired: 1,
+        choices: {
+          count: 1,
+          options: ['Knowledge Domain', 'Life Domain', 'Light Domain', 'Nature Domain', 'Tempest Domain', 'Trickery Domain', 'War Domain'],
+          optionDetails: {
+            'Knowledge Domain': 'Gain deeper command of lore, skills, and languages while channeling divine insight.',
+            'Life Domain': 'Focus on restorative miracles with stronger healing magic and heavy armor training.',
+            'Light Domain': 'Wield radiant power that burns darkness and protects allies with blinding light.',
+            'Nature Domain': 'Blend divine power with the natural world, including druidic magic and resilient defenses.',
+            'Tempest Domain': 'Command storm and thunder magic while fighting with martial and heavy armor proficiencies.',
+            'Trickery Domain': 'Use stealth, illusions, and deception-focused blessings to outmaneuver enemies.',
+            'War Domain': 'Fight as a battle priest with martial training and combat-focused divine features.'
+          }
+        }
       },
       {
         name: 'Channel Divinity',
@@ -187,7 +284,20 @@ export const srdClasses: DndClass[] = [
         levelAcquired: 1
       }
     ],
-    slotsPerLevel: [3, 4, 4, 4, 4, 4, 5, 5, 5, 5, 6, 6, 6, 6, 7, 7, 7, 7, 8, 8]
+    startingEquipment: {
+      startingGoldFormula: '5d4 * 10',
+      startingGoldAverage: 125,
+      choices: [
+        {
+          label: 'Choose your weapon:',
+          options: [
+            { label: '(a) Light Crossbow and Bolts', items: ['Light Crossbow', 'Bolts'], type: 'bundle' },
+            { label: '(b) Simple Weapon', type: 'choice', weaponCategories: ['Simple Melee', 'Simple Ranged'] }
+          ]
+        }
+      ],
+      fixedEquipment: ['Scale Mail', 'Shield', 'Priest\'s Pack', 'Holy Symbol: Amulet']
+    }
   },
   {
     name: 'Druid',
@@ -196,7 +306,15 @@ export const srdClasses: DndClass[] = [
     savingThrows: ['intelligence', 'wisdom'],
     skillProficienciesChoices: 2,
     skillOptions: ['arcana', 'animalHandling', 'insight', 'medicine', 'nature', 'perception', 'religion', 'survival'],
+    asiLevels: [4, 8, 12, 16, 19],
+    multiclassing: {
+      prerequisites: [{ ability: 'wisdom', min: 13 }],
+      proficienciesGained: {
+        armor: ['Light', 'Medium', 'Shield']
+      }
+    },
     spellcastingAbility: 'wisdom',
+    spellPrepType: 'prepared',
     features: [
       {
         name: 'Druidic',
@@ -216,7 +334,15 @@ export const srdClasses: DndClass[] = [
       {
         name: 'Druid Circle',
         description: 'Your circle grants you special features. At 2nd level, you choose to identify with a circle of druids. Your choice grants you features at 2nd level and again at 6th, 10th, and 14th levels.',
-        levelAcquired: 2
+        levelAcquired: 2,
+        choices: {
+          count: 1,
+          options: ['Circle of the Land', 'Circle of the Moon'],
+          optionDetails: {
+            'Circle of the Land': 'Deepen your spellcasting through regional nature magic and improved resource recovery.',
+            'Circle of the Moon': 'Specialize in stronger Wild Shape combat forms and more aggressive shapeshifting tactics.'
+          }
+        }
       },
       {
         name: 'Ability Score Improvement',
@@ -239,7 +365,20 @@ export const srdClasses: DndClass[] = [
         levelAcquired: 20
       }
     ],
-    slotsPerLevel: [3, 4, 4, 4, 4, 4, 5, 5, 5, 5, 6, 6, 6, 6, 7, 7, 7, 7, 8, 8]
+    startingEquipment: {
+      startingGoldFormula: '2d4 * 10',
+      startingGoldAverage: 50,
+      choices: [
+        {
+          label: 'Choose your weapon:',
+          options: [
+            { label: '(a) Scimitar', items: ['Scimitar'], type: 'bundle' },
+            { label: '(b) Simple Melee Weapon (non-metal)', items: ['Club', 'Dagger', 'Greatclub', 'Light Hammer', 'Quarterstaff', 'Sickle', 'Spear'], type: 'choice' }
+          ]
+        }
+      ],
+      fixedEquipment: ['Leather Armor', 'Explorer\'s Pack', 'Druidic Focus: Sprig of Mistletoe']
+    }
   },
   {
     name: 'Fighter',
@@ -248,11 +387,31 @@ export const srdClasses: DndClass[] = [
     savingThrows: ['strength', 'constitution'],
     skillProficienciesChoices: 2,
     skillOptions: ['acrobatics', 'animalHandling', 'athletics', 'history', 'insight', 'intimidation', 'perception', 'survival'],
+    asiLevels: [4, 6, 8, 12, 14, 16, 19],
+    multiclassing: {
+      prerequisites: [{ ability: 'strength', min: 13 }],
+      proficienciesGained: {
+        armor: ['Light', 'Medium', 'Shield'],
+        weapons: ['Simple', 'Martial']
+      }
+    },
     features: [
       {
         name: 'Fighting Style',
         description: 'You adopt a particular style of fighting as your specialty. You adopt a particular style of fighting as your specialty. You can\'t take a Fighting Style option more than once, even if you later get to choose again.',
-        levelAcquired: 1
+        levelAcquired: 1,
+        choices: {
+          count: 1,
+          options: ['Archery', 'Defense', 'Dueling', 'Great Weapon Fighting', 'Protection', 'Two-Weapon Fighting'],
+          optionDetails: {
+            'Archery': 'You gain a +2 bonus to attack rolls you make with ranged weapons.',
+            'Defense': 'While you are wearing armor, you gain a +1 bonus to AC.',
+            'Dueling': 'When wielding a melee weapon in one hand and no other weapons, you gain a +2 bonus to damage rolls.',
+            'Great Weapon Fighting': 'When you roll a 1 or 2 on weapon damage with a two-handed or versatile weapon used in two hands, you can reroll the die.',
+            'Protection': 'While wielding a shield, you can use your reaction to impose disadvantage on an attack against an ally within 5 feet.',
+            'Two-Weapon Fighting': 'When fighting with two weapons, you can add your ability modifier to the damage of the off-hand attack.'
+          }
+        }
       },
       {
         name: 'Second Wind',
@@ -267,7 +426,16 @@ export const srdClasses: DndClass[] = [
       {
         name: 'Martial Archetype',
         description: 'Choose an archetype that you strive to emulate. At 3rd level, you choose an archetype that you strive to emulate in your combat styles and techniques. Choose Champion, Battle Master, or Eldritch Knight, all detailed at the end of the class description. The archetype you choose grants you features at 3rd level and again at 7th, 10th, 15th, and 18th level.',
-        levelAcquired: 3
+        levelAcquired: 3,
+        choices: {
+          count: 1,
+          options: ['Champion', 'Battle Master', 'Eldritch Knight'],
+          optionDetails: {
+            'Champion': 'Focus on straightforward martial excellence with improved critical hits and strong physical prowess.',
+            'Battle Master': 'Use tactical maneuvers and superiority dice to control the battlefield and support allies.',
+            'Eldritch Knight': 'Blend weapon combat with wizardly spells for a durable arcane warrior style.'
+          }
+        }
       },
       {
         name: 'Ability Score Improvement',
@@ -284,7 +452,28 @@ export const srdClasses: DndClass[] = [
         description: 'You can reroll a saving throw that you fail. Beginning at 9th level, you can reroll a saving throw that you fail. If you do so, you must use the new roll, and you can\'t use this feature again until you finish a long rest. You can use this feature twice before a long rest when you reach 13th level in this class and three times before a long rest when you reach 17th level in this class.',
         levelAcquired: 9
       }
-    ]
+    ],
+    startingEquipment: {
+      startingGoldFormula: '5d4 * 10',
+      startingGoldAverage: 125,
+      choices: [
+        {
+          label: 'Choose your armor:',
+          options: [
+            { label: '(a) Chain Mail', items: ['Chain Mail'], type: 'bundle' },
+            { label: '(b) Leather Armor, Longbow, and Arrows', items: ['Leather Armor', 'Longbow', 'Arrows'], type: 'bundle' }
+          ]
+        },
+        {
+          label: 'Choose your weapon:',
+          options: [
+            { label: '(a) Martial Weapon and Shield', type: 'choice', weaponClasses: ['Martial'] },
+            { label: '(b) Two Martial Weapons', type: 'choice', weaponClasses: ['Martial'], count: 2 }
+          ]
+        }
+      ],
+      fixedEquipment: ['Dungeoneer\'s Pack']
+    }
   },
   {
     name: 'Monk',
@@ -293,6 +482,13 @@ export const srdClasses: DndClass[] = [
     savingThrows: ['strength', 'dexterity'],
     skillProficienciesChoices: 1,
     skillOptions: ['acrobatics', 'athletics', 'history', 'insight', 'religion', 'stealth'],
+    asiLevels: [4, 8, 12, 16, 19],
+    multiclassing: {
+      prerequisites: [{ ability: 'dexterity', min: 13 }, { ability: 'wisdom', min: 13 }],
+      proficienciesGained: {
+        weapons: ['Simple', 'shortsword']
+      }
+    },
     features: [
       {
         name: 'Unarmored Defense',
@@ -317,7 +513,16 @@ export const srdClasses: DndClass[] = [
       {
         name: 'Monastic Tradition',
         description: 'Choose a tradition that represents your training. At 3rd level, you commit yourself to a monastic tradition: the Way of the Open Hand, the Way of Shadow, or the Way of the Four Elements, all detailed at the end of the class description. Your tradition grants you features at 3rd level and again at 6th, 11th, and 17th level.',
-        levelAcquired: 3
+        levelAcquired: 3,
+        choices: {
+          count: 1,
+          options: ['Way of the Open Hand', 'Way of Shadow', 'Way of the Four Elements'],
+          optionDetails: {
+            'Way of the Open Hand': 'Refine pure martial technique with control effects that shove, topple, and disrupt foes.',
+            'Way of Shadow': 'Adopt stealth and deception tools, using ki to create darkness and move unseen.',
+            'Way of the Four Elements': 'Channel elemental disciplines, spending ki to produce spell-like elemental effects.'
+          }
+        }
       },
       {
         name: 'Deflect Missiles',
@@ -389,7 +594,21 @@ export const srdClasses: DndClass[] = [
         description: 'When you roll for initiative and have no ki remaining, you regain 4 ki points. At 20th level, when you roll for initiative and have no Ki points remaining, you regain 4 Ki points.',
         levelAcquired: 20
       }
-    ]
+    ],
+    startingEquipment: {
+      startingGoldFormula: '5d4',
+      startingGoldAverage: 12,
+      choices: [
+        {
+          label: 'Choose your weapon:',
+          options: [
+            { label: '(a) Shortsword', items: ['Shortsword'], type: 'bundle' },
+            { label: '(b) Simple Weapon', type: 'choice', weaponClasses: ['Simple'] }
+          ]
+        }
+      ],
+      fixedEquipment: ['Dungeoneer\'s Pack']
+    }
   },
   {
     name: 'Paladin',
@@ -398,7 +617,16 @@ export const srdClasses: DndClass[] = [
     savingThrows: ['wisdom', 'charisma'],
     skillProficienciesChoices: 2,
     skillOptions: ['athletics', 'insight', 'intimidation', 'medicine', 'persuasion', 'religion'],
+    asiLevels: [4, 8, 12, 16, 19],
     spellcastingAbility: 'charisma',
+    spellPrepType: 'prepared',
+    multiclassing: {
+      prerequisites: [{ ability: 'strength', min: 13 }, { ability: 'charisma', min: 13 }],
+      proficienciesGained: {
+        armor: ['Light', 'Medium', 'Shield'],
+        weapons: ['Simple', 'Martial']
+      }
+    },
     features: [
       {
         name: 'Divine Sense',
@@ -418,7 +646,17 @@ export const srdClasses: DndClass[] = [
       {
         name: 'Fighting Style',
         description: 'You adopt a particular style of fighting as your specialty. At 2nd level, you adopt a particular style of fighting as your specialty. You can\'t take a Fighting Style option more than once, even if you later get to choose again.',
-        levelAcquired: 2
+        levelAcquired: 2,
+        choices: {
+          count: 1,
+          options: ['Defense', 'Dueling', 'Great Weapon Fighting', 'Protection'],
+          optionDetails: {
+            'Defense': 'While you are wearing armor, you gain a +1 bonus to AC.',
+            'Dueling': 'When wielding a melee weapon in one hand and no other weapons, you gain a +2 bonus to damage rolls.',
+            'Great Weapon Fighting': 'When you roll a 1 or 2 on weapon damage with a two-handed or versatile weapon used in two hands, you can reroll the die.',
+            'Protection': 'While wielding a shield, you can use your reaction to impose disadvantage on an attack against an ally within 5 feet.'
+          }
+        }
       },
       {
         name: 'Divine Health',
@@ -428,7 +666,16 @@ export const srdClasses: DndClass[] = [
       {
         name: 'Sacred Oath',
         description: 'Choose an oath that you will swear to uphold. When you reach 3rd level, you swear the oath that binds you as a paladin forever. Up to this time you have been in a preparatory stage, committed to the path but not yet sworn to it. Now you choose the Oath of Devotion, the Oath of the Ancients, or the Oath of Vengeance, all detailed at the end of the class description. Your choice grants you features at 3rd level and again at 7th, 15th, and 20th level.',
-        levelAcquired: 3
+        levelAcquired: 3,
+        choices: {
+          count: 1,
+          options: ['Oath of Devotion', 'Oath of the Ancients', 'Oath of Vengeance'],
+          optionDetails: {
+            'Oath of Devotion': 'Uphold ideals of honesty, courage, compassion, and justice as a classic holy champion.',
+            'Oath of the Ancients': 'Defend life, beauty, and light through nature-aligned paladin magic and resilience.',
+            'Oath of Vengeance': 'Pursue and punish great evil with relentless focus and hard-hitting pursuit tools.'
+          }
+        }
       },
       {
         name: 'Ability Score Improvement',
@@ -461,7 +708,20 @@ export const srdClasses: DndClass[] = [
         levelAcquired: 14
       }
     ],
-    slotsPerLevel: [0, 0, 3, 4, 4, 4, 4, 4, 4, 4, 5, 5, 5, 5, 5, 5, 6, 6, 6, 6]
+    startingEquipment: {
+      startingGoldFormula: '5d4 * 10',
+      startingGoldAverage: 125,
+      choices: [
+        {
+          label: 'Choose your weapon:',
+          options: [
+            { label: '(a) Martial Weapon and Shield', type: 'choice', weaponClasses: ['Martial'] },
+            { label: '(b) Two Martial Weapons', type: 'choice', weaponClasses: ['Martial'], count: 2 }
+          ]
+        }
+      ],
+      fixedEquipment: ['Chain Mail', 'Holy Symbol: Amulet', 'Priest\'s Pack', 'Shield']
+    }
   },
   {
     name: 'Ranger',
@@ -470,26 +730,86 @@ export const srdClasses: DndClass[] = [
     savingThrows: ['strength', 'dexterity'],
     skillProficienciesChoices: 3,
     skillOptions: ['animalHandling', 'athletics', 'insight', 'investigation', 'nature', 'perception', 'stealth', 'survival'],
+    asiLevels: [4, 8, 12, 16, 19],
+    multiclassing: {
+      prerequisites: [{ ability: 'dexterity', min: 13 }, { ability: 'wisdom', min: 13 }],
+      proficienciesGained: {
+        armor: ['Light', 'Medium', 'Shield'],
+        weapons: ['Simple', 'Martial'],
+        skills: 1
+      }
+    },
     features: [
       {
         name: 'Favored Enemy',
         description: 'You have significant experience studying, tracking, and combating a particular type of enemy. Beginning at 1st level, you have significant experience studying, tracking, and combating a particular type of enemy. Choose a type of favored enemy: aberrations, beasts, celestials, constructs, dragons, elementals, fey, fiends, giants, monstrosities, oozes, plants, or undead. You have advantage on Wisdom (Survival) checks to track your favored enemies, as well as on Intelligence checks to recall information about them.',
-        levelAcquired: 1
+        levelAcquired: 1,
+        choices: {
+          count: 1,
+          options: ['Aberrations', 'Beasts', 'Celestials', 'Constructs', 'Dragons', 'Elementals', 'Fey', 'Fiends', 'Giants', 'Monstrosities', 'Oozes', 'Plants', 'Undead'],
+          optionDetails: {
+            'Aberrations': 'You are trained to track aberrations and recall useful lore about them.',
+            'Beasts': 'You are trained to track beasts and recall useful lore about them.',
+            'Celestials': 'You are trained to track celestials and recall useful lore about them.',
+            'Constructs': 'You are trained to track constructs and recall useful lore about them.',
+            'Dragons': 'You are trained to track dragons and recall useful lore about them.',
+            'Elementals': 'You are trained to track elementals and recall useful lore about them.',
+            'Fey': 'You are trained to track fey and recall useful lore about them.',
+            'Fiends': 'You are trained to track fiends and recall useful lore about them.',
+            'Giants': 'You are trained to track giants and recall useful lore about them.',
+            'Monstrosities': 'You are trained to track monstrosities and recall useful lore about them.',
+            'Oozes': 'You are trained to track oozes and recall useful lore about them.',
+            'Plants': 'You are trained to track dangerous plants and recall useful lore about them.',
+            'Undead': 'You are trained to track undead and recall useful lore about them.'
+          }
+        }
       },
       {
         name: 'Natural Explorer',
         description: 'You are particularly familiar with one type of natural environment. You are particularly familiar with one type of natural environment and are adept at traveling and surviving in such regions. Choose one type of terrain: arctic, coast, desert, forest, grassland, hill, mountain, or swamp. When you make an Intelligence or Wisdom check related to your favored terrain, your proficiency bonus is doubled if you are using any of your trained skills.',
-        levelAcquired: 1
+        levelAcquired: 1,
+        choices: {
+          count: 1,
+          options: ['Arctic', 'Coast', 'Desert', 'Forest', 'Grassland', 'Hill', 'Mountain', 'Swamp'],
+          optionDetails: {
+            'Arctic': 'You are especially effective navigating and surviving arctic terrain, with stronger exploration checks there.',
+            'Coast': 'You are especially effective navigating and surviving coastal terrain, with stronger exploration checks there.',
+            'Desert': 'You are especially effective navigating and surviving desert terrain, with stronger exploration checks there.',
+            'Forest': 'You are especially effective navigating and surviving forest terrain, with stronger exploration checks there.',
+            'Grassland': 'You are especially effective navigating and surviving grassland terrain, with stronger exploration checks there.',
+            'Hill': 'You are especially effective navigating and surviving hill terrain, with stronger exploration checks there.',
+            'Mountain': 'You are especially effective navigating and surviving mountain terrain, with stronger exploration checks there.',
+            'Swamp': 'You are especially effective navigating and surviving swamp terrain, with stronger exploration checks there.'
+          }
+        }
       },
       {
         name: 'Fighting Style',
         description: 'You adopt a particular style of fighting as your specialty. At 2nd level, you adopt a particular style of fighting as your specialty. Choose one of the following options. Once you choose a style, you can\'t take a Fighting Style option more than again, even if you later get to choose again.',
-        levelAcquired: 2
+        levelAcquired: 2,
+        choices: {
+          count: 1,
+          options: ['Archery', 'Defense', 'Dueling', 'Two-Weapon Fighting'],
+          optionDetails: {
+            'Archery': 'You gain a +2 bonus to attack rolls you make with ranged weapons.',
+            'Defense': 'While you are wearing armor, you gain a +1 bonus to AC.',
+            'Dueling': 'When wielding a melee weapon in one hand and no other weapons, you gain a +2 bonus to damage rolls.',
+            'Two-Weapon Fighting': 'When fighting with two weapons, you can add your ability modifier to the damage of the off-hand attack.'
+          }
+        }
       },
       {
         name: 'Ranger Archetype',
         description: 'Choose an archetype that you emulate in the exercise of your ranger abilities. At 3rd level, you choose an archetype that you emulate in the exercise of your ranger abilities. Choose Hunter or Beast Master, both detailed at the end of the class description. Your archetype choice grants you features at 3rd, 7th, 11th, and 15th level.',
-        levelAcquired: 3
+        levelAcquired: 3,
+        choices: {
+          count: 1,
+          options: ['Hunter', 'Beast Master'],
+          optionDetails: {
+            'Hunter': 'Specialize in personal combat techniques designed to counter a wide range of foes.',
+            'Beast Master': 'Fight alongside a loyal animal companion that grows with your ranger training.'
+          }
+        }
       },
       {
         name: 'Primeval Awareness',
@@ -531,7 +851,30 @@ export const srdClasses: DndClass[] = [
         description: 'You become a master hunter. At 20th level, you become a master hunter. Once on each of your turns, you can add your Wisdom modifier to the attack roll or the damage roll of an attack you make against one of your favored enemies. You can choose to use this feature before or after the roll, but before any effects of the roll are applied.',
         levelAcquired: 20
       }
-    ]
+    ],
+    startingEquipment: {
+      startingGoldFormula: '5d4 * 10',
+      startingGoldAverage: 125,
+      choices: [
+        {
+          label: 'Choose your armor:',
+          options: [
+            { label: '(a) Scale Mail', items: ['Scale Mail'], type: 'bundle' },
+            { label: '(b) Leather Armor', items: ['Leather Armor'], type: 'bundle' }
+          ]
+        },
+        {
+          label: 'Choose your weapons:',
+          options: [
+            { label: '(a) Two Shortswords', items: ['Shortsword', 'Shortsword'], type: 'bundle' },
+            { label: '(b) Two Simple Melee Weapons', type: 'choice', weaponClasses: ['Simple'], weaponForms: ['Melee'], count: 2 }
+          ]
+        }
+      ],
+      fixedEquipment: ['Explorer\'s Pack', 'Longbow', 'Arrows']
+    },
+    spellcastingAbility: 'wisdom',
+    spellPrepType: 'prepared',
   },
   {
     name: 'Rogue',
@@ -540,11 +883,38 @@ export const srdClasses: DndClass[] = [
     savingThrows: ['dexterity', 'intelligence'],
     skillProficienciesChoices: 4,
     skillOptions: ['acrobatics', 'athletics', 'deception', 'insight', 'intimidation', 'investigation', 'perception', 'performance', 'persuasion', 'sleightOfHand', 'stealth'],
+    asiLevels: [4, 8, 10, 12, 16, 19],
+    multiclassing: {
+      prerequisites: [{ ability: 'dexterity', min: 13 }],
+      proficienciesGained: {
+        armor: ['Light'],
+        skills: 1,
+        weapons: ['thieves tools']
+      }
+    },
     features: [
       {
         name: 'Expertise',
         description: 'Choose two of your skill proficiencies, or one of your skill proficiencies and your proficiency with thieves\' tools. At 1st level, choose two of your skill proficiencies, or one of your skill proficiencies and your proficiency with thieves\' tools. Your proficiency bonus is doubled for any ability check that uses either of these skills. At 6th level, you can choose another two skills (or thieves\' tools) to gain this benefit.',
-        levelAcquired: 1
+        levelAcquired: 1,
+        choices: {
+          count: 2,
+          options: ['acrobatics', 'athletics', 'deception', 'insight', 'intimidation', 'investigation', 'perception', 'performance', 'persuasion', 'sleightOfHand', 'stealth', 'thieves tools'],
+          optionDetails: {
+            acrobatics: 'Your proficiency bonus is doubled for ability checks you make using Acrobatics.',
+            athletics: 'Your proficiency bonus is doubled for ability checks you make using Athletics.',
+            deception: 'Your proficiency bonus is doubled for ability checks you make using Deception.',
+            insight: 'Your proficiency bonus is doubled for ability checks you make using Insight.',
+            intimidation: 'Your proficiency bonus is doubled for ability checks you make using Intimidation.',
+            investigation: 'Your proficiency bonus is doubled for ability checks you make using Investigation.',
+            perception: 'Your proficiency bonus is doubled for ability checks you make using Perception.',
+            performance: 'Your proficiency bonus is doubled for ability checks you make using Performance.',
+            persuasion: 'Your proficiency bonus is doubled for ability checks you make using Persuasion.',
+            sleightOfHand: 'Your proficiency bonus is doubled for ability checks you make using Sleight of Hand.',
+            stealth: 'Your proficiency bonus is doubled for ability checks you make using Stealth.',
+            'thieves tools': 'Your proficiency bonus is doubled for ability checks you make using thieves\' tools.'
+          }
+        }
       },
       {
         name: 'Sneak Attack',
@@ -564,7 +934,16 @@ export const srdClasses: DndClass[] = [
       {
         name: 'Roguish Archetype',
         description: 'Choose an archetype that represents your area of expertise. At 3rd level, you choose an archetype that represents your area of expertise: Assassin, Arcane Trickster, or Thief. Your archetype choice grants you features at 3rd level and again at 9th, 13th, and 17th level.',
-        levelAcquired: 3
+        levelAcquired: 3,
+        choices: {
+          count: 1,
+          options: ['Assassin', 'Arcane Trickster', 'Thief'],
+          optionDetails: {
+            'Assassin': 'Excel at infiltration and burst damage with deadly ambush and disguise-focused tools.',
+            'Arcane Trickster': 'Mix rogue cunning with enchantment and illusion magic for tricky battlefield control.',
+            'Thief': 'Master mobility and object interaction with fast hands and superior climbing and stealth utility.'
+          }
+        }
       },
       {
         name: 'Ability Score Improvement',
@@ -606,7 +985,21 @@ export const srdClasses: DndClass[] = [
         description: 'You have an uncanny ability to succeed when you need it. At 20th level, you have an uncanny ability to succeed when you need it. If your attack misses a target within range, you can turn the miss into a hit. Alternatively, if you fail an ability check, you can treat the d20 roll as a 20.',
         levelAcquired: 20
       }
-    ]
+    ],
+    startingEquipment: {
+      startingGoldFormula: '4d4 * 10',
+      startingGoldAverage: 100,
+      choices: [
+        {
+          label: 'Choose your weapon:',
+          options: [
+            { label: '(a) Rapier', items: ['Rapier'], type: 'bundle' },
+            { label: '(b) Shortsword', items: ['Shortsword'], type: 'bundle' }
+          ]
+        }
+      ],
+      fixedEquipment: ['Leather Armor', 'Burglar\'s Pack', 'Thieves\' Tools', 'Dagger', 'Dagger']
+    }
   },
   {
     name: 'Sorcerer',
@@ -615,7 +1008,13 @@ export const srdClasses: DndClass[] = [
     savingThrows: ['constitution', 'charisma'],
     skillProficienciesChoices: 2,
     skillOptions: ['arcana', 'deception', 'insight', 'intimidation', 'persuasion', 'religion'],
+    asiLevels: [4, 8, 12, 16, 19],
     spellcastingAbility: 'charisma',
+    spellPrepType: 'known',
+    multiclassing: {
+      prerequisites: [{ ability: 'charisma', min: 13 }],
+      proficienciesGained: {}
+    },
     features: [
       {
         name: 'Spellcasting',
@@ -625,7 +1024,15 @@ export const srdClasses: DndClass[] = [
       {
         name: 'Sorcerous Origin',
         description: 'Choose a sorcerous origin that describes the source of your magical power. Choose a sorcerous origin, which describes the source of your innate magical power: Draconic Bloodline or Wild Magic, both detailed at the end of the class description. Your choice grants you features when you choose it at 1st level and again at 6th, 14th, and 18th level.',
-        levelAcquired: 1
+        levelAcquired: 1,
+        choices: {
+          count: 1,
+          options: ['Draconic Bloodline', 'Wild Magic'],
+          optionDetails: {
+            'Draconic Bloodline': 'Your magic is tied to draconic ancestry, improving durability and empowering dragon-themed spells.',
+            'Wild Magic': 'Your magic is unpredictable, producing surges of chaotic arcane effects as you cast spells.'
+          }
+        }
       },
       {
         name: 'Font of Magic',
@@ -648,7 +1055,20 @@ export const srdClasses: DndClass[] = [
         levelAcquired: 20
       }
     ],
-    slotsPerLevel: [2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20]
+    startingEquipment: {
+      startingGoldFormula: '3d4 * 10',
+      startingGoldAverage: 75,
+      choices: [
+        {
+          label: 'Choose your weapon:',
+          options: [
+            { label: '(a) Light Crossbow and Bolts', items: ['Light Crossbow', 'Bolts'], type: 'bundle' },
+            { label: '(b) Simple Weapon', type: 'choice', weaponClasses: ['Simple'] }
+          ]
+        }
+      ],
+      fixedEquipment: ['Leather Armor', 'Component Pouch', 'Dungeoneer\'s Pack', 'Dagger', 'Dagger']
+    }
   },
   {
     name: 'Warlock',
@@ -657,12 +1077,30 @@ export const srdClasses: DndClass[] = [
     savingThrows: ['wisdom', 'charisma'],
     skillProficienciesChoices: 2,
     skillOptions: ['arcana', 'deception', 'history', 'intimidation', 'investigation', 'nature', 'religion'],
+    asiLevels: [4, 8, 12, 16, 19],
     spellcastingAbility: 'charisma',
+    spellPrepType: 'known',
+    multiclassing: {
+      prerequisites: [{ ability: 'charisma', min: 13 }],
+      proficienciesGained: {
+        armor: ['Light'],
+        weapons: ['Simple']
+      }
+    },
     features: [
       {
         name: 'Otherworldly Patron',
         description: 'You have struck a bargain with an otherworldly being. You have struck a bargain with an otherworldly being of your choice: the Archfey, the Fiend, or the Great Old One, each detailed at the end of the class description. Your choice grants you features at 1st level and again at 6th, 10th, and 14th level.',
-        levelAcquired: 1
+        levelAcquired: 1,
+        choices: {
+          count: 1,
+          options: ['The Archfey', 'The Fiend', 'The Great Old One'],
+          optionDetails: {
+            'The Archfey': 'Your patron grants fey trickery and control effects that charm, beguile, or reposition foes.',
+            'The Fiend': 'Your patron grants infernal resilience and aggressive magic centered on destructive power.',
+            'The Great Old One': 'Your patron grants alien mental influence, including telepathic and mind-bending abilities.'
+          }
+        }
       },
       {
         name: 'Pact Magic',
@@ -677,7 +1115,16 @@ export const srdClasses: DndClass[] = [
       {
         name: 'Pact Boon',
         description: 'Your otherworldly patron grants you a magical gift. At 3rd level, your otherworldly patron grants you a magical gift based on the pact you made with your patron. Choose one of the following patron-specific bonus spells.',
-        levelAcquired: 3
+        levelAcquired: 3,
+        choices: {
+          count: 1,
+          options: ['Pact of the Chain', 'Pact of the Blade', 'Pact of the Tome'],
+          optionDetails: {
+            'Pact of the Chain': 'Gain a special familiar with expanded forms and stronger utility through invocation support.',
+            'Pact of the Blade': 'Conjure and bond with a pact weapon to emphasize martial warlock combat.',
+            'Pact of the Tome': 'Receive a Book of Shadows that grants extra cantrips and ritual-focused versatility.'
+          }
+        }
       },
       {
         name: 'Ability Score Improvement',
@@ -695,7 +1142,20 @@ export const srdClasses: DndClass[] = [
         levelAcquired: 20
       }
     ],
-    slotsPerLevel: [1, 2, 2, 2, 2, 2, 2, 2, 2, 2, 3, 3, 3, 3, 3, 4, 4, 4, 4, 4]
+    startingEquipment: {
+      startingGoldFormula: '4d4 * 10',
+      startingGoldAverage: 100,
+      choices: [
+        {
+          label: 'Choose your weapon:',
+          options: [
+            { label: '(a) Light Crossbow and Bolts', items: ['Light Crossbow', 'Bolts'], type: 'bundle' },
+            { label: '(b) Simple Weapon', type: 'choice', weaponClasses: ['Simple'] }
+          ]
+        }
+      ],
+      fixedEquipment: ['Leather Armor', 'Component Pouch', 'Dungeoneer\'s Pack', 'Dagger', 'Dagger']
+    }
   },
   {
     name: 'Wizard',
@@ -704,7 +1164,13 @@ export const srdClasses: DndClass[] = [
     savingThrows: ['intelligence', 'wisdom'],
     skillProficienciesChoices: 2,
     skillOptions: ['arcana', 'history', 'insight', 'investigation', 'medicine', 'religion'],
+    asiLevels: [4, 8, 12, 16, 19],
     spellcastingAbility: 'intelligence',
+    spellPrepType: 'known',
+    multiclassing: {
+      prerequisites: [{ ability: 'intelligence', min: 13 }],
+      proficienciesGained: {}
+    },
     features: [
       {
         name: 'Spellcasting',
@@ -719,7 +1185,21 @@ export const srdClasses: DndClass[] = [
       {
         name: 'Arcane Tradition',
         description: 'Choose an arcane tradition that shapes your magical practice. At 2nd level, you choose an arcane tradition, shaping your magical practice. Your choice grants you features at 2nd level and again at 6th, 10th, and 14th level. Choose either Abjuration, Conjuration, Divination, Enchantment, Evocation, Illusion, Necromancy, or Transmutation, all detailed at the end of the class description.',
-        levelAcquired: 2
+        levelAcquired: 2,
+        choices: {
+          count: 1,
+          options: ['School of Abjuration', 'School of Conjuration', 'School of Divination', 'School of Enchantment', 'School of Evocation', 'School of Illusion', 'School of Necromancy', 'School of Transmutation'],
+          optionDetails: {
+            'School of Abjuration': 'Focus on protective wards and anti-magic techniques that shield you and your allies.',
+            'School of Conjuration': 'Specialize in summoning creatures and objects while mastering teleportation tricks.',
+            'School of Divination': 'Use foresight and magical insight to predict outcomes and influence key moments.',
+            'School of Enchantment': 'Control minds and emotions with charm magic that manipulates enemy behavior.',
+            'School of Evocation': 'Unleash powerful elemental blasts while shaping effects to spare your allies.',
+            'School of Illusion': 'Create convincing false images and phantasms to deceive and outmaneuver opponents.',
+            'School of Necromancy': 'Harness life-and-death magic to drain vitality and command undead servants.',
+            'School of Transmutation': 'Alter creatures and matter with adaptable magic that changes forms and properties.'
+          }
+        }
       },
       {
         name: 'Ability Score Improvement',
@@ -737,6 +1217,19 @@ export const srdClasses: DndClass[] = [
         levelAcquired: 20
       }
     ],
-    slotsPerLevel: [3, 4, 4, 4, 4, 4, 5, 5, 5, 5, 6, 6, 6, 6, 7, 7, 7, 7, 8, 8]
+    startingEquipment: {
+      startingGoldFormula: '4d4 * 10',
+      startingGoldAverage: 100,
+      choices: [
+        {
+          label: 'Choose your weapon:',
+          options: [
+            { label: '(a) Quarterstaff', items: ['Quarterstaff'], type: 'bundle' },
+            { label: '(b) Dagger', items: ['Dagger'], type: 'bundle' }
+          ]
+        }
+      ],
+      fixedEquipment: ['Spellbook', 'Scholar\'s Pack', 'Component Pouch']
+    }
   }
 ];

@@ -3,15 +3,17 @@ import type { Character, Feat } from '../types';
 export interface DisplayFeature {
   name: string;
   description: string;
-  source: 'race' | 'class' | 'feat';
+  source: 'race' | 'class' | 'feat' | 'background' | 'language';
   sourceDetail: string;
   levelAcquired?: number;
 }
 
 export interface GroupedFeatures {
   raceFeatures: { raceName: string; features: DisplayFeature[] };
+  backgroundFeatures: { backgroundName: string; features: DisplayFeature[] };
   classFeatures: { className: string; features: DisplayFeature[] }[];
   featFeatures: DisplayFeature[];
+  languages: string[];
 }
 
 function mapRaceFeature(
@@ -51,11 +53,28 @@ function mapFeatFeature(feat: Feat): DisplayFeature {
   };
 }
 
+function mapSelectedChoiceDescription(
+  featureName: string,
+  selectedChoice: string | string[],
+  optionDetails?: Record<string, string>
+): string {
+  const selectedValues = Array.isArray(selectedChoice) ? selectedChoice : [selectedChoice];
+
+  const renderedChoices = selectedValues.map(choice => {
+    const detail = optionDetails?.[choice];
+    return detail ? `${choice}: ${detail}` : choice;
+  });
+
+  return `${featureName}: ${renderedChoices.join(', ')}`;
+}
+
 export async function getCharacterFeatures(character: Character): Promise<GroupedFeatures> {
   const result: GroupedFeatures = {
     raceFeatures: { raceName: '', features: [] },
+    backgroundFeatures: { backgroundName: '', features: [] },
     classFeatures: [],
     featFeatures: [],
+    languages: character.languages || [],
   };
 
   // Get race features
@@ -65,12 +84,28 @@ export async function getCharacterFeatures(character: Character): Promise<Groupe
 
     if (race) {
       const raceFeatureList: DisplayFeature[] = [];
+      const subrace = character.subrace 
+        ? race.subraces?.find(sr => sr.id === character.subrace)
+        : undefined;
+
+      const raceName = subrace 
+        ? `${race.name} (${subrace.name})`
+        : race.name;
 
       // Map regular racial features
       for (const feature of race.features || []) {
         raceFeatureList.push(
-          mapRaceFeature(feature.name, feature.description, race.name)
+          mapRaceFeature(feature.name, feature.description, raceName)
         );
+      }
+
+      // Map subrace features if selected
+      if (subrace?.features) {
+        for (const feature of subrace.features) {
+          raceFeatureList.push(
+            mapRaceFeature(feature.name, feature.description, raceName)
+          );
+        }
       }
 
       // Map racial saving throw features
@@ -80,18 +115,42 @@ export async function getCharacterFeatures(character: Character): Promise<Groupe
           mapRaceFeature(
             `${typeLabel} on Saving Throws`,
             stFeature.description,
-            race.name
+            raceName
           )
         );
       }
 
       result.raceFeatures = {
-        raceName: race.name,
+        raceName: raceName,
         features: raceFeatureList,
       };
     }
   } catch {
     // Race not found, skip
+  }
+
+  // Get background features
+  try {
+    const { srdBackgrounds } = await import('../data/srdBackgrounds');
+    const background = srdBackgrounds.find(b => b.name === character.background);
+
+    if (background && background.features) {
+      const bgFeatureList: DisplayFeature[] = [];
+      for (const feature of background.features) {
+        bgFeatureList.push({
+          name: feature.name,
+          description: feature.description,
+          source: 'background',
+          sourceDetail: background.name,
+        });
+      }
+      result.backgroundFeatures = {
+        backgroundName: background.name,
+        features: bgFeatureList,
+      };
+    }
+  } catch {
+    // Background not found, skip
   }
 
   // Get class features (filtered by level)
@@ -105,10 +164,28 @@ export async function getCharacterFeatures(character: Character): Promise<Groupe
 
         for (const feature of dndClass.features) {
           if (feature.levelAcquired <= classEntry.level) {
+            const featureName = feature.name;
+            let featureDescription = feature.description;
+
+            if (feature.choices) {
+              const featureKey = `${dndClass.name.toLowerCase()}-${feature.levelAcquired}-${feature.name.toLowerCase().replace(/\s+/g, '-')}`;
+              const selectedChoice = character.featureChoices[featureKey];
+
+              if (selectedChoice) {
+                featureDescription = mapSelectedChoiceDescription(
+                  feature.name,
+                  selectedChoice,
+                  feature.choices.optionDetails
+                );
+              } else {
+                continue;
+              }
+            }
+
             classFeatureList.push(
               mapClassFeature(
-                feature.name,
-                feature.description,
+                featureName,
+                featureDescription,
                 dndClass.name,
                 feature.levelAcquired
               )
