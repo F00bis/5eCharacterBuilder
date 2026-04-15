@@ -5,6 +5,7 @@ import Stepper from '../components/ui/stepper';
 import { useCharacterBuilder } from '../contexts/CharacterBuilderContextTypes';
 import { getCharacterById } from '../db/characters';
 import { calculateFeatEntitlements, hasEntitlements } from '../utils/featEntitlements';
+import { hasProgressionEntitlements } from '../utils/progressionEntitlements';
 import { calculateSpellEntitlements } from '../utils/spellCalculations';
 import { useAsiLevelsByClass } from '../utils/useAsiLevelsByClass';
 import AbilityScoresStep from './builder/steps/AbilityScoresStep';
@@ -12,6 +13,7 @@ import BackgroundStep from './builder/steps/BackgroundStep';
 import ClassSelectionStep from './builder/steps/ClassSelectionStep';
 import EquipmentFeatsStep from './builder/steps/EquipmentFeatsStep';
 import FeatsAsiStep from './builder/steps/FeatsAsiStep';
+import ProgressionChoicesStep from './builder/steps/ProgressionChoicesStep';
 import ProficienciesStep from './builder/steps/ProficienciesStep';
 import RaceStep from './builder/steps/RaceStep';
 import ReviewStep from './builder/steps/ReviewStep';
@@ -40,6 +42,11 @@ export default function CharacterCreator({ mode }: CharacterCreatorProps) {
     const entitlements = calculateFeatEntitlements(state.draft, mode, asiLevelsByClass);
     return hasEntitlements(entitlements);
   }, [state.draft, mode, asiLevelsByClass]);
+
+  const showProgressionChoices = useMemo(() => {
+    const classes = state.draft.classes || [];
+    return hasProgressionEntitlements(classes);
+  }, [state.draft.classes]);
 
   useEffect(() => {
     if (mode === 'create') {
@@ -84,6 +91,15 @@ export default function CharacterCreator({ mode }: CharacterCreatorProps) {
         const profIdx = stepsToReturn.findIndex(s => s.id === 'proficiencies');
         stepsToReturn.splice(profIdx + 1, 0, { id: 'feats-asi', label: 'Feats & ASI', isValid: state.stepValidations['feats-asi'] ?? false });
       }
+      if (showProgressionChoices) {
+        const featsIdx = stepsToReturn.findIndex(s => s.id === 'feats-asi');
+        const insertAt = featsIdx >= 0 ? featsIdx + 1 : stepsToReturn.findIndex(s => s.id === 'proficiencies') + 1;
+        stepsToReturn.splice(insertAt, 0, {
+          id: 'progression-choices',
+          label: 'Progression Choices',
+          isValid: state.stepValidations['progression-choices'] ?? false,
+        });
+      }
 
       return stepsToReturn;
     } else {
@@ -103,10 +119,19 @@ export default function CharacterCreator({ mode }: CharacterCreatorProps) {
         const profIdx = stepsToReturn.findIndex(s => s.id === 'proficiencies');
         stepsToReturn.splice(profIdx + 1, 0, { id: 'feats-asi', label: 'Feats & ASI', isValid: state.stepValidations['feats-asi'] ?? false });
       }
+      if (showProgressionChoices) {
+        const featsIdx = stepsToReturn.findIndex(s => s.id === 'feats-asi');
+        const insertAt = featsIdx >= 0 ? featsIdx + 1 : stepsToReturn.findIndex(s => s.id === 'proficiencies') + 1;
+        stepsToReturn.splice(insertAt, 0, {
+          id: 'progression-choices',
+          label: 'Progression Choices',
+          isValid: state.stepValidations['progression-choices'] ?? false,
+        });
+      }
 
       return stepsToReturn;
     }
-  }, [mode, state.stepValidations, showSpellSelection, showFeatsAsi]);
+  }, [mode, state.stepValidations, showSpellSelection, showFeatsAsi, showProgressionChoices]);
 
   const handleNext = () => {
     if (state.currentStep < steps.length - 1) {
@@ -146,6 +171,9 @@ export default function CharacterCreator({ mode }: CharacterCreatorProps) {
         {steps[state.currentStep]?.id === 'spells' && <SpellSelectionStep isVisible={showSpellSelection} />}
         {steps[state.currentStep]?.id === 'proficiencies' && <ProficienciesStep />}
         {steps[state.currentStep]?.id === 'feats-asi' && showFeatsAsi && <FeatsAsiStep />}
+        {steps[state.currentStep]?.id === 'progression-choices' && showProgressionChoices && (
+          <ProgressionChoicesStep />
+        )}
         {steps[state.currentStep]?.id === 'equipment' && <EquipmentFeatsStep />}
         {steps[state.currentStep]?.id === 'review' && <ReviewStep />}
       </div>

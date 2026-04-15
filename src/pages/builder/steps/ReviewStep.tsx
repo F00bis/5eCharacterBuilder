@@ -11,7 +11,14 @@ export default function ReviewStep() {
   const { state, dispatch } = useCharacterBuilder();
   const { finalCharacter, isValid, handleFinish } = useReviewStep();
 
-  const draftWithChoices = { ...state.draft, featChoices: state.featChoices };
+  const draftWithChoices = {
+    ...state.draft,
+    featChoices: state.featChoices,
+    expertiseChoices: state.expertiseChoices,
+    metamagicChoices: state.metamagicChoices,
+    invocationChoices: state.invocationChoices,
+    mysticArcanumChoices: state.mysticArcanumChoices,
+  };
   const maxHp = calculateMaxHp(draftWithChoices, finalCharacter.level);
   const acBreakdown = getArmorClassForDraft(draftWithChoices);
   const totalLevel = state.draft.classes?.reduce((sum, c) => sum + c.level, 0) ?? 0;
@@ -96,9 +103,53 @@ export default function ReviewStep() {
               ))}
             </div>
           )}
+          {finalCharacter.expertiseChoices && Object.keys(finalCharacter.expertiseChoices).length > 0 && (
+            <div>
+              <span className="font-medium">Expertise: </span>
+              {Object.entries(finalCharacter.expertiseChoices).map(([source, skills]) => (
+                <span key={source} className="inline-block bg-amber-100 px-2 py-1 rounded mr-1">
+                  {skills.join(', ')}
+                </span>
+              ))}
+            </div>
+          )}
+          {finalCharacter.metamagicChoices && Object.keys(finalCharacter.metamagicChoices).length > 0 && (
+            <div>
+              <span className="font-medium">Metamagic: </span>
+              {Object.entries(finalCharacter.metamagicChoices).map(([source, options]) => (
+                <span key={source} className="inline-block bg-violet-100 px-2 py-1 rounded mr-1">
+                  {options.join(', ')}
+                </span>
+              ))}
+            </div>
+          )}
+          {finalCharacter.invocationChoices && Object.keys(finalCharacter.invocationChoices).length > 0 && (
+            <div>
+              <span className="font-medium">Invocations: </span>
+              {Object.entries(finalCharacter.invocationChoices).map(([source, options]) => (
+                <span key={source} className="inline-block bg-indigo-100 px-2 py-1 rounded mr-1">
+                  {options.join(', ')}
+                </span>
+              ))}
+            </div>
+          )}
+          {finalCharacter.mysticArcanumChoices && Object.keys(finalCharacter.mysticArcanumChoices).length > 0 && (
+            <div>
+              <span className="font-medium">Mystic Arcanum: </span>
+              {Object.entries(finalCharacter.mysticArcanumChoices).map(([source, spell]) => (
+                <span key={source} className="inline-block bg-purple-100 px-2 py-1 rounded mr-1">
+                  {spell}
+                </span>
+              ))}
+            </div>
+          )}
           {!Object.keys(finalCharacter.featureChoices || {}).length &&
             (!finalCharacter.equipment || finalCharacter.equipment.length === 0) &&
-            (!finalCharacter.feats || finalCharacter.feats.length === 0) && (
+            (!finalCharacter.feats || finalCharacter.feats.length === 0) &&
+            (!finalCharacter.expertiseChoices || Object.keys(finalCharacter.expertiseChoices).length === 0) &&
+            (!finalCharacter.metamagicChoices || Object.keys(finalCharacter.metamagicChoices).length === 0) &&
+            (!finalCharacter.invocationChoices || Object.keys(finalCharacter.invocationChoices).length === 0) &&
+            (!finalCharacter.mysticArcanumChoices || Object.keys(finalCharacter.mysticArcanumChoices).length === 0) && (
               <p className="text-slate-500 italic">No new acquisitions this session.</p>
             )}
         </div>

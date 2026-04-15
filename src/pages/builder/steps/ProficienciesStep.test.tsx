@@ -84,6 +84,25 @@ describe('ProficienciesStep', () => {
     expect(screen.queryByText(/expertise/i)).not.toBeInTheDocument();
   });
 
+  it('does not show expertise section for Bard at level 1', async () => {
+    render(
+      <CharacterBuilderProvider>
+        <ProficienciesStepWithSetup className="Bard" />
+      </CharacterBuilderProvider>
+    );
+
+    await waitFor(() => {
+      expect(screen.getByRole('heading', { name: 'Proficiencies & Skills' })).toBeInTheDocument();
+    });
+
+    const select = screen.getAllByRole('combobox')[0];
+    await act(async () => {
+      fireEvent.change(select, { target: { value: 'Bard' } });
+    });
+
+    expect(screen.queryByRole('heading', { name: /expertise/i })).not.toBeInTheDocument();
+  });
+
   it('shows validation summary', async () => {
     render(
       <CharacterBuilderProvider>

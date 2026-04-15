@@ -1,6 +1,14 @@
 import type React from 'react';
 import { createContext, useContext } from 'react';
-import type { Ability, CharacterBase } from '../types';
+import type {
+  Ability,
+  CharacterBase,
+  ExpertiseChoiceStore,
+  InvocationChoiceStore,
+  MetamagicChoiceStore,
+  MysticArcanumChoiceStore,
+  Skill,
+} from '../types';
 import { createDefaultCharacter } from '../types';
 
 export interface AsiChoice {
@@ -25,6 +33,10 @@ export interface CharacterBuilderState {
   baseCharacterId: number | null;
   asiChoices: AsiChoice[];
   featChoices: FeatChoice[];
+  expertiseChoices: ExpertiseChoiceStore;
+  metamagicChoices: MetamagicChoiceStore;
+  invocationChoices: InvocationChoiceStore;
+  mysticArcanumChoices: MysticArcanumChoiceStore;
   stepValidations: Record<string, boolean>;
   useTashasRules: boolean;
   raceChoices: Record<string, string | string[]>;
@@ -44,6 +56,14 @@ export type BuilderAction =
   | { type: 'SET_FEAT_CHOICE'; choice: FeatChoice }
   | { type: 'REMOVE_FEAT_CHOICE'; source: string }
   | { type: 'CLEAR_FEAT_CHOICES' }
+  | { type: 'SET_EXPERTISE_CHOICE'; source: string; skills: Skill[] }
+  | { type: 'REMOVE_EXPERTISE_CHOICE'; source: string }
+  | { type: 'SET_METAMAGIC_CHOICE'; source: string; options: string[] }
+  | { type: 'REMOVE_METAMAGIC_CHOICE'; source: string }
+  | { type: 'SET_INVOCATION_CHOICE'; source: string; options: string[] }
+  | { type: 'REMOVE_INVOCATION_CHOICE'; source: string }
+  | { type: 'SET_MYSTIC_ARCANUM_CHOICE'; source: string; spellName: string }
+  | { type: 'REMOVE_MYSTIC_ARCANUM_CHOICE'; source: string }
   | { type: 'SET_STEP_VALIDATION'; stepId: string; isValid: boolean }
   | { type: 'SET_TASHAS_RULES'; enabled: boolean }
   | { type: 'RESET_VALIDATIONS' }
@@ -61,6 +81,10 @@ export const defaultState: CharacterBuilderState = {
   baseCharacterId: null,
   asiChoices: [],
   featChoices: [],
+  expertiseChoices: {},
+  metamagicChoices: {},
+  invocationChoices: {},
+  mysticArcanumChoices: {},
   stepValidations: {},
   useTashasRules: true,
   raceChoices: {},
@@ -77,10 +101,16 @@ export function characterBuilderReducer(
       return { ...state, mode: action.mode, baseCharacterId: action.baseCharacterId ?? null };
     case 'LOAD_BASE_CHARACTER': {
       const loadedDraft = createDefaultCharacter();
+      const characterWithProgression = action.character as Partial<CharacterBase>;
       return { 
         ...state, 
         draft: { ...loadedDraft, ...action.character },
-        asiChoices: (action.character as unknown as { asiChoices?: AsiChoice[] })?.asiChoices || []
+        asiChoices: (action.character as unknown as { asiChoices?: AsiChoice[] })?.asiChoices || [],
+        featChoices: characterWithProgression.featChoices || [],
+        expertiseChoices: characterWithProgression.expertiseChoices || {},
+        metamagicChoices: characterWithProgression.metamagicChoices || {},
+        invocationChoices: characterWithProgression.invocationChoices || {},
+        mysticArcanumChoices: characterWithProgression.mysticArcanumChoices || {},
       };
     }
     case 'UPDATE_DRAFT':
@@ -137,6 +167,58 @@ export function characterBuilderReducer(
       return { ...state, featChoices: state.featChoices.filter(c => c.source !== action.source) };
     case 'CLEAR_FEAT_CHOICES':
       return { ...state, featChoices: [] };
+    case 'SET_EXPERTISE_CHOICE':
+      return {
+        ...state,
+        expertiseChoices: {
+          ...state.expertiseChoices,
+          [action.source]: action.skills,
+        },
+      };
+    case 'REMOVE_EXPERTISE_CHOICE': {
+      const updated = { ...state.expertiseChoices };
+      delete updated[action.source];
+      return { ...state, expertiseChoices: updated };
+    }
+    case 'SET_METAMAGIC_CHOICE':
+      return {
+        ...state,
+        metamagicChoices: {
+          ...state.metamagicChoices,
+          [action.source]: action.options,
+        },
+      };
+    case 'REMOVE_METAMAGIC_CHOICE': {
+      const updated = { ...state.metamagicChoices };
+      delete updated[action.source];
+      return { ...state, metamagicChoices: updated };
+    }
+    case 'SET_INVOCATION_CHOICE':
+      return {
+        ...state,
+        invocationChoices: {
+          ...state.invocationChoices,
+          [action.source]: action.options,
+        },
+      };
+    case 'REMOVE_INVOCATION_CHOICE': {
+      const updated = { ...state.invocationChoices };
+      delete updated[action.source];
+      return { ...state, invocationChoices: updated };
+    }
+    case 'SET_MYSTIC_ARCANUM_CHOICE':
+      return {
+        ...state,
+        mysticArcanumChoices: {
+          ...state.mysticArcanumChoices,
+          [action.source]: action.spellName,
+        },
+      };
+    case 'REMOVE_MYSTIC_ARCANUM_CHOICE': {
+      const updated = { ...state.mysticArcanumChoices };
+      delete updated[action.source];
+      return { ...state, mysticArcanumChoices: updated };
+    }
     case 'SET_STEP_VALIDATION':
       return {
         ...state,

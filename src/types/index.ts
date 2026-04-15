@@ -132,6 +132,19 @@ export interface ToolProficiency {
   source: string;
 }
 
+export interface PersistedFeatChoice {
+  source: string;
+  type: 'feat' | 'asi';
+  featName?: string;
+  asiBonuses?: { ability: Ability; amount: number }[];
+  featSelections?: Record<string, string | string[]>;
+}
+
+export type ExpertiseChoiceStore = Record<string, Skill[]>;
+export type MetamagicChoiceStore = Record<string, string[]>;
+export type InvocationChoiceStore = Record<string, string[]>;
+export type MysticArcanumChoiceStore = Record<string, string>;
+
 export interface CharacterBase {
   name: string;
   race: string;
@@ -178,6 +191,11 @@ export interface CharacterBase {
   toolProficiencies: ToolProficiency[];
   raceChoices: Record<string, string | string[]>;
   backgroundChoices: Record<string, string | string[]>;
+  featChoices?: PersistedFeatChoice[];
+  expertiseChoices?: ExpertiseChoiceStore;
+  metamagicChoices?: MetamagicChoiceStore;
+  invocationChoices?: InvocationChoiceStore;
+  mysticArcanumChoices?: MysticArcanumChoiceStore;
 }
 
 export interface Character extends CharacterBase {
@@ -238,10 +256,14 @@ export function createDefaultCharacter(): CharacterBase {
     toolProficiencies: [],
     raceChoices: {},
     backgroundChoices: {},
+    featChoices: [],
+    expertiseChoices: {},
+    metamagicChoices: {},
+    invocationChoices: {},
+    mysticArcanumChoices: {},
   };
 }
 
 export type { ActionType, FeatureAction, ResourceDefinition } from './classes';
 export type { ArmorCategory, EquipmentCategory, SrdEquipment, WeaponCategory, WeaponMastery } from './equipment';
 export type { DndSpell, SpellSchool } from './spells';
-

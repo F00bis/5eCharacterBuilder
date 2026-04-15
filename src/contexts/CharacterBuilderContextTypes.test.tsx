@@ -117,4 +117,46 @@ describe('characterBuilderReducer', () => {
     const state = characterBuilderReducer(startState, action);
     expect(state.stepValidations).toEqual({});
   });
+
+  it('handles progression-domain choice actions', () => {
+    let state = characterBuilderReducer(initialState, {
+      type: 'SET_EXPERTISE_CHOICE',
+      source: 'expertise:0:rogue:1',
+      skills: ['stealth', 'perception'],
+    });
+    state = characterBuilderReducer(state, {
+      type: 'SET_METAMAGIC_CHOICE',
+      source: 'metamagic:0:sorcerer:3',
+      options: ['Quickened Spell', 'Subtle Spell'],
+    });
+    state = characterBuilderReducer(state, {
+      type: 'SET_INVOCATION_CHOICE',
+      source: 'invocation:0:warlock:2',
+      options: ['Agonizing Blast', "Devil's Sight"],
+    });
+    state = characterBuilderReducer(state, {
+      type: 'SET_MYSTIC_ARCANUM_CHOICE',
+      source: 'mystic-arcanum:0:warlock:11',
+      spellName: 'Mass Suggestion',
+    });
+
+    expect(state.expertiseChoices['expertise:0:rogue:1']).toEqual(['stealth', 'perception']);
+    expect(state.metamagicChoices['metamagic:0:sorcerer:3']).toEqual(['Quickened Spell', 'Subtle Spell']);
+    expect(state.invocationChoices['invocation:0:warlock:2']).toEqual(['Agonizing Blast', "Devil's Sight"]);
+    expect(state.mysticArcanumChoices['mystic-arcanum:0:warlock:11']).toBe('Mass Suggestion');
+  });
+
+  it('removes progression-domain choices by source', () => {
+    let state = characterBuilderReducer(initialState, {
+      type: 'SET_EXPERTISE_CHOICE',
+      source: 'expertise:0:rogue:1',
+      skills: ['stealth', 'perception'],
+    });
+    state = characterBuilderReducer(state, {
+      type: 'REMOVE_EXPERTISE_CHOICE',
+      source: 'expertise:0:rogue:1',
+    });
+
+    expect(state.expertiseChoices['expertise:0:rogue:1']).toBeUndefined();
+  });
 });

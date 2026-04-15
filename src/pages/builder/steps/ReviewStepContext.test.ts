@@ -14,6 +14,7 @@ describe('calculateFinalAbilityScores', () => {
       },
       featChoices: [
         {
+          source: 'Class (Fighter 4)',
           type: 'asi',
           asiBonuses: [
             { ability: 'strength', amount: 2 },
@@ -38,6 +39,7 @@ describe('calculateFinalAbilityScores', () => {
       },
       featChoices: [
         {
+          source: 'Class (Fighter 4)',
           type: 'asi',
           asiBonuses: [
             { ability: 'strength', amount: 1 },

@@ -53,19 +53,21 @@ export default function ProficienciesStep() {
     return classData.skillProficienciesChoices;
   }, [classData, isMulticlass, isLevel1]);
 
+  const effectiveClassLevel = useMemo(() => {
+    const entry = (state.draft.classes || []).find(c => c.className === effectiveClassName);
+    return entry?.level ?? 1;
+  }, [state.draft.classes, effectiveClassName]);
+
   const hasExpertise = useMemo(() => {
     if (!classData) return false;
-    if (classData.name === 'Rogue') return true;
-    if (classData.name === 'Bard') return true;
-    return false;
-  }, [classData]);
+    return classData.name === 'Rogue' && effectiveClassLevel === 1;
+  }, [classData, effectiveClassLevel]);
 
   const expertiseChoicesCount = useMemo(() => {
     if (!classData) return 0;
-    if (classData.name === 'Rogue') return 2;
-    if (classData.name === 'Bard') return 2;
+    if (classData.name === 'Rogue' && effectiveClassLevel === 1) return 2;
     return 0;
-  }, [classData]);
+  }, [classData, effectiveClassLevel]);
 
   const availableSkillsForClass = useMemo(() => {
     if (!classData) return [];
@@ -236,7 +238,7 @@ export default function ProficienciesStep() {
     if (userSelectedClassSkills.length !== skillChoicesCount) return false;
     
     if (hasExpertise) {
-      if (allExpertiseSelections.length !== expertiseChoicesCount) return false;
+      if (expertiseSelections.length !== expertiseChoicesCount) return false;
     }
     
     return true;

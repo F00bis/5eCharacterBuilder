@@ -1,5 +1,10 @@
 # React + TypeScript + Vite
 
+## Rules Baseline
+
+- Character building targets D&D 5e (2014 rules).
+- Homebrew extensions are supported where data or progression rules are customized.
+
 This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
 
 Currently, two official plugins are available:

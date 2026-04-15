@@ -1,6 +1,15 @@
 import { useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
-import type { Character, Ability, RaceStatSelection } from '../../../types';
+import type {
+  Character,
+  Ability,
+  InvocationChoiceStore,
+  MetamagicChoiceStore,
+  MysticArcanumChoiceStore,
+  PersistedFeatChoice,
+  RaceStatSelection,
+  Skill,
+} from '../../../types';
 import { useCharacterBuilder } from '../../../contexts/CharacterBuilderContextTypes';
 import { addCharacter } from '../../../db/characters';
 import { updateCharacter } from '../../../db/characters';
@@ -20,7 +29,11 @@ interface PartialCharacterDraft {
   hpBonus?: number;
   equipment?: { equipped?: boolean; statModifiers?: Partial<Record<Ability, number>> }[];
   feats?: { statModifiers?: Partial<Record<Ability, number>> }[];
-  featChoices?: { type: 'feat' | 'asi'; asiBonuses?: { ability: Ability; amount: number }[] }[];
+  featChoices?: PersistedFeatChoice[];
+  expertiseChoices?: Record<string, Skill[]>;
+  metamagicChoices?: MetamagicChoiceStore;
+  invocationChoices?: InvocationChoiceStore;
+  mysticArcanumChoices?: MysticArcanumChoiceStore;
   raceStatSelections?: RaceStatSelection[];
 }
 
@@ -129,7 +142,14 @@ export function useReviewStep() {
   const finalCharacter = useMemo<Character>(() => {
     const draft = state.draft;
 
-    const draftWithChoices = { ...draft, featChoices: state.featChoices };
+    const draftWithChoices = {
+      ...draft,
+      featChoices: state.featChoices,
+      expertiseChoices: state.expertiseChoices,
+      metamagicChoices: state.metamagicChoices,
+      invocationChoices: state.invocationChoices,
+      mysticArcanumChoices: state.mysticArcanumChoices,
+    };
     const abilityScores = calculateFinalAbilityScores(draftWithChoices);
 
     const conMod = getModifier(abilityScores.constitution);
@@ -141,7 +161,7 @@ export function useReviewStep() {
     const proficiencyBonus = 1 + Math.floor((totalLevel - 1) / 4);
 
     const character: Character = {
-      ...draft,
+      ...draftWithChoices,
       level: totalLevel,
       abilityScores,
       maxHp: calculatedMaxHp,
@@ -158,7 +178,16 @@ export function useReviewStep() {
     character.updatedAt = new Date();
 
     return character;
-  }, [state.draft, state.featChoices, state.mode, totalLevel]);
+  }, [
+    state.draft,
+    state.expertiseChoices,
+    state.featChoices,
+    state.invocationChoices,
+    state.metamagicChoices,
+    state.mode,
+    state.mysticArcanumChoices,
+    totalLevel,
+  ]);
 
   const isValid = !!(state.draft.name?.trim());
 
