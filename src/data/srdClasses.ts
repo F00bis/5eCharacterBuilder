@@ -47,7 +47,14 @@ export const srdClasses: DndClass[] = [
         name: 'Primal Path',
         description: 'Choose a path that shapes the nature of your rage. At 3rd level, you choose a path that shapes the nature of your rage. Choose either the Berserker or the Totem Warrior, both detailed at the end of the class description. Your choice grants you features at 3rd level and again at 6th, 10th, and 14th levels.',
         levelAcquired: 3,
-        choices: { count: 1, options: ['Path of the Berserker', 'Path of the Totem Warrior'] }
+        choices: {
+          count: 1,
+          options: ['Path of the Berserker', 'Path of the Totem Warrior'],
+          optionDetails: {
+            'Path of the Berserker': 'Embrace relentless fury with aggressive rage features like Frenzy and intimidating presence.',
+            'Path of the Totem Warrior': 'Channel spiritual totem power to gain versatile, nature-themed benefits tied to animal spirits.'
+          }
+        }
       },
       {
         name: 'Ability Score Improvement',
@@ -153,7 +160,14 @@ export const srdClasses: DndClass[] = [
         name: 'Bard College',
         description: 'Choose a college that represents your musical training. At 3rd level, you choose a college that inspires and informs your casting. Choose the College of Lore or the College of Valor, both detailed at the end of the class description. Your choice grants you features at 3rd level and again at 6th and 14th levels.',
         levelAcquired: 3,
-        choices: { count: 1, options: ['College of Lore', 'College of Valor'] }
+        choices: {
+          count: 1,
+          options: ['College of Lore', 'College of Valor'],
+          optionDetails: {
+            'College of Lore': 'Master broad knowledge and magical versatility, with extra skills and flexible spell options.',
+            'College of Valor': 'Inspire allies from the front line with martial training and combat-focused bard features.'
+          }
+        }
       },
       {
         name: 'Expertise',
@@ -321,7 +335,14 @@ export const srdClasses: DndClass[] = [
         name: 'Druid Circle',
         description: 'Your circle grants you special features. At 2nd level, you choose to identify with a circle of druids. Your choice grants you features at 2nd level and again at 6th, 10th, and 14th levels.',
         levelAcquired: 2,
-        choices: { count: 1, options: ['Circle of the Land', 'Circle of the Moon'] }
+        choices: {
+          count: 1,
+          options: ['Circle of the Land', 'Circle of the Moon'],
+          optionDetails: {
+            'Circle of the Land': 'Deepen your spellcasting through regional nature magic and improved resource recovery.',
+            'Circle of the Moon': 'Specialize in stronger Wild Shape combat forms and more aggressive shapeshifting tactics.'
+          }
+        }
       },
       {
         name: 'Ability Score Improvement',
@@ -406,7 +427,15 @@ export const srdClasses: DndClass[] = [
         name: 'Martial Archetype',
         description: 'Choose an archetype that you strive to emulate. At 3rd level, you choose an archetype that you strive to emulate in your combat styles and techniques. Choose Champion, Battle Master, or Eldritch Knight, all detailed at the end of the class description. The archetype you choose grants you features at 3rd level and again at 7th, 10th, 15th, and 18th level.',
         levelAcquired: 3,
-        choices: { count: 1, options: ['Champion', 'Battle Master', 'Eldritch Knight'] }
+        choices: {
+          count: 1,
+          options: ['Champion', 'Battle Master', 'Eldritch Knight'],
+          optionDetails: {
+            'Champion': 'Focus on straightforward martial excellence with improved critical hits and strong physical prowess.',
+            'Battle Master': 'Use tactical maneuvers and superiority dice to control the battlefield and support allies.',
+            'Eldritch Knight': 'Blend weapon combat with wizardly spells for a durable arcane warrior style.'
+          }
+        }
       },
       {
         name: 'Ability Score Improvement',
@@ -485,7 +514,15 @@ export const srdClasses: DndClass[] = [
         name: 'Monastic Tradition',
         description: 'Choose a tradition that represents your training. At 3rd level, you commit yourself to a monastic tradition: the Way of the Open Hand, the Way of Shadow, or the Way of the Four Elements, all detailed at the end of the class description. Your tradition grants you features at 3rd level and again at 6th, 11th, and 17th level.',
         levelAcquired: 3,
-        choices: { count: 1, options: ['Way of the Open Hand', 'Way of Shadow', 'Way of the Four Elements'] }
+        choices: {
+          count: 1,
+          options: ['Way of the Open Hand', 'Way of Shadow', 'Way of the Four Elements'],
+          optionDetails: {
+            'Way of the Open Hand': 'Refine pure martial technique with control effects that shove, topple, and disrupt foes.',
+            'Way of Shadow': 'Adopt stealth and deception tools, using ki to create darkness and move unseen.',
+            'Way of the Four Elements': 'Channel elemental disciplines, spending ki to produce spell-like elemental effects.'
+          }
+        }
       },
       {
         name: 'Deflect Missiles',
@@ -610,7 +647,16 @@ export const srdClasses: DndClass[] = [
         name: 'Fighting Style',
         description: 'You adopt a particular style of fighting as your specialty. At 2nd level, you adopt a particular style of fighting as your specialty. You can\'t take a Fighting Style option more than once, even if you later get to choose again.',
         levelAcquired: 2,
-        choices: { count: 1, options: ['Defense', 'Dueling', 'Great Weapon Fighting', 'Protection'] }
+        choices: {
+          count: 1,
+          options: ['Defense', 'Dueling', 'Great Weapon Fighting', 'Protection'],
+          optionDetails: {
+            'Defense': 'While you are wearing armor, you gain a +1 bonus to AC.',
+            'Dueling': 'When wielding a melee weapon in one hand and no other weapons, you gain a +2 bonus to damage rolls.',
+            'Great Weapon Fighting': 'When you roll a 1 or 2 on weapon damage with a two-handed or versatile weapon used in two hands, you can reroll the die.',
+            'Protection': 'While wielding a shield, you can use your reaction to impose disadvantage on an attack against an ally within 5 feet.'
+          }
+        }
       },
       {
         name: 'Divine Health',
@@ -621,7 +667,15 @@ export const srdClasses: DndClass[] = [
         name: 'Sacred Oath',
         description: 'Choose an oath that you will swear to uphold. When you reach 3rd level, you swear the oath that binds you as a paladin forever. Up to this time you have been in a preparatory stage, committed to the path but not yet sworn to it. Now you choose the Oath of Devotion, the Oath of the Ancients, or the Oath of Vengeance, all detailed at the end of the class description. Your choice grants you features at 3rd level and again at 7th, 15th, and 20th level.',
         levelAcquired: 3,
-        choices: { count: 1, options: ['Oath of Devotion', 'Oath of the Ancients', 'Oath of Vengeance'] }
+        choices: {
+          count: 1,
+          options: ['Oath of Devotion', 'Oath of the Ancients', 'Oath of Vengeance'],
+          optionDetails: {
+            'Oath of Devotion': 'Uphold ideals of honesty, courage, compassion, and justice as a classic holy champion.',
+            'Oath of the Ancients': 'Defend life, beauty, and light through nature-aligned paladin magic and resilience.',
+            'Oath of Vengeance': 'Pursue and punish great evil with relentless focus and hard-hitting pursuit tools.'
+          }
+        }
       },
       {
         name: 'Ability Score Improvement',
@@ -733,13 +787,29 @@ export const srdClasses: DndClass[] = [
         name: 'Fighting Style',
         description: 'You adopt a particular style of fighting as your specialty. At 2nd level, you adopt a particular style of fighting as your specialty. Choose one of the following options. Once you choose a style, you can\'t take a Fighting Style option more than again, even if you later get to choose again.',
         levelAcquired: 2,
-        choices: { count: 1, options: ['Archery', 'Defense', 'Dueling', 'Two-Weapon Fighting'] }
+        choices: {
+          count: 1,
+          options: ['Archery', 'Defense', 'Dueling', 'Two-Weapon Fighting'],
+          optionDetails: {
+            'Archery': 'You gain a +2 bonus to attack rolls you make with ranged weapons.',
+            'Defense': 'While you are wearing armor, you gain a +1 bonus to AC.',
+            'Dueling': 'When wielding a melee weapon in one hand and no other weapons, you gain a +2 bonus to damage rolls.',
+            'Two-Weapon Fighting': 'When fighting with two weapons, you can add your ability modifier to the damage of the off-hand attack.'
+          }
+        }
       },
       {
         name: 'Ranger Archetype',
         description: 'Choose an archetype that you emulate in the exercise of your ranger abilities. At 3rd level, you choose an archetype that you emulate in the exercise of your ranger abilities. Choose Hunter or Beast Master, both detailed at the end of the class description. Your archetype choice grants you features at 3rd, 7th, 11th, and 15th level.',
         levelAcquired: 3,
-        choices: { count: 1, options: ['Hunter', 'Beast Master'] }
+        choices: {
+          count: 1,
+          options: ['Hunter', 'Beast Master'],
+          optionDetails: {
+            'Hunter': 'Specialize in personal combat techniques designed to counter a wide range of foes.',
+            'Beast Master': 'Fight alongside a loyal animal companion that grows with your ranger training.'
+          }
+        }
       },
       {
         name: 'Primeval Awareness',
@@ -865,7 +935,15 @@ export const srdClasses: DndClass[] = [
         name: 'Roguish Archetype',
         description: 'Choose an archetype that represents your area of expertise. At 3rd level, you choose an archetype that represents your area of expertise: Assassin, Arcane Trickster, or Thief. Your archetype choice grants you features at 3rd level and again at 9th, 13th, and 17th level.',
         levelAcquired: 3,
-        choices: { count: 1, options: ['Assassin', 'Arcane Trickster', 'Thief'] }
+        choices: {
+          count: 1,
+          options: ['Assassin', 'Arcane Trickster', 'Thief'],
+          optionDetails: {
+            'Assassin': 'Excel at infiltration and burst damage with deadly ambush and disguise-focused tools.',
+            'Arcane Trickster': 'Mix rogue cunning with enchantment and illusion magic for tricky battlefield control.',
+            'Thief': 'Master mobility and object interaction with fast hands and superior climbing and stealth utility.'
+          }
+        }
       },
       {
         name: 'Ability Score Improvement',
@@ -1038,7 +1116,15 @@ export const srdClasses: DndClass[] = [
         name: 'Pact Boon',
         description: 'Your otherworldly patron grants you a magical gift. At 3rd level, your otherworldly patron grants you a magical gift based on the pact you made with your patron. Choose one of the following patron-specific bonus spells.',
         levelAcquired: 3,
-        choices: { count: 1, options: ['Pact of the Chain', 'Pact of the Blade', 'Pact of the Tome'] }
+        choices: {
+          count: 1,
+          options: ['Pact of the Chain', 'Pact of the Blade', 'Pact of the Tome'],
+          optionDetails: {
+            'Pact of the Chain': 'Gain a special familiar with expanded forms and stronger utility through invocation support.',
+            'Pact of the Blade': 'Conjure and bond with a pact weapon to emphasize martial warlock combat.',
+            'Pact of the Tome': 'Receive a Book of Shadows that grants extra cantrips and ritual-focused versatility.'
+          }
+        }
       },
       {
         name: 'Ability Score Improvement',
@@ -1100,7 +1186,20 @@ export const srdClasses: DndClass[] = [
         name: 'Arcane Tradition',
         description: 'Choose an arcane tradition that shapes your magical practice. At 2nd level, you choose an arcane tradition, shaping your magical practice. Your choice grants you features at 2nd level and again at 6th, 10th, and 14th level. Choose either Abjuration, Conjuration, Divination, Enchantment, Evocation, Illusion, Necromancy, or Transmutation, all detailed at the end of the class description.',
         levelAcquired: 2,
-        choices: { count: 1, options: ['School of Abjuration', 'School of Conjuration', 'School of Divination', 'School of Enchantment', 'School of Evocation', 'School of Illusion', 'School of Necromancy', 'School of Transmutation'] }
+        choices: {
+          count: 1,
+          options: ['School of Abjuration', 'School of Conjuration', 'School of Divination', 'School of Enchantment', 'School of Evocation', 'School of Illusion', 'School of Necromancy', 'School of Transmutation'],
+          optionDetails: {
+            'School of Abjuration': 'Focus on protective wards and anti-magic techniques that shield you and your allies.',
+            'School of Conjuration': 'Specialize in summoning creatures and objects while mastering teleportation tricks.',
+            'School of Divination': 'Use foresight and magical insight to predict outcomes and influence key moments.',
+            'School of Enchantment': 'Control minds and emotions with charm magic that manipulates enemy behavior.',
+            'School of Evocation': 'Unleash powerful elemental blasts while shaping effects to spare your allies.',
+            'School of Illusion': 'Create convincing false images and phantasms to deceive and outmaneuver opponents.',
+            'School of Necromancy': 'Harness life-and-death magic to drain vitality and command undead servants.',
+            'School of Transmutation': 'Alter creatures and matter with adaptable magic that changes forms and properties.'
+          }
+        }
       },
       {
         name: 'Ability Score Improvement',

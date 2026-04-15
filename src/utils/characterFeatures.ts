@@ -53,6 +53,21 @@ function mapFeatFeature(feat: Feat): DisplayFeature {
   };
 }
 
+function mapSelectedChoiceDescription(
+  featureName: string,
+  selectedChoice: string | string[],
+  optionDetails?: Record<string, string>
+): string {
+  const selectedValues = Array.isArray(selectedChoice) ? selectedChoice : [selectedChoice];
+
+  const renderedChoices = selectedValues.map(choice => {
+    const detail = optionDetails?.[choice];
+    return detail ? `${choice}: ${detail}` : choice;
+  });
+
+  return `${featureName}: ${renderedChoices.join(', ')}`;
+}
+
 export async function getCharacterFeatures(character: Character): Promise<GroupedFeatures> {
   const result: GroupedFeatures = {
     raceFeatures: { raceName: '', features: [] },
@@ -157,8 +172,11 @@ export async function getCharacterFeatures(character: Character): Promise<Groupe
               const selectedChoice = character.featureChoices[featureKey];
 
               if (selectedChoice) {
-                const choices = Array.isArray(selectedChoice) ? selectedChoice : [selectedChoice];
-                featureDescription = `${feature.name}: ${choices.join(', ')}`;
+                featureDescription = mapSelectedChoiceDescription(
+                  feature.name,
+                  selectedChoice,
+                  feature.choices.optionDetails
+                );
               } else {
                 continue;
               }
