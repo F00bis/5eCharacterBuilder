@@ -26,7 +26,7 @@ describe('resolveFeat', () => {
     });
   });
 
-  describe('half-feats with fixed ASI (single asiOption)', () => {
+describe('half-feats with fixed ASI (single asiOption)', () => {
     it('Actor: applies +1 CHA when charisma is selected', () => {
       const srdFeat = makeSrdFeat({
         name: 'Actor',
@@ -46,6 +46,28 @@ describe('resolveFeat', () => {
       });
       const result = resolveFeat(srdFeat, { asiChoice: 'constitution' });
       expect(result.statModifiers).toEqual({ constitution: 1 });
+    });
+
+    it('Actor: auto-applies +1 CHA without explicit asiChoice (regression test)', () => {
+      const srdFeat = makeSrdFeat({
+        name: 'Actor',
+        isHalfFeat: true,
+        asiOptions: ['charisma'],
+      });
+      const result = resolveFeat(srdFeat, {});
+      expect(result.statModifiers).toEqual({ charisma: 1 });
+      expect(result.resolvedChoices).toEqual({ asi: 'charisma' });
+    });
+
+    it('Durable: auto-applies +1 CON without explicit asiChoice (regression test)', () => {
+      const srdFeat = makeSrdFeat({
+        name: 'Durable',
+        isHalfFeat: true,
+        asiOptions: ['constitution'],
+      });
+      const result = resolveFeat(srdFeat, {});
+      expect(result.statModifiers).toEqual({ constitution: 1 });
+      expect(result.resolvedChoices).toEqual({ asi: 'constitution' });
     });
   });
 
@@ -93,7 +115,7 @@ describe('resolveFeat', () => {
       expect(result.statModifiers).toEqual({});
     });
 
-    it('does not apply ASI if no asiChoice provided for half-feat', () => {
+it('does not apply ASI if no asiChoice provided for half-feat with multiple options', () => {
       const srdFeat = makeSrdFeat({
         name: 'Athlete',
         isHalfFeat: true,

@@ -9,10 +9,17 @@ export interface FeatSelections {
 export function resolveFeat(srdFeat: SrdFeat, selections: FeatSelections): Feat {
   const statModifiers: Partial<Record<Ability, number>> = {};
 
-  if (srdFeat.isHalfFeat && selections.asiChoice) {
-    if (srdFeat.asiOptions?.includes(selections.asiChoice)) {
-      statModifiers[selections.asiChoice] = 1;
+  let effectiveAsiChoice: Ability | undefined;
+  if (srdFeat.isHalfFeat) {
+    if (selections.asiChoice && srdFeat.asiOptions?.includes(selections.asiChoice)) {
+      effectiveAsiChoice = selections.asiChoice;
+    } else if (!selections.asiChoice && srdFeat.asiOptions && srdFeat.asiOptions.length === 1) {
+      effectiveAsiChoice = srdFeat.asiOptions[0];
     }
+  }
+
+  if (effectiveAsiChoice) {
+    statModifiers[effectiveAsiChoice] = 1;
   }
 
   const savingThrowProficiencies: Partial<Record<Ability, ProficiencyLevel>> = {};
@@ -20,8 +27,8 @@ export function resolveFeat(srdFeat: SrdFeat, selections: FeatSelections): Feat 
     for (const choiceDef of srdFeat.choices) {
       if (choiceDef.kind === 'saving-throw') {
         let value: string | undefined;
-        if (choiceDef.linkedTo === 'asi' && selections.asiChoice) {
-          value = selections.asiChoice;
+        if (choiceDef.linkedTo === 'asi' && effectiveAsiChoice) {
+          value = effectiveAsiChoice;
         } else {
           value = selections.choices?.[choiceDef.id] as string | undefined;
         }
@@ -59,8 +66,8 @@ export function resolveFeat(srdFeat: SrdFeat, selections: FeatSelections): Feat 
   }
 
   const resolvedChoices: Record<string, string | string[]> = {};
-  if (selections.asiChoice) {
-    resolvedChoices.asi = selections.asiChoice;
+  if (effectiveAsiChoice) {
+    resolvedChoices.asi = effectiveAsiChoice;
   }
   if (selections.choices) {
     for (const [key, value] of Object.entries(selections.choices)) {

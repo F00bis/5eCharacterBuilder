@@ -11,8 +11,9 @@ export default function ReviewStep() {
   const { state, dispatch } = useCharacterBuilder();
   const { finalCharacter, isValid, handleFinish } = useReviewStep();
 
-  const maxHp = calculateMaxHp(state.draft, finalCharacter.level);
-  const acBreakdown = getArmorClassForDraft(state.draft);
+  const draftWithChoices = { ...state.draft, featChoices: state.featChoices };
+  const maxHp = calculateMaxHp(draftWithChoices, finalCharacter.level);
+  const acBreakdown = getArmorClassForDraft(draftWithChoices);
   const totalLevel = state.draft.classes?.reduce((sum, c) => sum + c.level, 0) ?? 0;
 
   return (
