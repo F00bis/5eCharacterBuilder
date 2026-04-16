@@ -1,4 +1,4 @@
-import type { Ability, Skill, ProficiencyLevel } from '../types';
+import type { Ability, Skill, ProficiencyLevel, InitiativeBonus } from '../types';
 import type { FeatChoiceDefinition } from '../types/featChoices';
 
 export interface SrdFeat {
@@ -7,6 +7,7 @@ export interface SrdFeat {
   description: string;
   prerequisites: string;
   statModifiers: Partial<Record<Ability, number>>;
+  initiativeBonus?: InitiativeBonus;
   skillModifiers?: Partial<Record<Skill, number>>;
   savingThrowProficiencies?: Partial<Record<Ability, ProficiencyLevel>>;
   isHalfFeat: boolean;
@@ -23,6 +24,7 @@ export const srdFeats: SrdFeat[] = [
     description: 'Always on the lookout for danger, you gain the following benefits: You gain a +5 bonus to initiative. You can\'t be surprised while you are conscious. Other creatures don\'t gain advantage on attack rolls against you as a result of being unseen by you.',
     prerequisites: '',
     statModifiers: {},
+    initiativeBonus: { type: 'flat', value: 5 },
     isHalfFeat: false,
     isSRD: true
   },

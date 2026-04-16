@@ -1,6 +1,8 @@
-import type { Character } from '../types';
-import { getModifier } from './abilityScores';
+import type { Character, InitiativeBonus } from '../types';
+import { getAbilityBreakdown, getModifier } from './abilityScores';
 import { db } from '../db';
+import { srdBackgrounds } from '../data/srdBackgrounds';
+import { srdRaces } from '../data/srdRaces';
 
 export function calculateMaxHp(character: Character): number {
   const hpRollsTotal = character.hpRolls
@@ -15,7 +17,7 @@ export function calculateMaxHp(character: Character): number {
 
 export interface BreakdownSource {
   name: string;
-  type: 'base' | 'race' | 'feat' | 'equipment' | 'class' | 'other';
+  type: 'base' | 'race' | 'background' | 'feat' | 'equipment' | 'class' | 'other';
   value: number;
   description?: string;
 }
@@ -25,53 +27,151 @@ export interface StatBreakdown {
   sources: BreakdownSource[];
 }
 
-export async function getInitiativeBreakdown(character: Character): Promise<StatBreakdown> {
+function resolveInitiativeBonus(bonus: InitiativeBonus | undefined, proficiencyBonus: number): number {
+  if (!bonus) return 0;
+  return bonus.type === 'flat' ? bonus.value : proficiencyBonus;
+}
+
+function getDexterityInitiativeBreakdown(character: Character): StatBreakdown {
   const sources: BreakdownSource[] = [];
-  
-  const dexModifier = getModifier(character.abilityScores.dexterity);
+  const dexterity = getAbilityBreakdown('dexterity', character);
+
+  let currentScore = dexterity.baseScore + dexterity.racialBonus;
+  let currentModifier = getModifier(currentScore);
+
   sources.push({
     name: 'Dexterity Modifier',
     type: 'base',
-    value: dexModifier,
+    value: currentModifier,
   });
 
-  let total = dexModifier;
+  const applyDexteritySource = (
+    name: string,
+    type: BreakdownSource['type'],
+    scoreDelta: number,
+    description?: string
+  ) => {
+    if (scoreDelta === 0) return;
 
-  const featBonus = character.feats.reduce((sum, feat) => {
-    const speedMatch = feat.statModifiers?.dexterity;
-    if (speedMatch) {
-      return sum + speedMatch;
+    const nextScore = currentScore + scoreDelta;
+    const nextModifier = getModifier(nextScore);
+    const modifierDelta = nextModifier - currentModifier;
+
+    currentScore = nextScore;
+    currentModifier = nextModifier;
+
+    if (modifierDelta !== 0) {
+      sources.push({ name, type, value: modifierDelta, description });
     }
-    return sum;
-  }, 0);
-  
-  if (featBonus !== 0) {
-    const matchingFeats = character.feats.filter(f => f.statModifiers?.dexterity);
-    for (const feat of matchingFeats) {
+  };
+
+  for (const featSource of dexterity.featSources) {
+    applyDexteritySource(featSource.name, 'feat', featSource.value);
+  }
+
+  for (const equipmentSource of dexterity.equipmentSources) {
+    applyDexteritySource(equipmentSource.name, 'equipment', equipmentSource.value);
+  }
+
+  if (dexterity.override !== null) {
+    const featBonus = dexterity.featSources.reduce((sum, source) => sum + source.value, 0);
+    const overrideScore = dexterity.override.value + featBonus;
+    const nextModifier = getModifier(overrideScore);
+    const modifierDelta = nextModifier - currentModifier;
+
+    currentScore = overrideScore;
+    currentModifier = nextModifier;
+
+    if (modifierDelta !== 0) {
       sources.push({
-        name: feat.name,
-        type: 'feat',
-        value: feat.statModifiers!.dexterity!,
+        name: dexterity.override.name,
+        type: 'equipment',
+        value: modifierDelta,
+        description: `Sets DEX to ${dexterity.override.value}`,
       });
     }
-    total += featBonus;
+  }
+
+  return { total: currentModifier, sources };
+}
+
+function getExplicitInitiativeBreakdown(character: Character): StatBreakdown {
+  const sources: BreakdownSource[] = [];
+  let total = 0;
+
+  const race = srdRaces.find((entry) => entry.name === character.race);
+  const subrace = character.subrace
+    ? race?.subraces?.find((entry) => entry.id === character.subrace)
+    : undefined;
+
+  const raceBonus = resolveInitiativeBonus(race?.initiativeBonus, character.proficiencyBonus);
+  if (raceBonus !== 0 && race) {
+    sources.push({ name: race.name, type: 'race', value: raceBonus });
+    total += raceBonus;
+  }
+
+  const subraceBonus = resolveInitiativeBonus(subrace?.initiativeBonus, character.proficiencyBonus);
+  if (subraceBonus !== 0 && race && subrace) {
+    sources.push({ name: `${race.name} (${subrace.name})`, type: 'race', value: subraceBonus });
+    total += subraceBonus;
+  }
+
+  for (const feat of character.feats) {
+    const bonus = resolveInitiativeBonus(feat.initiativeBonus, character.proficiencyBonus);
+
+    if (bonus !== 0) {
+      sources.push({ name: feat.name, type: 'feat', value: bonus });
+      total += bonus;
+    }
   }
 
   for (const item of character.equipment) {
     if (!item.equipped) continue;
-    if (item.abilityOverride?.dexterity) {
-      const overrideValue = item.abilityOverride.dexterity - character.abilityScores.dexterity;
-      if (overrideValue > 0) {
-        sources.push({
-          name: item.name,
-          type: 'equipment',
-          value: overrideValue,
-          description: `Sets DEX to ${item.abilityOverride.dexterity}`,
-        });
-        total += overrideValue;
-      }
+
+    const bonus = resolveInitiativeBonus(item.initiativeBonus, character.proficiencyBonus);
+
+    if (bonus !== 0) {
+      const type: BreakdownSource['type'] = item.source === 'Background' ? 'background' : 'equipment';
+      sources.push({ name: item.name, type, value: bonus });
+      total += bonus;
     }
   }
+
+  const selectedBackground = srdBackgrounds.find((background) => background.name === character.background);
+  if (selectedBackground) {
+    const backgroundBonus = resolveInitiativeBonus(selectedBackground.initiativeBonus, character.proficiencyBonus);
+
+    if (backgroundBonus !== 0) {
+      sources.push({
+        name: selectedBackground.name,
+        type: 'background',
+        value: backgroundBonus,
+      });
+      total += backgroundBonus;
+    }
+  }
+
+  return { total, sources };
+}
+
+function getCalculatedInitiativeBreakdown(character: Character): StatBreakdown {
+  const dexterityBreakdown = getDexterityInitiativeBreakdown(character);
+  const explicitInitiativeBreakdown = getExplicitInitiativeBreakdown(character);
+
+  return {
+    total: dexterityBreakdown.total + explicitInitiativeBreakdown.total,
+    sources: [...dexterityBreakdown.sources, ...explicitInitiativeBreakdown.sources],
+  };
+}
+
+export function calculateInitiative(character: Character): number {
+  return getCalculatedInitiativeBreakdown(character).total;
+}
+
+export async function getInitiativeBreakdown(character: Character): Promise<StatBreakdown> {
+  const calculated = getCalculatedInitiativeBreakdown(character);
+  const sources = [...calculated.sources];
+  let total = calculated.total;
 
   const userInitiative = character.initiative;
   if (userInitiative !== total) {

@@ -1,4 +1,4 @@
-import type { Skill } from '../types';
+import type { InitiativeBonus, Skill } from '../types';
 
 export interface BackgroundFeature {
   name: string;
@@ -23,6 +23,7 @@ export interface DndBackground {
   skillProficiencies: Skill[];
   toolProficiencies?: string[];
   languages?: number;
+  initiativeBonus?: InitiativeBonus;
   features?: BackgroundFeature[];
   equipment?: BackgroundEquipmentPackage[];
 }

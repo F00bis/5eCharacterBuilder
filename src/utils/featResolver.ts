@@ -79,6 +79,7 @@ export function resolveFeat(srdFeat: SrdFeat, selections: FeatSelections): Feat 
     name: srdFeat.name,
     description: srdFeat.description,
     statModifiers,
+    ...(srdFeat.initiativeBonus ? { initiativeBonus: srdFeat.initiativeBonus } : {}),
     ...(Object.keys(skillModifiers).length > 0 ? { skillModifiers } : {}),
     ...(Object.keys(savingThrowProficiencies).length > 0 ? { savingThrowProficiencies } : {}),
     ...(Object.keys(resolvedChoices).length > 0 ? { resolvedChoices } : {}),
