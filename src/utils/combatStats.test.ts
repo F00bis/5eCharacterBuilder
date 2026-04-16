@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest';
 import type { Character } from '../types';
-import { calculateMaxHp } from './combatStats';
+import { calculateMaxHp, getInitiativeBreakdown } from './combatStats';
 
 function baseCharacter(overrides: Partial<Character> = {}): Character {
   return {
@@ -201,5 +201,126 @@ describe('calculateMaxHp', () => {
     const result = calculateMaxHp(character);
     expect(result).toBe(10 + (2 * 1) + 0);
     expect(result).toBe(12);
+  });
+});
+
+describe('getInitiativeBreakdown', () => {
+  it('uses racial ASI in dex baseline and includes explicit structured initiative bonuses', async () => {
+    const character = baseCharacter({
+      raceStatSelections: [{ ability: 'dexterity', amount: 2 }],
+      initiative: 9,
+      feats: [
+        {
+          name: 'Dex Feat',
+          description: 'Adds dex score',
+          statModifiers: { dexterity: 2 },
+        },
+        {
+          name: 'Alert',
+          description: 'You gain a +5 bonus to initiative.',
+          statModifiers: {},
+          initiativeBonus: { type: 'flat', value: 5 },
+        },
+      ],
+      equipment: [
+        {
+          name: 'Gloves of Dexterity',
+          rarity: 'uncommon',
+          weight: 1,
+          description: 'Dex boost',
+          statModifiers: { dexterity: 2 },
+          equipped: true,
+        },
+        {
+          name: 'Scout Insignia',
+          rarity: 'common',
+          weight: 0,
+          description: 'Background trinket',
+          initiativeBonus: { type: 'flat', value: 1 },
+          equipped: true,
+          source: 'Background',
+        },
+      ],
+    });
+
+    const breakdown = await getInitiativeBreakdown(character);
+
+    expect(breakdown.total).toBe(9);
+    expect(breakdown.sources).toContainEqual({ name: 'Dexterity Modifier', type: 'base', value: 1 });
+    expect(breakdown.sources).toContainEqual({ name: 'Dex Feat', type: 'feat', value: 1 });
+    expect(breakdown.sources).toContainEqual({ name: 'Gloves of Dexterity', type: 'equipment', value: 1 });
+    expect(breakdown.sources).toContainEqual({ name: 'Alert', type: 'feat', value: 5 });
+    expect(breakdown.sources).toContainEqual({ name: 'Scout Insignia', type: 'background', value: 1 });
+    expect(breakdown.sources.some((source) => source.name === 'Racial Dexterity')).toBe(false);
+  });
+
+  it('supports proficiency bonus initiative bonuses', async () => {
+    const character = baseCharacter({
+      proficiencyBonus: 3,
+      initiative: 3,
+      feats: [
+        {
+          name: 'Quick Reflexes',
+          description: 'Uses proficiency for initiative',
+          statModifiers: {},
+          initiativeBonus: { type: 'proficiencyBonus' },
+        },
+      ],
+      abilityScores: {
+        strength: 10,
+        dexterity: 10,
+        constitution: 10,
+        intelligence: 10,
+        wisdom: 10,
+        charisma: 10,
+      },
+      baseAbilityScores: {
+        strength: 10,
+        dexterity: 10,
+        constitution: 10,
+        intelligence: 10,
+        wisdom: 10,
+        charisma: 10,
+      },
+    });
+
+    const breakdown = await getInitiativeBreakdown(character);
+
+    expect(breakdown.total).toBe(3);
+    expect(breakdown.sources).toContainEqual({ name: 'Dexterity Modifier', type: 'base', value: 0 });
+    expect(breakdown.sources).toContainEqual({ name: 'Quick Reflexes', type: 'feat', value: 3 });
+  });
+
+  it('adds manual override only when persisted initiative differs from computed value', async () => {
+    const character = baseCharacter({
+      baseAbilityScores: {
+        strength: 10,
+        dexterity: 14,
+        constitution: 10,
+        intelligence: 10,
+        wisdom: 10,
+        charisma: 10,
+      },
+      abilityScores: {
+        strength: 10,
+        dexterity: 14,
+        constitution: 10,
+        intelligence: 10,
+        wisdom: 10,
+        charisma: 10,
+      },
+      initiative: 0,
+    });
+
+    const breakdown = await getInitiativeBreakdown(character);
+
+    expect(breakdown.total).toBe(0);
+    expect(breakdown.sources).toContainEqual({
+      name: 'Manual Override',
+      type: 'other',
+      value: -2,
+      description: 'User-set initiative modifier',
+    });
+    expect(breakdown.sources).toHaveLength(2);
   });
 });

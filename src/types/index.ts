@@ -26,6 +26,10 @@ export type Skill =
 
 export type ProficiencyLevel = 'none' | 'proficient' | 'expertise';
 
+export type InitiativeBonus =
+  | { type: 'flat'; value: number }
+  | { type: 'proficiencyBonus' };
+
 export type Rarity = 'common' | 'uncommon' | 'rare' | 'veryRare' | 'legendary' | 'artifact';
 
 export interface Currency {
@@ -75,6 +79,7 @@ export interface Equipment {
   attuned?: boolean;
   equippable?: boolean;
   statModifiers?: Partial<AbilityScores>;
+  initiativeBonus?: InitiativeBonus;
   abilityOverride?: Partial<AbilityScores>;
   skillModifiers?: Partial<Record<Skill, number>>;
   savingThrowModifiers?: Partial<Record<Ability, number>>;
@@ -110,6 +115,7 @@ export interface Feat {
   name: string;
   description: string;
   statModifiers: Partial<AbilityScores>;
+  initiativeBonus?: InitiativeBonus;
   skillModifiers?: Partial<Record<Skill, number>>;
   savingThrowProficiencies?: Partial<Record<Ability, ProficiencyLevel>>;
   actions?: FeatureAction[];

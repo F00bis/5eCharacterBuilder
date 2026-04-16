@@ -1,4 +1,4 @@
-import type { Ability } from './index';
+import type { Ability, InitiativeBonus } from './index';
 import type { FeatureAction } from './classes';
 
 export interface AbilityScoreIncrease {
@@ -33,6 +33,7 @@ export interface DndSubrace {
   speed?: number;
   features?: RaceFeature[];
   darkvision?: number;
+  initiativeBonus?: InitiativeBonus;
   choices?: RaceChoice[];
 }
 
@@ -45,6 +46,7 @@ export interface DndRace {
   languages: string[];
   additionalLanguages: number;
   features: RaceFeature[];
+  initiativeBonus?: InitiativeBonus;
   savingThrowFeatures: RaceSavingThrowFeature[];
   weaponProficiencies?: string[];
   subraces?: DndSubrace[];

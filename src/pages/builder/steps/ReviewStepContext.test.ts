@@ -1,5 +1,9 @@
-import { describe, expect, it } from 'vitest';
-import { calculateFinalAbilityScores } from './ReviewStepContext';
+import { renderHook } from '@testing-library/react';
+import { createElement, type ReactNode } from 'react';
+import { MemoryRouter } from 'react-router-dom';
+import { describe, expect, it, vi } from 'vitest';
+import { CharacterBuilderContext, defaultState, type CharacterBuilderContextType } from '../../../contexts/CharacterBuilderContextTypes';
+import { calculateFinalAbilityScores, useReviewStep } from './ReviewStepContext';
 
 describe('calculateFinalAbilityScores', () => {
   it('applies ASI bonuses from featChoices in review calculations', () => {
@@ -66,5 +70,38 @@ describe('calculateFinalAbilityScores', () => {
 
     expect(result.strength).toBe(13);
     expect(result.dexterity).toBe(11);
+  });
+});
+
+describe('useReviewStep', () => {
+  it('sets initiative from final dexterity modifier in create mode', () => {
+    const state = {
+      ...defaultState,
+      mode: 'create' as const,
+      draft: {
+        ...defaultState.draft,
+        name: 'Initiative Test',
+        baseAbilityScores: {
+          ...defaultState.draft.baseAbilityScores,
+          dexterity: 14,
+        },
+      },
+    };
+
+    const contextValue: CharacterBuilderContextType = {
+      state,
+      dispatch: vi.fn(),
+      isComplete: true,
+    };
+
+    const wrapper = ({ children }: { children: ReactNode }) => createElement(
+      MemoryRouter,
+      null,
+      createElement(CharacterBuilderContext.Provider, { value: contextValue }, children)
+    );
+
+    const { result } = renderHook(() => useReviewStep(), { wrapper });
+
+    expect(result.current.finalCharacter.initiative).toBe(2);
   });
 });

@@ -16,6 +16,7 @@ import { updateCharacter } from '../../../db/characters';
 import { getModifier } from '../../../utils/abilityScores';
 import { getArmorClass } from '../../../utils/armorClass';
 import type { ArmorClassBreakdown } from '../../../utils/armorClass';
+import { calculateInitiative } from '../../../utils/combatStats';
 
 const ABILITY_ORDER: Ability[] = ['strength', 'dexterity', 'constitution', 'intelligence', 'wisdom', 'charisma'];
 
@@ -174,6 +175,7 @@ export function useReviewStep() {
       character.hp = calculatedMaxHp;
       character.currentHp = calculatedMaxHp;
       character.tempHp = 0;
+      character.initiative = calculateInitiative(character);
     }
     character.updatedAt = new Date();
 

@@ -1,4 +1,4 @@
-import type { Ability, Skill, ProficiencyLevel } from './index';
+import type { Ability, Skill, ProficiencyLevel, InitiativeBonus } from './index';
 import type { FeatChoiceDefinition } from './featChoices';
 
 export interface Feat {
@@ -7,6 +7,7 @@ export interface Feat {
   description: string;
   prerequisites: string;
   statModifiers: Partial<Record<Ability, number>>;
+  initiativeBonus?: InitiativeBonus;
   skillModifiers?: Partial<Record<Skill, number>>;
   savingThrowProficiencies?: Partial<Record<Ability, ProficiencyLevel>>;
   isHalfFeat: boolean;
@@ -16,4 +17,4 @@ export interface Feat {
   isSRD: boolean;
 }
 
-export type { Ability, Skill, ProficiencyLevel } from './index';
+export type { Ability, Skill, ProficiencyLevel, InitiativeBonus } from './index';
