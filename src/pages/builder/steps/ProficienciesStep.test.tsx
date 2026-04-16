@@ -1,15 +1,29 @@
-import { act, fireEvent, render, screen, waitFor } from '@testing-library/react';
-import { useEffect } from 'react';
+import { act, fireEvent, render, screen, waitFor, within } from '@testing-library/react';
+import { useEffect, useRef } from 'react';
 import { beforeEach, describe, expect, it } from 'vitest';
 import { useCharacterBuilder } from '../../../contexts/CharacterBuilderContextTypes';
 import { CharacterBuilderProvider } from '../../../contexts/CharacterBuilderProvider';
+import type { SkillProficiency } from '../../../types';
 import ProficienciesStep from './ProficienciesStep';
 
-function ProficienciesStepWithSetup({ className }: { className: string }) {
+function ProficienciesStepWithSetup({
+  className,
+  initialSkills = [],
+}: {
+  className: string;
+  initialSkills?: SkillProficiency[];
+}) {
   const { dispatch } = useCharacterBuilder();
+  const initialSkillsRef = useRef(initialSkills);
   
   useEffect(() => {
-    dispatch({ type: 'UPDATE_DRAFT', updates: { classes: [{ className, level: 1 }] } });
+    dispatch({
+      type: 'UPDATE_DRAFT',
+      updates: {
+        classes: [{ className, level: 1 }],
+        skills: initialSkillsRef.current,
+      }
+    });
   }, [dispatch, className]);
 
   return <ProficienciesStep />;
@@ -138,5 +152,33 @@ describe('ProficienciesStep', () => {
     await waitFor(() => {
       expect(screen.getByText(/choose \d+ skill/i)).toBeInTheDocument();
     });
+  });
+
+  it('shows race-sourced skills as already known and locked', async () => {
+    render(
+      <CharacterBuilderProvider>
+        <ProficienciesStepWithSetup
+          className="Fighter"
+          initialSkills={[
+            { skill: 'athletics', ability: 'strength', level: 'proficient', source: 'Race: Half-Elf' }
+          ]}
+        />
+      </CharacterBuilderProvider>
+    );
+
+    await waitFor(() => {
+      expect(screen.getByRole('heading', { name: 'Proficiencies & Skills' })).toBeInTheDocument();
+    });
+
+    const knownSkillsHeading = screen.getByText('Already Known Skills');
+    expect(knownSkillsHeading).toBeInTheDocument();
+    const knownSkillsContainer = knownSkillsHeading.closest('div');
+    expect(knownSkillsContainer).not.toBeNull();
+    expect(within(knownSkillsContainer as HTMLElement).getByText('Athletics')).toBeInTheDocument();
+    expect(within(knownSkillsContainer as HTMLElement).getByText('R:')).toBeInTheDocument();
+
+    const athleticsButton = screen.getByRole('button', { name: /Athletics/ });
+    expect(athleticsButton).toHaveAttribute('data-state', 'selected');
+    expect(within(athleticsButton).getByText('R')).toBeInTheDocument();
   });
 });

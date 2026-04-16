@@ -1,9 +1,10 @@
 import { useMemo, useState, useEffect, useCallback } from 'react';
 import { useCharacterBuilder } from '../../../contexts/CharacterBuilderContextTypes';
 import { srdRaces } from '../../../data/srdRaces';
-import type { Ability } from '../../../types';
+import type { Ability, Skill, SkillProficiency } from '../../../types';
 import type { RaceChoice } from '../../../types/races';
 import { isValidRaceStep } from '../../../utils/validation';
+import { SKILL_ABILITY_MAP } from '../../../utils/skills';
 import {
   DraconicAncestryChoice,
   SkillChoice,
@@ -130,6 +131,7 @@ export default function RaceStep() {
       }
     });
     dispatch({ type: 'CLEAR_RACE_CHOICES' });
+    removeRaceSkillProficiencies();
 
     setPlus2(null);
     setPlus1(null);
@@ -147,6 +149,7 @@ export default function RaceStep() {
       }
     });
     dispatch({ type: 'CLEAR_RACE_CHOICES' });
+    removeRaceSkillProficiencies();
 
     setPlus2(null);
     setPlus1(null);
@@ -173,7 +176,49 @@ export default function RaceStep() {
     }));
   };
 
+  const removeRaceSkillProficiencies = useCallback(() => {
+    const updatedSkills = (state.draft.skills || []).filter(
+      (entry): entry is SkillProficiency =>
+        entry !== undefined &&
+        entry.source !== 'Race' &&
+        !(entry.source?.startsWith('Race:') ?? false)
+    );
+
+    dispatch({ type: 'UPDATE_DRAFT', updates: { skills: updatedSkills } });
+  }, [state.draft.skills, dispatch]);
+
+  const syncRaceSkillChoicesToDraft = useCallback((selectedSkills: string[]) => {
+    const selectedRaceName = selectedSubrace?.name ?? selectedRace?.name;
+    if (!selectedRaceName) return;
+
+    const filteredSkills = (state.draft.skills || []).filter(
+      (entry): entry is SkillProficiency =>
+        entry !== undefined &&
+        entry.source !== 'Race' &&
+        !(entry.source?.startsWith('Race:') ?? false)
+    );
+
+    const raceSkillEntries: SkillProficiency[] = selectedSkills.map(skill => {
+      const typedSkill = skill as Skill;
+      return {
+        skill: typedSkill,
+        ability: SKILL_ABILITY_MAP[typedSkill],
+        level: 'proficient',
+        source: `Race: ${selectedRaceName}`,
+      };
+    });
+
+    dispatch({
+      type: 'UPDATE_DRAFT',
+      updates: { skills: [...filteredSkills, ...raceSkillEntries] }
+    });
+  }, [state.draft.skills, selectedRace?.name, selectedSubrace?.name, dispatch]);
+
   const handleRaceChoiceChange = (choiceType: string, value: string | string[]) => {
+    if (choiceType === 'skill') {
+      const skills = Array.isArray(value) ? value : [value];
+      syncRaceSkillChoicesToDraft(skills);
+    }
     dispatch({ type: 'SET_RACE_CHOICE', choiceType, value });
   };
 
