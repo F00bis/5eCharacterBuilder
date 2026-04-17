@@ -11,10 +11,10 @@ import { useAsiLevelsByClass } from '../utils/useAsiLevelsByClass';
 import AbilityScoresStep from './builder/steps/AbilityScoresStep';
 import BackgroundStep from './builder/steps/BackgroundStep';
 import ClassSelectionStep from './builder/steps/ClassSelectionStep';
-import EquipmentFeatsStep from './builder/steps/EquipmentFeatsStep';
+import EquipmentStep from './builder/steps/EquipmentStep';
 import FeatsAsiStep from './builder/steps/FeatsAsiStep';
-import ProgressionChoicesStep from './builder/steps/ProgressionChoicesStep';
 import ProficienciesStep from './builder/steps/ProficienciesStep';
+import ProgressionChoicesStep from './builder/steps/ProgressionChoicesStep';
 import RaceStep from './builder/steps/RaceStep';
 import ReviewStep from './builder/steps/ReviewStep';
 import SpellSelectionStep from './builder/steps/SpellSelectionStep';
@@ -174,7 +174,7 @@ export default function CharacterCreator({ mode }: CharacterCreatorProps) {
         {steps[state.currentStep]?.id === 'progression-choices' && showProgressionChoices && (
           <ProgressionChoicesStep />
         )}
-        {steps[state.currentStep]?.id === 'equipment' && <EquipmentFeatsStep />}
+        {steps[state.currentStep]?.id === 'equipment' && <EquipmentStep />}
         {steps[state.currentStep]?.id === 'review' && <ReviewStep />}
       </div>
 

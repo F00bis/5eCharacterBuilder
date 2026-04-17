@@ -1,5 +1,6 @@
 import type { ComboboxOption } from '@/components/ui/combobox';
 import { MultiSelectAutocomplete } from '@/components/ui/multi-select-autocomplete';
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useCharacterBuilder } from '../../../contexts/CharacterBuilderContextTypes';
 import { getClassByName } from '../../../db/classes';
@@ -343,7 +344,8 @@ export default function EquipmentPackages({ currentClassName, isLevel1 }: Equipm
   }
 
   return (
-    <div className="bg-white border border-slate-200 rounded-lg p-6 space-y-6">
+    <TooltipProvider delayDuration={200}>
+      <div className="bg-white border border-slate-200 rounded-lg p-6 space-y-6">
       {classEquipment.choices.map((choice, choiceIdx) => (
         <div key={choiceIdx}>
           <h3 className="font-semibold mb-3">{choice.label}</h3>
@@ -417,12 +419,27 @@ export default function EquipmentPackages({ currentClassName, isLevel1 }: Equipm
           <ul className="list-disc list-inside text-slate-600">
             {classEquipment.fixedEquipment.map((itemName, idx) => {
               const packItem = shopItems.find(i => i.name === itemName && i.equipmentCategory === 'Pack');
-              if (packItem?.contents) {
+              if (packItem) {
                 return (
                   <li key={idx}>
-                    <span className="text-purple-700 underline decoration-dotted cursor-help">
-                      {itemName}
-                    </span>
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <button
+                          type="button"
+                          className="text-purple-700 underline decoration-dotted cursor-help"
+                          aria-label={`Show contents of ${itemName}`}
+                        >
+                          {itemName}
+                        </button>
+                      </TooltipTrigger>
+                      <TooltipContent>
+                        <ul className="list-disc list-inside">
+                          {packItem.contents?.map((content, contentIdx) => (
+                            <li key={contentIdx}>{content.name} x{content.quantity || 1}</li>
+                          ))}
+                        </ul>
+                      </TooltipContent>
+                    </Tooltip>
                   </li>
                 );
               }
@@ -431,6 +448,7 @@ export default function EquipmentPackages({ currentClassName, isLevel1 }: Equipm
           </ul>
         </div>
       )}
-    </div>
+      </div>
+    </TooltipProvider>
   );
 }
