@@ -1,10 +1,10 @@
-import { useState, useMemo, useEffect } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useCharacterBuilder } from '../../../contexts/CharacterBuilderContextTypes';
 import { getClassByName } from '../../../db/classes';
 import EquipmentPackages from './EquipmentPackages';
 import EquipmentShop from './EquipmentShop';
 
-export default function EquipmentFeatsStep() {
+export default function EquipmentStep() {
   const { state } = useCharacterBuilder();
   const currentTotalLevel = (state.draft.classes || []).reduce((acc, c) => acc + c.level, 0);
   const isLevel1 = currentTotalLevel === 0 || state.mode === 'create';

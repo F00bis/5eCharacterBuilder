@@ -309,4 +309,29 @@ describe('EquipmentPackages', () => {
     expect(itemNames).toContain('Torch');
     expect(itemNames).not.toContain("Dungeoneer's Pack");
   });
+
+  it('shows tooltip with pack contents when hovering over pack item', async () => {
+    render(
+      <CharacterBuilderProvider>
+        <EquipmentPackagesWithSetup className="Fighter" />
+      </CharacterBuilderProvider>
+    );
+
+    await waitFor(() => {
+      expect(screen.getByText("Dungeoneer's Pack")).toBeInTheDocument();
+    });
+    const packItem = screen.getByText("Dungeoneer's Pack");
+    packItem.focus();
+    await waitFor(() => {
+      expect(screen.getAllByText(/Backpack\s*x1/i).length).toBeGreaterThan(0);
+      expect(screen.getAllByText(/Caltrops\s*x1/i).length).toBeGreaterThan(0);
+      expect(screen.getAllByText(/Crowbar\s*x1/i).length).toBeGreaterThan(0);
+      expect(screen.getAllByText(/Oil\s*x2/i).length).toBeGreaterThan(0);
+      expect(screen.getAllByText(/Rations\s*x10/i).length).toBeGreaterThan(0);
+      expect(screen.getAllByText(/Rope\s*x1/i).length).toBeGreaterThan(0);
+      expect(screen.getAllByText(/Tinderbox\s*x1/i).length).toBeGreaterThan(0);
+      expect(screen.getAllByText(/Torch\s*x10/i).length).toBeGreaterThan(0);
+      expect(screen.getAllByText(/Waterskin\s*x1/i).length).toBeGreaterThan(0);
+    });
+  });
 });

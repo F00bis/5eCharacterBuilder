@@ -2,7 +2,7 @@ import { fireEvent, render, screen, waitFor } from '@testing-library/react';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { CharacterBuilderProvider } from '../../../contexts/CharacterBuilderProvider';
 import { createDefaultCharacter } from '../../../types';
-import EquipmentFeatsStep from './EquipmentFeatsStep';
+import EquipmentStep from './EquipmentStep';
 
 vi.mock('../../../db/equipment', () => ({
   getAllEquipment: vi.fn().mockResolvedValue([
@@ -87,7 +87,7 @@ describe('EquipmentFeatsStep - No Class Selected', () => {
   it('renders a message when no class is selected', () => {
     render(
       <CharacterBuilderProvider>
-        <EquipmentFeatsStep />
+        <EquipmentStep />
       </CharacterBuilderProvider>
     );
     expect(screen.getByText(/select a class first/i)).toBeInTheDocument();
@@ -96,7 +96,7 @@ describe('EquipmentFeatsStep - No Class Selected', () => {
   it('renders the component without crashing', () => {
     render(
       <CharacterBuilderProvider>
-        <EquipmentFeatsStep />
+        <EquipmentStep />
       </CharacterBuilderProvider>
     );
     expect(screen.getByText(/Please select a class first to configure equipment and feats/i)).toBeInTheDocument();
@@ -105,7 +105,7 @@ describe('EquipmentFeatsStep - No Class Selected', () => {
   it('shows no class selected message when draft.classes is empty', () => {
     render(
       <CharacterBuilderProvider>
-        <EquipmentFeatsStep />
+        <EquipmentStep />
       </CharacterBuilderProvider>
     );
     const message = screen.getByText(/select a class first/i);
@@ -116,7 +116,7 @@ describe('EquipmentFeatsStep - No Class Selected', () => {
   it('displays equipment section in the validation message', () => {
     render(
       <CharacterBuilderProvider>
-        <EquipmentFeatsStep />
+        <EquipmentStep />
       </CharacterBuilderProvider>
     );
     expect(screen.getByText(/equipment/i)).toBeInTheDocument();
@@ -125,7 +125,7 @@ describe('EquipmentFeatsStep - No Class Selected', () => {
   it('displays the no class selected message in a centered div', () => {
     render(
       <CharacterBuilderProvider>
-        <EquipmentFeatsStep />
+        <EquipmentStep />
       </CharacterBuilderProvider>
     );
     const message = screen.getByText(/Please select a class first to configure equipment and feats/i);
@@ -136,7 +136,7 @@ describe('EquipmentFeatsStep - No Class Selected', () => {
   it('renders the container with correct spacing', () => {
     render(
       <CharacterBuilderProvider>
-        <EquipmentFeatsStep />
+        <EquipmentStep />
       </CharacterBuilderProvider>
     );
     const container = screen.getByText(/Please select a class first/i).parentElement;
@@ -162,7 +162,7 @@ describe('EquipmentFeatsStep - Class Selected (Create Mode Level 1)', () => {
   it('shows Starting Equipment section heading', async () => {
     render(
       <CharacterBuilderProvider>
-        <EquipmentFeatsStep />
+        <EquipmentStep />
       </CharacterBuilderProvider>
     );
     await waitFor(() => {
@@ -173,7 +173,7 @@ describe('EquipmentFeatsStep - Class Selected (Create Mode Level 1)', () => {
   it('shows Class Packages and Starting Gold toggle buttons', async () => {
     render(
       <CharacterBuilderProvider>
-        <EquipmentFeatsStep />
+        <EquipmentStep />
       </CharacterBuilderProvider>
     );
     await waitFor(() => {
@@ -185,7 +185,7 @@ describe('EquipmentFeatsStep - Class Selected (Create Mode Level 1)', () => {
   it('shows Fighter equipment choices by default in packages mode', async () => {
     render(
       <CharacterBuilderProvider>
-        <EquipmentFeatsStep />
+        <EquipmentStep />
       </CharacterBuilderProvider>
     );
     await waitFor(() => {
@@ -197,7 +197,7 @@ describe('EquipmentFeatsStep - Class Selected (Create Mode Level 1)', () => {
   it('shows fixed equipment list', async () => {
     render(
       <CharacterBuilderProvider>
-        <EquipmentFeatsStep />
+        <EquipmentStep />
       </CharacterBuilderProvider>
     );
     await waitFor(() => {
@@ -209,7 +209,7 @@ describe('EquipmentFeatsStep - Class Selected (Create Mode Level 1)', () => {
   it('allows selecting an equipment option', async () => {
     render(
       <CharacterBuilderProvider>
-        <EquipmentFeatsStep />
+        <EquipmentStep />
       </CharacterBuilderProvider>
     );
     await waitFor(() => {
@@ -222,7 +222,7 @@ describe('EquipmentFeatsStep - Class Selected (Create Mode Level 1)', () => {
   it('toggles to Starting Gold mode', async () => {
     render(
       <CharacterBuilderProvider>
-        <EquipmentFeatsStep />
+        <EquipmentStep />
       </CharacterBuilderProvider>
     );
     await waitFor(() => {
@@ -237,7 +237,7 @@ describe('EquipmentFeatsStep - Class Selected (Create Mode Level 1)', () => {
   it('shows validation incomplete before selections', async () => {
     render(
       <CharacterBuilderProvider>
-        <EquipmentFeatsStep />
+        <EquipmentStep />
       </CharacterBuilderProvider>
     );
     await waitFor(() => {
@@ -264,7 +264,7 @@ describe('EquipmentFeatsStep - Starting Gold Mode', () => {
   it('shows roll button for starting gold', async () => {
     render(
       <CharacterBuilderProvider>
-        <EquipmentFeatsStep />
+        <EquipmentStep />
       </CharacterBuilderProvider>
     );
     await waitFor(() => {
@@ -279,7 +279,7 @@ describe('EquipmentFeatsStep - Starting Gold Mode', () => {
   it('rolls gold and displays amount', async () => {
     render(
       <CharacterBuilderProvider>
-        <EquipmentFeatsStep />
+        <EquipmentStep />
       </CharacterBuilderProvider>
     );
     await waitFor(() => {
@@ -299,7 +299,7 @@ describe('EquipmentFeatsStep - Starting Gold Mode', () => {
   it('shows shop filters when gold is rolled', async () => {
     render(
       <CharacterBuilderProvider>
-        <EquipmentFeatsStep />
+        <EquipmentStep />
       </CharacterBuilderProvider>
     );
     await waitFor(() => {
@@ -337,7 +337,7 @@ describe('EquipmentFeatsStep - ASI Level (Levelup Mode)', () => {
   it('shows ASI section when leveling to ASI level', async () => {
     render(
       <CharacterBuilderProvider>
-        <EquipmentFeatsStep />
+        <EquipmentStep />
       </CharacterBuilderProvider>
     );
     await waitFor(() => {
@@ -348,7 +348,7 @@ describe('EquipmentFeatsStep - ASI Level (Levelup Mode)', () => {
   it('shows level indicator in ASI section', async () => {
     render(
       <CharacterBuilderProvider>
-        <EquipmentFeatsStep />
+        <EquipmentStep />
       </CharacterBuilderProvider>
     );
     await waitFor(() => {
@@ -359,7 +359,7 @@ describe('EquipmentFeatsStep - ASI Level (Levelup Mode)', () => {
   it('shows ASI and Feat toggle buttons', async () => {
     render(
       <CharacterBuilderProvider>
-        <EquipmentFeatsStep />
+        <EquipmentStep />
       </CharacterBuilderProvider>
     );
     await waitFor(() => {
@@ -371,7 +371,7 @@ describe('EquipmentFeatsStep - ASI Level (Levelup Mode)', () => {
   it('shows increase type selector in ASI mode', async () => {
     render(
       <CharacterBuilderProvider>
-        <EquipmentFeatsStep />
+        <EquipmentStep />
       </CharacterBuilderProvider>
     );
     await waitFor(() => {
@@ -383,7 +383,7 @@ describe('EquipmentFeatsStep - ASI Level (Levelup Mode)', () => {
   it('displays ASI/Feat section when in levelup mode with pending class', async () => {
     render(
       <CharacterBuilderProvider>
-        <EquipmentFeatsStep />
+        <EquipmentStep />
       </CharacterBuilderProvider>
     );
     await waitFor(() => {
@@ -411,7 +411,7 @@ describe('EquipmentFeatsStep - Validation States', () => {
 
     render(
       <CharacterBuilderProvider>
-        <EquipmentFeatsStep />
+        <EquipmentStep />
       </CharacterBuilderProvider>
     );
 
@@ -446,7 +446,7 @@ describe('EquipmentFeatsStep - Edge Cases', () => {
 
     render(
       <CharacterBuilderProvider>
-        <EquipmentFeatsStep />
+        <EquipmentStep />
       </CharacterBuilderProvider>
     );
 
@@ -474,7 +474,7 @@ describe('EquipmentFeatsStep - Edge Cases', () => {
 
     render(
       <CharacterBuilderProvider>
-        <EquipmentFeatsStep />
+        <EquipmentStep />
       </CharacterBuilderProvider>
     );
 
