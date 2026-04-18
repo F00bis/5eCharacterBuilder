@@ -40,33 +40,36 @@ export default function ClassSelectionStep() {
     return srdClasses.find(c => c.name === selectedClass);
   }, [selectedClass]);
 
-  const currentTotalLevel = (state.draft.classes || []).reduce((acc, c) => acc + c.level, 0);
-  const isFirstLevel = currentTotalLevel === 0;
-
-  const saveToDraft = useCallback(() => {
+  const saveClassToDraft = useCallback(() => {
     if (!classData) return;
 
-    const newClassEntry = { className: classData.name, level: 1 };
-    const existingClasses = state.draft.classes || [];
-    
-    // Prevent duplicate saves - check if this class already exists at level 1
-    const alreadyExists = existingClasses.some(c => c.className === classData.name && c.level === 1);
-    if (alreadyExists) {
+    dispatch({
+      type: 'SET_CLASS_FOR_CURRENT_PASS',
+      className: classData.name,
+    });
+  }, [classData, dispatch]);
+
+  const saveClassDetailsToDraft = useCallback(() => {
+    if (!classData) return;
+
+    const mergedFeatureChoices = { ...state.draft.featureChoices, ...featureChoices };
+    const featureChoicesUnchanged =
+      JSON.stringify(mergedFeatureChoices) === JSON.stringify(state.draft.featureChoices);
+    const hpRollsUnchanged =
+      state.draft.hpRolls.length === 1 && state.draft.hpRolls[0] === level1HpRoll;
+
+    if (featureChoicesUnchanged && hpRollsUnchanged) {
       return;
     }
-
-    const updatedClasses = isFirstLevel ? [newClassEntry] : [...existingClasses, newClassEntry];
 
     dispatch({
       type: 'UPDATE_DRAFT',
       updates: {
-        classes: updatedClasses,
-        level: currentTotalLevel + 1,
         hpRolls: [level1HpRoll],
-        featureChoices: { ...state.draft.featureChoices, ...featureChoices }
-      }
+        featureChoices: mergedFeatureChoices,
+      },
     });
-  }, [classData, isFirstLevel, currentTotalLevel, level1HpRoll, featureChoices, state.draft, dispatch]);
+  }, [classData, level1HpRoll, featureChoices, state.draft.featureChoices, state.draft.hpRolls, dispatch]);
 
   const handleClassChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     const newClass = e.target.value;
@@ -86,9 +89,15 @@ export default function ClassSelectionStep() {
 
   useEffect(() => {
     if (selectedClass && classData) {
-      saveToDraft();
+      saveClassToDraft();
     }
-  }, [selectedClass, level1HpRoll, featureChoices, saveToDraft, classData]);
+  }, [selectedClass, saveClassToDraft, classData]);
+
+  useEffect(() => {
+    if (selectedClass && classData) {
+      saveClassDetailsToDraft();
+    }
+  }, [selectedClass, level1HpRoll, featureChoices, saveClassDetailsToDraft, classData]);
 
   const featuresWithChoices = classData?.features.filter(f => f.levelAcquired === 1 && f.choices);
 
