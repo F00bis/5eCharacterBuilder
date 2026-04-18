@@ -1,7 +1,13 @@
 import { render, screen, fireEvent, act } from '@testing-library/react';
 import { describe, it, expect, beforeEach } from 'vitest';
 import ClassSelectionStep from './ClassSelectionStep';
+import { useCharacterBuilder } from '../../../contexts/CharacterBuilderContextTypes';
 import { CharacterBuilderProvider } from '../../../contexts/CharacterBuilderProvider';
+
+function DraftStateProbe() {
+  const { state } = useCharacterBuilder();
+  return <pre data-testid="draft-state">{JSON.stringify(state.draft)}</pre>;
+}
 
 describe('ClassSelectionStep', () => {
   beforeEach(() => {
@@ -12,6 +18,7 @@ describe('ClassSelectionStep', () => {
     return render(
       <CharacterBuilderProvider>
         <ClassSelectionStep />
+        <DraftStateProbe />
       </CharacterBuilderProvider>
     );
   };
@@ -96,5 +103,24 @@ describe('ClassSelectionStep', () => {
     expect(screen.getByText('Selected: Acrobatics, Stealth')).toBeInTheDocument();
     expect(screen.getAllByText(/your proficiency bonus is doubled for ability checks you make using Acrobatics/i).length).toBeGreaterThan(0);
     expect(screen.getAllByText(/your proficiency bonus is doubled for ability checks you make using Stealth/i).length).toBeGreaterThan(0);
+  });
+
+  it('replaces class selection in create mode when switching classes', async () => {
+    renderComponent();
+
+    const classSelect = screen.getByRole('combobox');
+    await act(async () => {
+      fireEvent.change(classSelect, { target: { value: 'Warlock' } });
+    });
+
+    await act(async () => {
+      fireEvent.change(classSelect, { target: { value: 'Fighter' } });
+    });
+
+    const draft = JSON.parse(screen.getByTestId('draft-state').textContent || '{}') as {
+      classes?: Array<{ className: string; level: number }>;
+    };
+
+    expect(draft.classes).toEqual([{ className: 'Fighter', level: 1 }]);
   });
 });

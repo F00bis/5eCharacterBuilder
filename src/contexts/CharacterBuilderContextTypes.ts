@@ -31,6 +31,8 @@ export interface CharacterBuilderState {
   currentStep: number;
   mode: 'create' | 'levelup';
   baseCharacterId: number | null;
+  baseLevel: number;
+  targetLevel: number | null;
   asiChoices: AsiChoice[];
   featChoices: FeatChoice[];
   expertiseChoices: ExpertiseChoiceStore;
@@ -48,6 +50,7 @@ export type BuilderAction =
   | { type: 'SET_MODE'; mode: 'create' | 'levelup'; baseCharacterId?: number | null }
   | { type: 'LOAD_BASE_CHARACTER'; character: Partial<CharacterBase> }
   | { type: 'UPDATE_DRAFT'; updates: Partial<CharacterBase> }
+  | { type: 'SET_CLASS_FOR_CURRENT_PASS'; className: string }
   | { type: 'SET_STEP'; step: number }
   | { type: 'ADD_ITEM_WITH_SOURCE'; listName: keyof CharacterBase; item: unknown }
   | { type: 'REMOVE_ITEMS_BY_SOURCE'; listName: keyof CharacterBase; source: string }
@@ -79,6 +82,8 @@ export const defaultState: CharacterBuilderState = {
   currentStep: 0,
   mode: 'create',
   baseCharacterId: null,
+  baseLevel: 0,
+  targetLevel: 1,
   asiChoices: [],
   featChoices: [],
   expertiseChoices: {},
@@ -96,15 +101,56 @@ export function characterBuilderReducer(
   state: CharacterBuilderState,
   action: BuilderAction
 ): CharacterBuilderState {
+  const getTotalLevel = (character: CharacterBase): number => {
+    return (character.classes || []).reduce((sum, entry) => sum + entry.level, 0);
+  };
+
+  const clearClassDerivedDraftFields = (draft: CharacterBase, oldClassNames: string[]): CharacterBase => {
+    const oldClassPrefixes = oldClassNames.map(name => `${name.toLowerCase()}-`);
+
+    const filteredFeatureChoices = Object.fromEntries(
+      Object.entries(draft.featureChoices || {}).filter(([key]) => {
+        return !oldClassPrefixes.some(prefix => key.startsWith(prefix));
+      })
+    );
+
+    return {
+      ...draft,
+      skills: (draft.skills || []).filter(skill => !(skill.source || '').startsWith('Class:')),
+      spells: (draft.spells || []).filter(spell => spell.source !== 'Class'),
+      featureChoices: filteredFeatureChoices,
+    };
+  };
+
   switch (action.type) {
     case 'SET_MODE':
-      return { ...state, mode: action.mode, baseCharacterId: action.baseCharacterId ?? null };
+      if (action.mode === 'create') {
+        return {
+          ...state,
+          mode: 'create',
+          baseCharacterId: null,
+          baseLevel: 0,
+          targetLevel: 1,
+        };
+      }
+
+      return {
+        ...state,
+        mode: 'levelup',
+        baseCharacterId: action.baseCharacterId ?? null,
+        baseLevel: 0,
+        targetLevel: null,
+      };
     case 'LOAD_BASE_CHARACTER': {
       const loadedDraft = createDefaultCharacter();
       const characterWithProgression = action.character as Partial<CharacterBase>;
+      const mergedDraft = { ...loadedDraft, ...action.character };
+      const baseLevel = getTotalLevel(mergedDraft);
       return { 
         ...state, 
-        draft: { ...loadedDraft, ...action.character },
+        draft: mergedDraft,
+        baseLevel,
+        targetLevel: baseLevel + 1,
         asiChoices: (action.character as unknown as { asiChoices?: AsiChoice[] })?.asiChoices || [],
         featChoices: characterWithProgression.featChoices || [],
         expertiseChoices: characterWithProgression.expertiseChoices || {},
@@ -115,6 +161,75 @@ export function characterBuilderReducer(
     }
     case 'UPDATE_DRAFT':
       return { ...state, draft: { ...state.draft, ...action.updates } };
+    case 'SET_CLASS_FOR_CURRENT_PASS': {
+      const className = action.className.trim();
+      if (!className) return state;
+
+      const currentClasses = state.draft.classes || [];
+      const currentTotalLevel = getTotalLevel(state.draft);
+      const targetLevel = state.targetLevel ?? (state.mode === 'create' ? 1 : null);
+      if (targetLevel === null) return state;
+
+      const budget = Math.max(0, targetLevel - state.baseLevel);
+      const allocated = Math.max(0, currentTotalLevel - state.baseLevel);
+      let nextClasses = currentClasses;
+
+      if (state.mode === 'create') {
+        nextClasses = [{ className, level: 1 }];
+      } else {
+        if (budget === 0) {
+          return state;
+        }
+
+        if (allocated < budget) {
+          const classIndex = currentClasses.findIndex(entry => entry.className === className);
+          if (classIndex >= 0) {
+            nextClasses = currentClasses.map((entry, index) =>
+              index === classIndex ? { ...entry, level: entry.level + 1 } : entry
+            );
+          } else {
+            nextClasses = [...currentClasses, { className, level: 1 }];
+          }
+        } else {
+          return state;
+        }
+      }
+
+      const nextTotalLevel = nextClasses.reduce((sum, entry) => sum + entry.level, 0);
+      if (nextTotalLevel > targetLevel) {
+        return state;
+      }
+
+      const oldClassNames = [...new Set(currentClasses.map(entry => entry.className))];
+      const classSelectionChanged =
+        currentClasses.length !== nextClasses.length ||
+        currentClasses.some((entry, index) => {
+          const nextEntry = nextClasses[index];
+          return !nextEntry || nextEntry.className !== entry.className || nextEntry.level !== entry.level;
+        });
+
+      const nextDraft =
+        state.mode === 'create' && classSelectionChanged
+          ? clearClassDerivedDraftFields(state.draft, oldClassNames)
+          : state.draft;
+
+      return {
+        ...state,
+        draft: {
+          ...nextDraft,
+          classes: nextClasses,
+          level: nextTotalLevel,
+        },
+        ...(state.mode === 'create' && classSelectionChanged
+          ? {
+              expertiseChoices: {},
+              metamagicChoices: {},
+              invocationChoices: {},
+              mysticArcanumChoices: {},
+            }
+          : {}),
+      };
+    }
     case 'SET_STEP':
       return { ...state, currentStep: action.step };
     case 'ADD_ITEM_WITH_SOURCE': {

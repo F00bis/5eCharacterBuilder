@@ -181,4 +181,28 @@ describe('ProficienciesStep', () => {
     expect(athleticsButton).toHaveAttribute('data-state', 'selected');
     expect(within(athleticsButton).getByText('R')).toBeInTheDocument();
   });
+
+  it('updates available proficiencies when class changes', async () => {
+    const view = render(
+      <CharacterBuilderProvider>
+        <ProficienciesStepWithSetup className="Warlock" />
+      </CharacterBuilderProvider>
+    );
+
+    await waitFor(() => {
+      expect(screen.getByRole('heading', { name: 'Proficiencies & Skills' })).toBeInTheDocument();
+      expect(screen.getAllByText(/Arcana/).length).toBeGreaterThan(0);
+    });
+
+    view.rerender(
+      <CharacterBuilderProvider>
+        <ProficienciesStepWithSetup className="Fighter" />
+      </CharacterBuilderProvider>
+    );
+
+    await waitFor(() => {
+      expect(screen.queryAllByText(/Arcana/)).toHaveLength(0);
+      expect(screen.getAllByText(/Athletics/).length).toBeGreaterThan(0);
+    });
+  });
 });

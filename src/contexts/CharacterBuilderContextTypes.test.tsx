@@ -14,14 +14,104 @@ describe('characterBuilderReducer', () => {
     const state = characterBuilderReducer(initialState, action);
     expect(state.mode).toBe('levelup');
     expect(state.baseCharacterId).toBe(5);
+    expect(state.baseLevel).toBe(0);
+    expect(state.targetLevel).toBe(null);
   });
 
   it('handles LOAD_BASE_CHARACTER', () => {
-    const mockCharacter: Partial<CharacterBase> = { name: 'Gimli', race: 'Dwarf' };
+    const mockCharacter: Partial<CharacterBase> = {
+      name: 'Gimli',
+      race: 'Dwarf',
+      classes: [{ className: 'Fighter', level: 4 }],
+    };
     const action: BuilderAction = { type: 'LOAD_BASE_CHARACTER', character: mockCharacter };
     const state = characterBuilderReducer(initialState, action);
     expect(state.draft.name).toBe('Gimli');
     expect(state.draft.race).toBe('Dwarf');
+    expect(state.baseLevel).toBe(4);
+    expect(state.targetLevel).toBe(5);
+  });
+
+  it('sets class for current pass in create mode as replacement', () => {
+    let state = characterBuilderReducer(initialState, { type: 'SET_CLASS_FOR_CURRENT_PASS', className: 'Warlock' });
+    state = characterBuilderReducer(state, { type: 'SET_CLASS_FOR_CURRENT_PASS', className: 'Fighter' });
+
+    expect(state.draft.classes).toEqual([{ className: 'Fighter', level: 1 }]);
+    expect(state.draft.level).toBe(1);
+  });
+
+  it('clears class-derived selections when class changes in create mode', () => {
+    const seededState: CharacterBuilderState = {
+      ...initialState,
+      draft: {
+        ...createDefaultCharacter(),
+        classes: [{ className: 'Warlock', level: 1 }],
+        level: 1,
+        spells: [
+          {
+            name: 'Eldritch Blast',
+            level: 0,
+            school: 'Evocation',
+            castingTime: '1 action',
+            range: '120 feet',
+            components: 'V, S',
+            duration: 'Instantaneous',
+            description: 'A beam of crackling energy streaks toward a creature within range.',
+            classes: ['Warlock'],
+            prepared: false,
+            source: 'Class',
+          } as CharacterBase['spells'][number],
+        ],
+        skills: [
+          { skill: 'arcana', ability: 'intelligence', level: 'proficient', source: 'Class: Warlock' },
+        ],
+        featureChoices: {
+          'warlock-1-eldritch-invocations': ['Agonizing Blast'],
+        },
+      },
+      expertiseChoices: { 'expertise:0:rogue:1': ['stealth'] },
+      metamagicChoices: { 'metamagic:0:sorcerer:3': ['Quickened Spell'] },
+      invocationChoices: { 'invocation:0:warlock:2': ['Agonizing Blast'] },
+      mysticArcanumChoices: { 'mystic-arcanum:0:warlock:11': 'Mass Suggestion' },
+    };
+
+    const state = characterBuilderReducer(seededState, { type: 'SET_CLASS_FOR_CURRENT_PASS', className: 'Fighter' });
+
+    expect(state.draft.classes).toEqual([{ className: 'Fighter', level: 1 }]);
+    expect(state.draft.spells).toEqual([]);
+    expect(state.draft.skills).toEqual([]);
+    expect(state.draft.featureChoices).toEqual({});
+    expect(state.expertiseChoices).toEqual({});
+    expect(state.metamagicChoices).toEqual({});
+    expect(state.invocationChoices).toEqual({});
+    expect(state.mysticArcanumChoices).toEqual({});
+  });
+
+  it('allocates only one level during levelup pass', () => {
+    const start = characterBuilderReducer(
+      {
+        ...initialState,
+        mode: 'levelup',
+        baseLevel: 4,
+        targetLevel: 5,
+        draft: {
+          ...createDefaultCharacter(),
+          classes: [{ className: 'Fighter', level: 4 }],
+          level: 4,
+        },
+      },
+      { type: 'SET_CLASS_FOR_CURRENT_PASS', className: 'Fighter' }
+    );
+
+    expect(start.draft.classes).toEqual([{ className: 'Fighter', level: 5 }]);
+
+    const unchanged = characterBuilderReducer(start, {
+      type: 'SET_CLASS_FOR_CURRENT_PASS',
+      className: 'Wizard',
+    });
+
+    expect(unchanged.draft.classes).toEqual([{ className: 'Fighter', level: 5 }]);
+    expect(unchanged.draft.level).toBe(5);
   });
 
   it('handles UPDATE_DRAFT', () => {

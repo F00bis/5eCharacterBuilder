@@ -2,11 +2,15 @@ import { render, screen } from '@testing-library/react';
 import { MemoryRouter, Route, Routes } from 'react-router-dom';
 import { describe, expect, it, vi } from 'vitest';
 import { CharacterBuilderProvider } from '../contexts/CharacterBuilderProvider';
+import { useCharacterBuilder } from '../contexts/CharacterBuilderContextTypes';
 import CharacterCreator from './CharacterCreator';
+import { useEffect } from 'react';
 
 // Simple mock components for Stepper and internal steps to be implemented later
 vi.mock('../components/ui/stepper', () => ({
-  default: () => <div data-testid="mock-stepper">Stepper</div>
+  default: ({ steps }: { steps: Array<{ id: string; label: string }> }) => (
+    <div data-testid="mock-stepper">{steps.map(step => step.label).join(' | ')}</div>
+  )
 }));
 
 vi.mock('../db/classes', () => ({
@@ -17,6 +21,16 @@ vi.mock('../db/classes', () => ({
 }));
 
 describe('CharacterCreator', () => {
+  function SetupClasses({ classes }: { classes: Array<{ className: string; level: number }> }) {
+    const { dispatch } = useCharacterBuilder();
+
+    useEffect(() => {
+      dispatch({ type: 'UPDATE_DRAFT', updates: { classes } });
+    }, [classes, dispatch]);
+
+    return null;
+  }
+
   it('renders in create mode and initializes context correctly', () => {
     render(
       <MemoryRouter initialEntries={['/characters/new']}>
@@ -45,5 +59,35 @@ describe('CharacterCreator', () => {
 
     // It should render a title reflecting level-up mode
     expect(screen.getByText(/Level Up Character/i)).toBeInTheDocument();
+  });
+
+  it('removes spells step when switching from caster to non-caster class', () => {
+    const firstRender = render(
+      <MemoryRouter initialEntries={['/characters/new']}>
+        <CharacterBuilderProvider>
+          <SetupClasses classes={[{ className: 'Warlock', level: 1 }]} />
+          <Routes>
+            <Route path="/characters/new" element={<CharacterCreator mode="create" />} />
+          </Routes>
+        </CharacterBuilderProvider>
+      </MemoryRouter>
+    );
+
+    expect(screen.getByTestId('mock-stepper')).toHaveTextContent('Spells');
+
+    firstRender.unmount();
+
+    render(
+      <MemoryRouter initialEntries={['/characters/new']}>
+        <CharacterBuilderProvider>
+          <SetupClasses classes={[{ className: 'Fighter', level: 1 }]} />
+          <Routes>
+            <Route path="/characters/new" element={<CharacterCreator mode="create" />} />
+          </Routes>
+        </CharacterBuilderProvider>
+      </MemoryRouter>
+    );
+
+    expect(screen.getByTestId('mock-stepper')).not.toHaveTextContent('Spells');
   });
 });
