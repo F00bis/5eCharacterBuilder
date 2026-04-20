@@ -3,6 +3,7 @@ import { createContext, useContext } from 'react';
 import type {
   Ability,
   CharacterBase,
+  ClassEntry,
   ExpertiseChoiceStore,
   InvocationChoiceStore,
   MetamagicChoiceStore,
@@ -44,6 +45,8 @@ export interface CharacterBuilderState {
   raceChoices: Record<string, string | string[]>;
   backgroundChoices: Record<string, string | string[]>;
   backgroundEquipmentPackage: 'A' | 'B' | null;
+  currentPassClassName: string | null;
+  baseClassesSnapshot: ClassEntry[];
 }
 
 export type BuilderAction =
@@ -95,6 +98,8 @@ export const defaultState: CharacterBuilderState = {
   raceChoices: {},
   backgroundChoices: {},
   backgroundEquipmentPackage: null,
+  currentPassClassName: null,
+  baseClassesSnapshot: [],
 };
 
 export function characterBuilderReducer(
@@ -131,6 +136,8 @@ export function characterBuilderReducer(
           baseCharacterId: null,
           baseLevel: 0,
           targetLevel: 1,
+          currentPassClassName: null,
+          baseClassesSnapshot: [],
         };
       }
 
@@ -140,6 +147,8 @@ export function characterBuilderReducer(
         baseCharacterId: action.baseCharacterId ?? null,
         baseLevel: 0,
         targetLevel: null,
+        currentPassClassName: null,
+        baseClassesSnapshot: [],
       };
     case 'LOAD_BASE_CHARACTER': {
       const loadedDraft = createDefaultCharacter();
@@ -151,6 +160,8 @@ export function characterBuilderReducer(
         draft: mergedDraft,
         baseLevel,
         targetLevel: baseLevel + 1,
+        currentPassClassName: null,
+        baseClassesSnapshot: mergedDraft.classes || [],
         asiChoices: (action.character as unknown as { asiChoices?: AsiChoice[] })?.asiChoices || [],
         featChoices: characterWithProgression.featChoices || [],
         expertiseChoices: characterWithProgression.expertiseChoices || {},
@@ -220,6 +231,7 @@ export function characterBuilderReducer(
           classes: nextClasses,
           level: nextTotalLevel,
         },
+        currentPassClassName: state.mode === 'levelup' ? className : state.currentPassClassName,
         ...(state.mode === 'create' && classSelectionChanged
           ? {
               expertiseChoices: {},

@@ -1,20 +1,27 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo } from 'react';
 import { useCharacterBuilder } from '../../../contexts/CharacterBuilderContextTypes';
 import { srdClasses } from '../../../data/srdClasses';
 import type { Skill, SkillProficiency } from '../../../types';
 import type { DndClass } from '../../../types/classes';
+import { calculateProficiencyEntitlement } from '../../../utils/proficiencyEntitlements';
 import { SKILL_ABILITY_MAP, SKILL_DISPLAY_NAMES } from '../../../utils/skills';
 
 export default function ProficienciesStep() {
   const { state, dispatch } = useCharacterBuilder();
-  const [pendingClass, setPendingClass] = useState<string | null>(null);
 
-  const currentTotalLevel = (state.draft.classes || []).reduce((acc, c) => acc + c.level, 0);
-  const isLevel1 = currentTotalLevel === 0;
-  const isMulticlass = state.mode === 'levelup';
+  const proficiencyEntitlement = useMemo(() => {
+    return calculateProficiencyEntitlement({
+      mode: state.mode,
+      draftClasses: state.draft.classes || [],
+      baseClassesSnapshot: state.baseClassesSnapshot,
+      currentPassClassName: state.currentPassClassName,
+    });
+  }, [state.mode, state.draft.classes, state.baseClassesSnapshot, state.currentPassClassName]);
 
-  const draftClassName = state.draft.classes?.[0]?.className || '';
-  const effectiveClassName = pendingClass || draftClassName;
+  const effectiveClassName =
+    state.mode === 'create'
+      ? proficiencyEntitlement.className || state.draft.classes?.[0]?.className || ''
+      : proficiencyEntitlement.className || '';
 
   const classData = useMemo<DndClass | undefined>(() => {
     return srdClasses.find(c => c.name === effectiveClassName);
@@ -47,11 +54,11 @@ export default function ProficienciesStep() {
 
   const skillChoicesCount = useMemo(() => {
     if (!classData) return 0;
-    if (isMulticlass && !isLevel1) {
-      return classData.multiclassing?.proficienciesGained.skills || classData.skillProficienciesChoices;
+    if (state.mode === 'levelup') {
+      return proficiencyEntitlement.skillChoicesCount;
     }
     return classData.skillProficienciesChoices;
-  }, [classData, isMulticlass, isLevel1]);
+  }, [classData, state.mode, proficiencyEntitlement.skillChoicesCount]);
 
   const effectiveClassLevel = useMemo(() => {
     const entry = (state.draft.classes || []).find(c => c.className === effectiveClassName);
@@ -139,18 +146,6 @@ export default function ProficienciesStep() {
   }, [allProficientSkills]);
 
   const remainingChoices = skillChoicesCount;
-
-  const handleClassChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    const newClass = e.target.value;
-    setPendingClass(null);
-
-    if (newClass) {
-      const cls = srdClasses.find(c => c.name === newClass);
-      if (cls && isLevel1) {
-        setPendingClass(cls.name);
-      }
-    }
-  };
 
   const handleSkillToggle = (skill: Skill) => {
     if (lockedSkills.has(skill)) return;
@@ -267,11 +262,11 @@ export default function ProficienciesStep() {
     );
   }
 
-  if (!effectiveClassName && !pendingClass) {
+  if (!effectiveClassName) {
     return (
       <div className="space-y-6">
         <div className="text-center text-slate-500 py-8">
-          Loading class selections...
+          Please complete the Class step first to configure proficiencies.
         </div>
       </div>
     );
@@ -281,16 +276,9 @@ export default function ProficienciesStep() {
     <div className="h-full overflow-y-auto pr-2 space-y-6">
       <div className="flex justify-between items-center shrink-0">
         <h2 className="text-xl font-bold">Proficiencies & Skills</h2>
-        <select 
-          className="border-slate-300 rounded-md shadow-sm focus:border-purple-500 focus:ring-purple-500 p-2 border"
-          value={effectiveClassName}
-          onChange={handleClassChange}
-        >
-          <option value="" disabled>-- Change Class --</option>
-          {srdClasses.map(c => (
-            <option key={c.name} value={c.name}>{c.name}</option>
-          ))}
-        </select>
+        <div className="px-3 py-1 bg-slate-100 border border-slate-200 rounded-md text-sm text-slate-700">
+          Class: <span className="font-semibold">{effectiveClassName}</span>
+        </div>
       </div>
 
       {(backgroundSkills.length > 0 || raceSkills.length > 0) && (
@@ -317,15 +305,6 @@ export default function ProficienciesStep() {
             ))}
           </div>
         </div>
-      )}
-
-      {pendingClass && (
-        <button
-          onClick={() => setPendingClass(null)}
-          className="px-4 py-2 bg-purple-600 text-white rounded hover:bg-purple-700"
-        >
-          Add {pendingClass}
-        </button>
       )}
 
       {classData && (

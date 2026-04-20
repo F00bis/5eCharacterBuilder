@@ -1,4 +1,5 @@
 import { fireEvent, render, screen, waitFor, within } from '@testing-library/react';
+import { useEffect, useState } from 'react';
 import { beforeEach, describe, expect, it } from 'vitest';
 import { useCharacterBuilder } from '../../../contexts/CharacterBuilderContextTypes';
 import { CharacterBuilderProvider } from '../../../contexts/CharacterBuilderProvider';
@@ -13,6 +14,46 @@ function DraftSkillsProbe() {
 function getDraftSkills(): SkillProficiency[] {
   const raw = screen.getByTestId('draft-skills').textContent || '[]';
   return JSON.parse(raw) as SkillProficiency[];
+}
+
+function RaceValidationProbe() {
+  const { state } = useCharacterBuilder();
+  return <pre data-testid="race-valid">{String(state.stepValidations['race'] ?? false)}</pre>;
+}
+
+function SeedValidRaceState() {
+  const { dispatch } = useCharacterBuilder();
+
+  useEffect(() => {
+    dispatch({
+      type: 'UPDATE_DRAFT',
+      updates: {
+        race: 'Dwarf',
+        subrace: undefined,
+        raceStatSelections: [
+          { ability: 'strength', amount: 2 },
+          { ability: 'dexterity', amount: 1 },
+        ],
+        languages: ['Dwarvish'],
+      },
+    });
+    dispatch({ type: 'CLEAR_RACE_CHOICES' });
+    dispatch({ type: 'SET_TASHAS_RULES', enabled: true });
+  }, [dispatch]);
+
+  return null;
+}
+
+function RaceRemountHarness() {
+  const [visible, setVisible] = useState(true);
+
+  return (
+    <>
+      <button type="button" onClick={() => setVisible(v => !v)}>Toggle</button>
+      {visible && <RaceStep />}
+      <RaceValidationProbe />
+    </>
+  );
 }
 
 describe('RaceStep', () => {
@@ -89,6 +130,26 @@ describe('RaceStep', () => {
     await waitFor(() => {
       const raceSkills = getDraftSkills().filter(skill => skill.source?.startsWith('Race:'));
       expect(raceSkills).toHaveLength(0);
+    });
+  });
+
+  it('preserves race validation after race step remount with persisted draft selections', async () => {
+    render(
+      <CharacterBuilderProvider>
+        <SeedValidRaceState />
+        <RaceRemountHarness />
+      </CharacterBuilderProvider>
+    );
+
+    await waitFor(() => {
+      expect(screen.getByTestId('race-valid')).toHaveTextContent('true');
+    });
+
+    fireEvent.click(screen.getByRole('button', { name: 'Toggle' }));
+    fireEvent.click(screen.getByRole('button', { name: 'Toggle' }));
+
+    await waitFor(() => {
+      expect(screen.getByTestId('race-valid')).toHaveTextContent('true');
     });
   });
 });
