@@ -1,11 +1,14 @@
 import { LanguageSelector } from '@/components/LanguageSelector';
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo } from 'react';
 import { useCharacterBuilder } from '../../../contexts/CharacterBuilderContextTypes';
 import { srdBackgrounds } from '../../../data/srdBackgrounds';
 
+function getEquipmentChoiceKey(packageIndex: number, itemIndex: number): string {
+  return `equipment:${packageIndex}:${itemIndex}`;
+}
+
 export default function BackgroundStep() {
   const { state, dispatch } = useCharacterBuilder();
-  const [equipmentSelections, setEquipmentSelections] = useState<Record<number, string>>({});
 
   const selectedBg = useMemo(
     () => srdBackgrounds.find(b => b.name === state.draft.background),
@@ -23,7 +26,11 @@ export default function BackgroundStep() {
   }, [currentPackage]);
 
   const allChoicesMade = equipmentChoices.length === 0 || 
-    equipmentChoices.every(({ idx }) => equipmentSelections[idx] !== undefined);
+    equipmentChoices.every(({ idx }) => {
+      const selectionKey = getEquipmentChoiceKey(currentPackageIdx, idx);
+      const selectedValue = state.backgroundChoices[selectionKey];
+      return typeof selectedValue === 'string' && selectedValue.length > 0;
+    });
 
   useEffect(() => {
     const isValid = !!state.draft.background && allChoicesMade;
@@ -38,7 +45,6 @@ export default function BackgroundStep() {
     dispatch({ type: 'REMOVE_ITEMS_BY_SOURCE', listName: 'equipment', source: 'Background' });
     dispatch({ type: 'REMOVE_ITEMS_BY_SOURCE', listName: 'toolProficiencies', source: 'Background' });
     dispatch({ type: 'CLEAR_BACKGROUND_CHOICES' });
-    setEquipmentSelections({});
 
     if (bg) {
       bg.skillProficiencies.forEach(skill => {
@@ -62,7 +68,7 @@ export default function BackgroundStep() {
       if (bg.equipment && bg.equipment.length > 0) {
         const firstPackage = bg.equipment[0];
         firstPackage.items.forEach((item, itemIdx) => {
-          addEquipmentItem(item, itemIdx);
+          addEquipmentItem(item, itemIdx, 0);
         });
         if (firstPackage.gold) {
           dispatch({
@@ -98,11 +104,12 @@ export default function BackgroundStep() {
     dispatch({ type: 'REMOVE_ITEMS_BY_SOURCE', listName: 'equipment', source: 'Background' });
 
     if (selectedBg?.equipment) {
-      const selectedPackage = selectedBg.equipment[packageId === 'A' ? 0 : 1];
-      if (selectedPackage) {
-        selectedPackage.items.forEach((item, itemIdx) => {
-          addEquipmentItem(item, itemIdx);
-        });
+        const selectedPackage = selectedBg.equipment[packageId === 'A' ? 0 : 1];
+        const selectedPackageIdx = packageId === 'A' ? 0 : 1;
+        if (selectedPackage) {
+          selectedPackage.items.forEach((item, itemIdx) => {
+            addEquipmentItem(item, itemIdx, selectedPackageIdx);
+          });
         if (selectedPackage.gold) {
           dispatch({
             type: 'UPDATE_DRAFT',
@@ -131,9 +138,16 @@ export default function BackgroundStep() {
   const knownLanguages = state.draft.languages || [];
   const languageCount = selectedBg?.languages || 0;
 
-  const addEquipmentItem = (item: { name: string; quantity?: number; options?: string[] }, packageIdx: number) => {
+  const addEquipmentItem = (
+    item: { name: string; quantity?: number; options?: string[] },
+    itemIdx: number,
+    packageIdx = currentPackageIdx
+  ) => {
+    const selectionKey = getEquipmentChoiceKey(packageIdx, itemIdx);
+    const selectedOption = state.backgroundChoices[selectionKey];
+    const optionName = typeof selectedOption === 'string' ? selectedOption : undefined;
     const itemName = item.options && item.options.length > 0
-      ? equipmentSelections[packageIdx]
+      ? optionName
       : item.name;
 
     if (!itemName) return;
@@ -152,8 +166,9 @@ export default function BackgroundStep() {
     });
   };
 
-  const handleEquipmentChoiceChange = (packageIdx: number, selection: string) => {
-    setEquipmentSelections(prev => ({ ...prev, [packageIdx]: selection }));
+  const handleEquipmentChoiceChange = (itemIdx: number, selection: string) => {
+    const selectionKey = getEquipmentChoiceKey(currentPackageIdx, itemIdx);
+    dispatch({ type: 'SET_BACKGROUND_CHOICE', choiceType: selectionKey, value: selection });
   };
 
   return (
@@ -211,7 +226,7 @@ export default function BackgroundStep() {
                                 <div className="flex items-center gap-2">
                                   <span>Choose one of:</span>
                                   <select
-                                    value={equipmentSelections[itemIdx] || ''}
+                                    value={(state.backgroundChoices[getEquipmentChoiceKey(currentPackageIdx, itemIdx)] as string) || ''}
                                     onChange={(e) => handleEquipmentChoiceChange(itemIdx, e.target.value)}
                                     className="text-xs border-slate-300 rounded px-1 py-0.5"
                                   >
@@ -297,7 +312,7 @@ export default function BackgroundStep() {
                           {selectedBg.equipment[0]?.items.map((item, idx) => (
                             <li key={idx}>
                               {item.options && item.options.length > 0
-                                ? equipmentSelections[idx] || '(not selected)'
+                                ? (state.backgroundChoices[getEquipmentChoiceKey(currentPackageIdx, idx)] as string) || '(not selected)'
                                 : `${item.quantity ? `${item.quantity}x ` : ''}${item.name}`}
                             </li>
                           ))}

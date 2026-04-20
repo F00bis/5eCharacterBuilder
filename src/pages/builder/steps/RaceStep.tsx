@@ -14,6 +14,36 @@ import { LanguageSelector } from '@/components/LanguageSelector';
 
 const ABILITIES: Ability[] = ['strength', 'dexterity', 'constitution', 'intelligence', 'wisdom', 'charisma'];
 
+function deriveFlexibleSelectionsFromDraft(
+  baseBonuses: { ability?: Ability; amount: number }[],
+  raceStatSelections: { ability: Ability; amount: number }[]
+): Record<number, Ability | null> {
+  const fixedAbilities = new Set(baseBonuses.filter(b => b.ability).map(b => b.ability as Ability));
+  const flexibleChosen = raceStatSelections
+    .filter(selection => !fixedAbilities.has(selection.ability))
+    .map(selection => selection.ability);
+
+  const flexibleSlotsCount = baseBonuses.filter(b => !b.ability).length;
+  const next: Record<number, Ability | null> = {};
+
+  for (let i = 0; i < flexibleSlotsCount; i++) {
+    next[i] = flexibleChosen[i] ?? null;
+  }
+
+  return next;
+}
+
+function areFlexibleSelectionsEqual(
+  a: Record<number, Ability | null>,
+  b: Record<number, Ability | null>
+): boolean {
+  const aKeys = Object.keys(a);
+  const bKeys = Object.keys(b);
+  if (aKeys.length !== bKeys.length) return false;
+
+  return aKeys.every(key => a[Number(key)] === b[Number(key)]);
+}
+
 function getAllRequiredChoices(
   race: typeof srdRaces[0] | undefined,
   subraceId: string | undefined
@@ -97,25 +127,110 @@ export default function RaceStep() {
   }, [dispatch]);
 
   useEffect(() => {
+    if (!state.draft.race) {
+      setPlus2(prev => (prev === null ? prev : null));
+      setPlus1(prev => (prev === null ? prev : null));
+      setFlexibleSelections(prev => (Object.keys(prev).length === 0 ? prev : {}));
+      return;
+    }
+
+    const currentSelections = state.draft.raceStatSelections || [];
+
+    if (useTashasRules) {
+      const nextPlus2 = currentSelections.find(s => s.amount === 2)?.ability ?? null;
+      const nextPlus1 = currentSelections.find(s => s.amount === 1 && s.ability !== nextPlus2)?.ability ?? null;
+      setPlus2(prev => (prev === nextPlus2 ? prev : nextPlus2));
+      setPlus1(prev => (prev === nextPlus1 ? prev : nextPlus1));
+      setFlexibleSelections(prev => (Object.keys(prev).length === 0 ? prev : {}));
+      return;
+    }
+
+    setPlus2(prev => (prev === null ? prev : null));
+    setPlus1(prev => (prev === null ? prev : null));
+    const nextFlexibleSelections = deriveFlexibleSelectionsFromDraft(baseBonuses, currentSelections);
+    setFlexibleSelections(prev =>
+      areFlexibleSelectionsEqual(prev, nextFlexibleSelections) ? prev : nextFlexibleSelections
+    );
+  }, [state.draft.race, state.draft.raceStatSelections, useTashasRules, baseBonuses]);
+
+  const effectivePlus2 = useMemo(() => {
+    if (!useTashasRules) return null;
+    return (state.draft.raceStatSelections || []).find(s => s.amount === 2)?.ability ?? plus2;
+  }, [useTashasRules, state.draft.raceStatSelections, plus2]);
+
+  const effectivePlus1 = useMemo(() => {
+    if (!useTashasRules) return null;
+    const selectedPlus2 = (state.draft.raceStatSelections || []).find(s => s.amount === 2)?.ability;
+    return (
+      (state.draft.raceStatSelections || []).find(s => s.amount === 1 && s.ability !== selectedPlus2)?.ability ?? plus1
+    );
+  }, [useTashasRules, state.draft.raceStatSelections, plus1]);
+
+  const effectiveFlexibleSelections = useMemo(() => {
+    if (useTashasRules) return {};
+
+    const draftSelections = state.draft.raceStatSelections || [];
+    if (draftSelections.length === 0) return flexibleSelections;
+
+    return deriveFlexibleSelectionsFromDraft(baseBonuses, draftSelections);
+  }, [useTashasRules, state.draft.raceStatSelections, baseBonuses, flexibleSelections]);
+
+  useEffect(() => {
     const isValid = isValidRaceStep(
       state.draft.race,
       state.draft.subrace,
       useTashasRules,
-      plus2,
-      plus1,
-      flexibleSelections,
+      effectivePlus2,
+      effectivePlus1,
+      effectiveFlexibleSelections,
       baseBonuses,
       state.raceChoices,
       requiredChoices,
       additionalLanguageCount
     );
     dispatch({ type: 'SET_STEP_VALIDATION', stepId: 'race', isValid });
-  }, [state.draft.race, state.draft.subrace, useTashasRules, plus2, plus1, flexibleSelections, baseBonuses, state.raceChoices, requiredChoices, additionalLanguageCount, dispatch]);
+  }, [
+    state.draft.race,
+    state.draft.subrace,
+    useTashasRules,
+    effectivePlus2,
+    effectivePlus1,
+    effectiveFlexibleSelections,
+    baseBonuses,
+    state.raceChoices,
+    requiredChoices,
+    additionalLanguageCount,
+    dispatch,
+  ]);
 
   // Update effect to sync selections when rules toggle or bonuses change
   useEffect(() => {
+    if (!state.draft.race) {
+      return;
+    }
+
+    if (useTashasRules) {
+      if (!plus2 || !plus1 || plus2 === plus1) {
+        return;
+      }
+    } else {
+      const flexibleSlotsCount = baseBonuses.filter(b => !b.ability).length;
+      const selectedFlexibleCount = Object.values(flexibleSelections).filter((a): a is Ability => a !== null).length;
+      if (selectedFlexibleCount < flexibleSlotsCount) {
+        return;
+      }
+    }
+
     updateRaceStatSelections(plus2, plus1, flexibleSelections, useTashasRules, baseBonuses);
-  }, [plus2, plus1, flexibleSelections, useTashasRules, baseBonuses, updateRaceStatSelections]);
+  }, [
+    state.draft.race,
+    plus2,
+    plus1,
+    flexibleSelections,
+    useTashasRules,
+    baseBonuses,
+    updateRaceStatSelections,
+  ]);
 
   const handleRaceChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     const raceId = e.target.value;

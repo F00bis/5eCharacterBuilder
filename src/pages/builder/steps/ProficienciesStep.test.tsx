@@ -1,4 +1,4 @@
-import { act, fireEvent, render, screen, waitFor, within } from '@testing-library/react';
+import { render, screen, waitFor, within } from '@testing-library/react';
 import { useEffect, useRef } from 'react';
 import { beforeEach, describe, expect, it } from 'vitest';
 import { useCharacterBuilder } from '../../../contexts/CharacterBuilderContextTypes';
@@ -34,7 +34,7 @@ describe('ProficienciesStep', () => {
     localStorage.clear();
   });
 
-  it('renders a class selection dropdown', async () => {
+  it('renders class context from draft state', async () => {
     render(
       <CharacterBuilderProvider>
         <ProficienciesStepWithSetup className="Fighter" />
@@ -44,9 +44,9 @@ describe('ProficienciesStep', () => {
     await waitFor(() => {
       expect(screen.getByRole('heading', { name: 'Proficiencies & Skills' })).toBeInTheDocument();
     });
-    
-    const selects = screen.getAllByRole('combobox');
-    expect(selects.length).toBeGreaterThan(0);
+
+    expect(screen.getByText(/Class:/i)).toBeInTheDocument();
+    expect(screen.getByText('Fighter')).toBeInTheDocument();
   });
 
   it('shows message when no class is selected', () => {
@@ -69,11 +69,6 @@ describe('ProficienciesStep', () => {
       expect(screen.getByRole('heading', { name: 'Proficiencies & Skills' })).toBeInTheDocument();
     });
     
-    const select = screen.getAllByRole('combobox')[0];
-    await act(async () => {
-      fireEvent.change(select, { target: { value: 'Rogue' } });
-    });
-    
     await waitFor(() => {
       expect(screen.getByRole('heading', { name: /expertise/i })).toBeInTheDocument();
     });
@@ -90,11 +85,6 @@ describe('ProficienciesStep', () => {
       expect(screen.getByRole('heading', { name: 'Proficiencies & Skills' })).toBeInTheDocument();
     });
     
-    const select = screen.getAllByRole('combobox')[0];
-    await act(async () => {
-      fireEvent.change(select, { target: { value: 'Fighter' } });
-    });
-    
     expect(screen.queryByText(/expertise/i)).not.toBeInTheDocument();
   });
 
@@ -109,11 +99,6 @@ describe('ProficienciesStep', () => {
       expect(screen.getByRole('heading', { name: 'Proficiencies & Skills' })).toBeInTheDocument();
     });
 
-    const select = screen.getAllByRole('combobox')[0];
-    await act(async () => {
-      fireEvent.change(select, { target: { value: 'Bard' } });
-    });
-
     expect(screen.queryByRole('heading', { name: /expertise/i })).not.toBeInTheDocument();
   });
 
@@ -126,11 +111,6 @@ describe('ProficienciesStep', () => {
     
     await waitFor(() => {
       expect(screen.getByRole('heading', { name: 'Proficiencies & Skills' })).toBeInTheDocument();
-    });
-    
-    const select = screen.getAllByRole('combobox')[0];
-    await act(async () => {
-      fireEvent.change(select, { target: { value: 'Fighter' } });
     });
     
     await waitFor(() => {

@@ -30,6 +30,8 @@ describe('characterBuilderReducer', () => {
     expect(state.draft.race).toBe('Dwarf');
     expect(state.baseLevel).toBe(4);
     expect(state.targetLevel).toBe(5);
+    expect(state.baseClassesSnapshot).toEqual([{ className: 'Fighter', level: 4 }]);
+    expect(state.currentPassClassName).toBeNull();
   });
 
   it('sets class for current pass in create mode as replacement', () => {
@@ -104,6 +106,7 @@ describe('characterBuilderReducer', () => {
     );
 
     expect(start.draft.classes).toEqual([{ className: 'Fighter', level: 5 }]);
+    expect(start.currentPassClassName).toBe('Fighter');
 
     const unchanged = characterBuilderReducer(start, {
       type: 'SET_CLASS_FOR_CURRENT_PASS',
@@ -112,6 +115,7 @@ describe('characterBuilderReducer', () => {
 
     expect(unchanged.draft.classes).toEqual([{ className: 'Fighter', level: 5 }]);
     expect(unchanged.draft.level).toBe(5);
+    expect(unchanged.currentPassClassName).toBe('Fighter');
   });
 
   it('handles UPDATE_DRAFT', () => {
@@ -170,6 +174,8 @@ describe('characterBuilderReducer', () => {
       currentStep: 5,
       mode: 'levelup',
       baseCharacterId: 1,
+      currentPassClassName: 'Rogue',
+      baseClassesSnapshot: [{ className: 'Fighter', level: 4 }],
     };
     const action: BuilderAction = { type: 'CLEAR_DRAFT' };
     const state = characterBuilderReducer(startState, action);
@@ -177,6 +183,8 @@ describe('characterBuilderReducer', () => {
     expect(state.currentStep).toBe(0);
     expect(state.mode).toBe('create');
     expect(state.baseCharacterId).toBe(null);
+    expect(state.currentPassClassName).toBeNull();
+    expect(state.baseClassesSnapshot).toEqual([]);
   });
 
   it('handles SET_STEP_VALIDATION', () => {

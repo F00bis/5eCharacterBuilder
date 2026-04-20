@@ -6,6 +6,7 @@ import { useCharacterBuilder } from '../contexts/CharacterBuilderContextTypes';
 import { getCharacterById } from '../db/characters';
 import { calculateFeatEntitlements, hasEntitlements } from '../utils/featEntitlements';
 import { hasProgressionEntitlements } from '../utils/progressionEntitlements';
+import { calculateProficiencyEntitlement } from '../utils/proficiencyEntitlements';
 import { calculateSpellEntitlements } from '../utils/spellCalculations';
 import { useAsiLevelsByClass } from '../utils/useAsiLevelsByClass';
 import AbilityScoresStep from './builder/steps/AbilityScoresStep';
@@ -48,6 +49,15 @@ export default function CharacterCreator({ mode }: CharacterCreatorProps) {
     return hasProgressionEntitlements(classes);
   }, [state.draft.classes]);
 
+  const proficiencyEntitlement = useMemo(() => {
+    return calculateProficiencyEntitlement({
+      mode,
+      draftClasses: state.draft.classes || [],
+      baseClassesSnapshot: state.baseClassesSnapshot,
+      currentPassClassName: state.currentPassClassName,
+    });
+  }, [mode, state.draft.classes, state.baseClassesSnapshot, state.currentPassClassName]);
+
   useEffect(() => {
     if (mode === 'create') {
       if (state.mode !== 'create') {
@@ -71,13 +81,28 @@ export default function CharacterCreator({ mode }: CharacterCreatorProps) {
   }, [mode, characterId, state.mode, state.baseCharacterId, dispatch]);
 
   const steps = useMemo<Step[]>(() => {
+    const insertAfterFirstFound = (
+      stepsToUpdate: Step[],
+      candidateIds: string[],
+      newStep: Step
+    ) => {
+      for (const stepId of candidateIds) {
+        const index = stepsToUpdate.findIndex(s => s.id === stepId);
+        if (index >= 0) {
+          stepsToUpdate.splice(index + 1, 0, newStep);
+          return;
+        }
+      }
+
+      stepsToUpdate.push(newStep);
+    };
+
     if (mode === 'create') {
       const baseSteps: Step[] = [
         { id: 'race', label: 'Race', isValid: state.stepValidations['race'] ?? false },
         { id: 'background', label: 'Background', isValid: state.stepValidations['background'] ?? false },
         { id: 'abilities', label: 'Ability Scores', isValid: true },
         { id: 'class', label: 'Class', isValid: true },
-        { id: 'proficiencies', label: 'Proficiencies', isValid: state.stepValidations['proficiencies'] ?? false },
         { id: 'equipment', label: 'Equipment', isValid: true },
         { id: 'review', label: 'Review', isValid: true },
       ];
@@ -87,14 +112,22 @@ export default function CharacterCreator({ mode }: CharacterCreatorProps) {
         const classIdx = stepsToReturn.findIndex(s => s.id === 'class');
         stepsToReturn.splice(classIdx + 1, 0, { id: 'spells', label: 'Spells', isValid: true });
       }
+      if (proficiencyEntitlement.showProficienciesStep) {
+        insertAfterFirstFound(stepsToReturn, ['spells', 'class'], {
+          id: 'proficiencies',
+          label: 'Proficiencies',
+          isValid: state.stepValidations['proficiencies'] ?? false,
+        });
+      }
       if (showFeatsAsi) {
-        const profIdx = stepsToReturn.findIndex(s => s.id === 'proficiencies');
-        stepsToReturn.splice(profIdx + 1, 0, { id: 'feats-asi', label: 'Feats & ASI', isValid: state.stepValidations['feats-asi'] ?? false });
+        insertAfterFirstFound(stepsToReturn, ['proficiencies', 'spells', 'class'], {
+          id: 'feats-asi',
+          label: 'Feats & ASI',
+          isValid: state.stepValidations['feats-asi'] ?? false,
+        });
       }
       if (showProgressionChoices) {
-        const featsIdx = stepsToReturn.findIndex(s => s.id === 'feats-asi');
-        const insertAt = featsIdx >= 0 ? featsIdx + 1 : stepsToReturn.findIndex(s => s.id === 'proficiencies') + 1;
-        stepsToReturn.splice(insertAt, 0, {
+        insertAfterFirstFound(stepsToReturn, ['feats-asi', 'proficiencies', 'spells', 'class'], {
           id: 'progression-choices',
           label: 'Progression Choices',
           isValid: state.stepValidations['progression-choices'] ?? false,
@@ -105,7 +138,6 @@ export default function CharacterCreator({ mode }: CharacterCreatorProps) {
     } else {
       const baseSteps: Step[] = [
         { id: 'class', label: 'Class & Level', isValid: true },
-        { id: 'proficiencies', label: 'Proficiencies', isValid: state.stepValidations['proficiencies'] ?? false },
         { id: 'equipment', label: 'Equipment', isValid: true },
         { id: 'review', label: 'Review', isValid: true },
       ];
@@ -115,14 +147,22 @@ export default function CharacterCreator({ mode }: CharacterCreatorProps) {
         const classIdx = stepsToReturn.findIndex(s => s.id === 'class');
         stepsToReturn.splice(classIdx + 1, 0, { id: 'spells', label: 'Spells', isValid: true });
       }
+      if (proficiencyEntitlement.showProficienciesStep) {
+        insertAfterFirstFound(stepsToReturn, ['spells', 'class'], {
+          id: 'proficiencies',
+          label: 'Proficiencies',
+          isValid: state.stepValidations['proficiencies'] ?? false,
+        });
+      }
       if (showFeatsAsi) {
-        const profIdx = stepsToReturn.findIndex(s => s.id === 'proficiencies');
-        stepsToReturn.splice(profIdx + 1, 0, { id: 'feats-asi', label: 'Feats & ASI', isValid: state.stepValidations['feats-asi'] ?? false });
+        insertAfterFirstFound(stepsToReturn, ['proficiencies', 'spells', 'class'], {
+          id: 'feats-asi',
+          label: 'Feats & ASI',
+          isValid: state.stepValidations['feats-asi'] ?? false,
+        });
       }
       if (showProgressionChoices) {
-        const featsIdx = stepsToReturn.findIndex(s => s.id === 'feats-asi');
-        const insertAt = featsIdx >= 0 ? featsIdx + 1 : stepsToReturn.findIndex(s => s.id === 'proficiencies') + 1;
-        stepsToReturn.splice(insertAt, 0, {
+        insertAfterFirstFound(stepsToReturn, ['feats-asi', 'proficiencies', 'spells', 'class'], {
           id: 'progression-choices',
           label: 'Progression Choices',
           isValid: state.stepValidations['progression-choices'] ?? false,
@@ -131,7 +171,14 @@ export default function CharacterCreator({ mode }: CharacterCreatorProps) {
 
       return stepsToReturn;
     }
-  }, [mode, state.stepValidations, showSpellSelection, showFeatsAsi, showProgressionChoices]);
+  }, [
+    mode,
+    state.stepValidations,
+    showSpellSelection,
+    showFeatsAsi,
+    showProgressionChoices,
+    proficiencyEntitlement.showProficienciesStep,
+  ]);
 
   const handleNext = () => {
     if (state.currentStep < steps.length - 1) {
