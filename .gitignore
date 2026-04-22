@@ -25,6 +25,7 @@ spec*.md
 *.njsproj
 *.sln
 *.sw?
+.opencode/*
 
 # tsconfig cache
 tsconfig.tsbuildinfo
