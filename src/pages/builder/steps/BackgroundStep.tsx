@@ -15,8 +15,11 @@ export default function BackgroundStep() {
     [state.draft.background]
   );
 
+  const equipmentPackageCount = selectedBg?.equipment?.length ?? 0;
+  const hasSingleEquipmentPackage = equipmentPackageCount === 1;
   const currentPackageIdx = state.backgroundEquipmentPackage === 'B' ? 1 : 0;
-  const currentPackage = selectedBg?.equipment?.[currentPackageIdx];
+  const effectivePackageIdx = hasSingleEquipmentPackage ? 0 : currentPackageIdx;
+  const currentPackage = selectedBg?.equipment?.[effectivePackageIdx];
 
   const equipmentChoices = useMemo(() => {
     if (!currentPackage) return [];
@@ -27,7 +30,7 @@ export default function BackgroundStep() {
 
   const allChoicesMade = equipmentChoices.length === 0 || 
     equipmentChoices.every(({ idx }) => {
-      const selectionKey = getEquipmentChoiceKey(currentPackageIdx, idx);
+      const selectionKey = getEquipmentChoiceKey(effectivePackageIdx, idx);
       const selectedValue = state.backgroundChoices[selectionKey];
       return typeof selectedValue === 'string' && selectedValue.length > 0;
     });
@@ -66,6 +69,7 @@ export default function BackgroundStep() {
       }
 
       if (bg.equipment && bg.equipment.length > 0) {
+        dispatch({ type: 'SET_BACKGROUND_EQUIPMENT', package: 'A' });
         const firstPackage = bg.equipment[0];
         firstPackage.items.forEach((item, itemIdx) => {
           addEquipmentItem(item, itemIdx, 0);
@@ -166,8 +170,12 @@ export default function BackgroundStep() {
     });
   };
 
-  const handleEquipmentChoiceChange = (itemIdx: number, selection: string) => {
-    const selectionKey = getEquipmentChoiceKey(currentPackageIdx, itemIdx);
+  const handleEquipmentChoiceChange = (
+    itemIdx: number,
+    selection: string,
+    packageIdx = effectivePackageIdx
+  ) => {
+    const selectionKey = getEquipmentChoiceKey(packageIdx, itemIdx);
     dispatch({ type: 'SET_BACKGROUND_CHOICE', choiceType: selectionKey, value: selection });
   };
 
@@ -206,46 +214,73 @@ export default function BackgroundStep() {
               <div className="bg-slate-50 p-4 rounded-md border border-slate-200">
                 <h3 className="text-sm font-semibold mb-3">Equipment</h3>
                 <div className="space-y-2">
-                  {selectedBg.equipment.map((pkg, idx) => (
-                    <label key={idx} className="flex items-start gap-2">
-                      <input
-                        type="radio"
-                        name="equipmentPackage"
-                        checked={state.backgroundEquipmentPackage === (idx === 0 ? 'A' : 'B')}
-                        onChange={() => handleEquipmentPackageChange(idx === 0 ? 'A' : 'B')}
-                        className="mt-1"
-                      />
-                      <div>
-                        <span className="text-xs font-medium text-slate-700">
-                          Package {idx === 0 ? 'A' : 'B'}:
-                        </span>
-                        <ul className="text-xs text-slate-600 mt-1">
-                          {pkg.items.map((item, itemIdx) => (
-                            <li key={itemIdx}>
-                              {item.options && item.options.length > 0 ? (
-                                <div className="flex items-center gap-2">
-                                  <span>Choose one of:</span>
-                                  <select
-                                    value={(state.backgroundChoices[getEquipmentChoiceKey(currentPackageIdx, itemIdx)] as string) || ''}
-                                    onChange={(e) => handleEquipmentChoiceChange(itemIdx, e.target.value)}
-                                    className="text-xs border-slate-300 rounded px-1 py-0.5"
-                                  >
-                                    <option value="" disabled>Select...</option>
-                                    {item.options.map(opt => (
-                                      <option key={opt} value={opt}>{opt}</option>
-                                    ))}
-                                  </select>
-                                </div>
-                              ) : (
-                                <span>{item.quantity ? `${item.quantity}x ` : ''}{item.name}</span>
-                              )}
-                            </li>
-                          ))}
-                          {pkg.gold && <li>{pkg.gold} GP</li>}
-                        </ul>
-                      </div>
-                    </label>
-                  ))}
+                  {hasSingleEquipmentPackage ? (
+                    <ul className="text-xs text-slate-600">
+                      {selectedBg.equipment[0].items.map((item, itemIdx) => (
+                        <li key={itemIdx}>
+                          {item.options && item.options.length > 0 ? (
+                            <div className="flex items-center gap-2">
+                              <span>Choose one of:</span>
+                              <select
+                                value={(state.backgroundChoices[getEquipmentChoiceKey(0, itemIdx)] as string) || ''}
+                                onChange={(e) => handleEquipmentChoiceChange(itemIdx, e.target.value, 0)}
+                                className="text-xs border-slate-300 rounded px-1 py-0.5"
+                              >
+                                <option value="" disabled>Select...</option>
+                                {item.options.map(opt => (
+                                  <option key={opt} value={opt}>{opt}</option>
+                                ))}
+                              </select>
+                            </div>
+                          ) : (
+                            <span>{item.quantity ? `${item.quantity}x ` : ''}{item.name}</span>
+                          )}
+                        </li>
+                      ))}
+                      {selectedBg.equipment[0].gold && <li>{selectedBg.equipment[0].gold} GP</li>}
+                    </ul>
+                  ) : (
+                    selectedBg.equipment.map((pkg, idx) => (
+                      <label key={idx} className="flex items-start gap-2">
+                        <input
+                          type="radio"
+                          name="equipmentPackage"
+                          checked={state.backgroundEquipmentPackage === (idx === 0 ? 'A' : 'B')}
+                          onChange={() => handleEquipmentPackageChange(idx === 0 ? 'A' : 'B')}
+                          className="mt-1"
+                        />
+                        <div>
+                          <span className="text-xs font-medium text-slate-700">
+                            Package {idx === 0 ? 'A' : 'B'}:
+                          </span>
+                          <ul className="text-xs text-slate-600 mt-1">
+                            {pkg.items.map((item, itemIdx) => (
+                              <li key={itemIdx}>
+                                {item.options && item.options.length > 0 ? (
+                                  <div className="flex items-center gap-2">
+                                    <span>Choose one of:</span>
+                                    <select
+                                      value={(state.backgroundChoices[getEquipmentChoiceKey(idx, itemIdx)] as string) || ''}
+                                      onChange={(e) => handleEquipmentChoiceChange(itemIdx, e.target.value, idx)}
+                                      className="text-xs border-slate-300 rounded px-1 py-0.5"
+                                    >
+                                      <option value="" disabled>Select...</option>
+                                      {item.options.map(opt => (
+                                        <option key={opt} value={opt}>{opt}</option>
+                                      ))}
+                                    </select>
+                                  </div>
+                                ) : (
+                                  <span>{item.quantity ? `${item.quantity}x ` : ''}{item.name}</span>
+                                )}
+                              </li>
+                            ))}
+                            {pkg.gold && <li>{pkg.gold} GP</li>}
+                          </ul>
+                        </div>
+                      </label>
+                    ))
+                  )}
                 </div>
               </div>
             )}
@@ -268,7 +303,7 @@ export default function BackgroundStep() {
               <div className="mt-4 space-y-3">
                 <div>
                   <h4 className="text-sm font-semibold text-slate-700">Your Selections</h4>
-                  {selectedBg.equipment && selectedBg.equipment.length > 0 && (
+                  {selectedBg.equipment && selectedBg.equipment.length > 1 && (
                     <p className="text-xs text-slate-600 mt-1">
                       Equipment Package: <span className="font-medium">{state.backgroundEquipmentPackage || 'A'}</span>
                     </p>
@@ -312,7 +347,7 @@ export default function BackgroundStep() {
                           {selectedBg.equipment[0]?.items.map((item, idx) => (
                             <li key={idx}>
                               {item.options && item.options.length > 0
-                                ? (state.backgroundChoices[getEquipmentChoiceKey(currentPackageIdx, idx)] as string) || '(not selected)'
+                                ? (state.backgroundChoices[getEquipmentChoiceKey(effectivePackageIdx, idx)] as string) || '(not selected)'
                                 : `${item.quantity ? `${item.quantity}x ` : ''}${item.name}`}
                             </li>
                           ))}
