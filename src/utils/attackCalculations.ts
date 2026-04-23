@@ -96,9 +96,30 @@ function getWeaponBonus(weapon: Equipment): number {
   return 0;
 }
 
+function isFinesseWeapon(weapon: Equipment): boolean {
+  const hasTaggedFinesse = weapon.weaponProperties?.includes('Finesse') ?? false;
+  const hasLegacyFinesse = weapon.properties?.some((property) => property.toLowerCase().includes('finesse')) ?? false;
+  return hasTaggedFinesse || hasLegacyFinesse;
+}
+
+function getWeaponAbility(character: Character, weapon: Equipment, isMelee: boolean): Ability {
+  if (!isMelee) {
+    return 'dexterity';
+  }
+
+  if (!isFinesseWeapon(weapon)) {
+    return 'strength';
+  }
+
+  const strengthMod = Math.floor((getEffectiveAbilityScore(character, 'strength') - 10) / 2);
+  const dexterityMod = Math.floor((getEffectiveAbilityScore(character, 'dexterity') - 10) / 2);
+
+  return dexterityMod > strengthMod ? 'dexterity' : 'strength';
+}
+
 export function getWeaponAttack(character: Character, weapon: Equipment): AttackResult {
-  const isMelee = !weapon.weaponCategory?.includes('Ranged') || weapon.properties?.includes('Thrown');
-  const ability: Ability = isMelee ? 'strength' : 'dexterity';
+  const isMelee = !weapon.weaponCategory?.includes('Ranged') || (weapon.properties?.includes('Thrown') ?? false);
+  const ability = getWeaponAbility(character, weapon, isMelee);
   
   const effectiveScore = getEffectiveAbilityScore(character, ability);
   const mod = Math.floor((effectiveScore - 10) / 2);
