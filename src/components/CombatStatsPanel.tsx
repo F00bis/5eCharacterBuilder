@@ -2,12 +2,14 @@ import { Card } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { Shield } from 'lucide-react';
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { useCharacter } from '../contexts/CharacterContext';
 import { StatusEffectsSection } from './StatusEffectsSection';
-import { getArmorClass } from '../utils/armorClass';
+import { getArmorClass, type ArmorClassBreakdown } from '../utils/armorClass';
 import { calculateMaxHp, getInitiativeBreakdown, getSpeedBreakdown, getVisionBreakdown, type StatBreakdown, type VisionBreakdown } from '../utils/combatStats';
 import { getModifier } from '../utils/abilityScores';
+import { getAllClasses } from '../db/classes';
+import type { DndClass } from '../types/classes';
 
 function formatModifier(value: number): string {
   return value >= 0 ? `+${value}` : String(value);
@@ -82,6 +84,7 @@ export function CombatStatsPanel(_props: CombatStatsPanelProps) {
   const [initiativeBreakdown, setInitiativeBreakdown] = useState<StatBreakdown | null>(null);
   const [speedBreakdown, setSpeedBreakdown] = useState<StatBreakdown | null>(null);
   const [visionBreakdown, setVisionBreakdown] = useState<VisionBreakdown | null>(null);
+  const [classDefinitions, setClassDefinitions] = useState<DndClass[]>([]);
 
   const currentHpInputRef = useRef<HTMLInputElement>(null);
   const maxHpInputRef = useRef<HTMLInputElement>(null);
@@ -112,9 +115,13 @@ export function CombatStatsPanel(_props: CombatStatsPanelProps) {
     getInitiativeBreakdown(character).then(setInitiativeBreakdown);
     getSpeedBreakdown(character).then(setSpeedBreakdown);
     getVisionBreakdown(character).then(setVisionBreakdown);
+    getAllClasses().then(setClassDefinitions);
   }, [character]);
 
-  const acBreakdown = getArmorClass(character);
+  const acBreakdown = useMemo<ArmorClassBreakdown>(
+    () => getArmorClass(character, new Map(classDefinitions.map(c => [c.name, c]))),
+    [character, classDefinitions]
+  );
 
   const handleCurrentHpSave = () => {
     const value = parseInt(editedCurrentHp, 10);
