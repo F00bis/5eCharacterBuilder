@@ -30,7 +30,13 @@ export const srdClasses: DndClass[] = [
         description: 'While you are not wearing any armor, your AC equals 10 + your Dexterity modifier + your Constitution modifier. Your Armor Class equals 10 + your Dexterity modifier + your Constitution modifier. You gain a shield if you use one.',
         levelAcquired: 1,
         effects: {
-          ac: 10
+          acCalculation: {
+            base: 10,
+            abilityModifiers: ['dexterity', 'constitution'],
+            requiresNoArmor: true,
+            requiresNoShield: false,
+            allowShield: true,
+          }
         }
       },
       {
@@ -493,7 +499,16 @@ export const srdClasses: DndClass[] = [
       {
         name: 'Unarmored Defense',
         description: 'While you are wearing no armor and not wielding a shield, your AC equals 10 + your Dexterity modifier + your Wisdom modifier. Beginning at 1st level, while you are wearing no armor and not wielding a shield, your AC equals 10 + your Dexterity modifier + your Wisdom modifier.',
-        levelAcquired: 1
+        levelAcquired: 1,
+        effects: {
+          acCalculation: {
+            base: 10,
+            abilityModifiers: ['dexterity', 'wisdom'],
+            requiresNoArmor: true,
+            requiresNoShield: true,
+            allowShield: false,
+          }
+        }
       },
       {
         name: 'Martial Arts',
@@ -1031,6 +1046,24 @@ export const srdClasses: DndClass[] = [
           optionDetails: {
             'Draconic Bloodline': 'Your magic is tied to draconic ancestry, improving durability and empowering dragon-themed spells.',
             'Wild Magic': 'Your magic is unpredictable, producing surges of chaotic arcane effects as you cast spells.'
+          }
+        }
+      },
+      {
+        name: 'Draconic Resilience',
+        description: 'The magic in your body manifests physical traits of your draconic gift. Your Hit Point maximum increases by 1, and it increases by 1 again whenever you gain a level in this class. Additionally, parts of your skin are covered by a thin sheen of dragon-like scales. When you aren\'t wearing armor, your AC equals 13 + your Dexterity modifier.',
+        levelAcquired: 1,
+        requiredFeatureChoice: {
+          featureKey: 'sorcerer-1-sorcerous-origin',
+          expectedValue: 'Draconic Bloodline',
+        },
+        effects: {
+          acCalculation: {
+            base: 13,
+            abilityModifiers: ['dexterity'],
+            requiresNoArmor: true,
+            requiresNoShield: false,
+            allowShield: true,
           }
         }
       },

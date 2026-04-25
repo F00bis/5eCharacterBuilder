@@ -3,7 +3,7 @@ import { Input } from '../../../components/ui/input';
 import { useCharacterBuilder } from '../../../contexts/CharacterBuilderContextTypes';
 import type { Ability } from '../../../types';
 import { getModifier } from '../../../utils/abilityScores';
-import { calculateMaxHp, getArmorClassForDraft, useReviewStep } from './ReviewStepContext';
+import { calculateFinalAbilityScores, calculateMaxHp, getArmorClassForDraft, useReviewStep } from './ReviewStepContext';
 
 const ABILITY_ORDER: Ability[] = ['strength', 'dexterity', 'constitution', 'intelligence', 'wisdom', 'charisma'];
 
@@ -19,8 +19,10 @@ export default function ReviewStep() {
     invocationChoices: state.invocationChoices,
     mysticArcanumChoices: state.mysticArcanumChoices,
   };
-  const maxHp = calculateMaxHp(draftWithChoices, finalCharacter.level);
-  const acBreakdown = getArmorClassForDraft(draftWithChoices);
+  const abilityScores = calculateFinalAbilityScores(draftWithChoices);
+  const draftWithScores = { ...draftWithChoices, abilityScores } as Parameters<typeof getArmorClassForDraft>[0];
+  const maxHp = calculateMaxHp(draftWithScores, finalCharacter.level);
+  const acBreakdown = getArmorClassForDraft(draftWithScores);
   const totalLevel = state.draft.classes?.reduce((sum, c) => sum + c.level, 0) ?? 0;
 
   return (

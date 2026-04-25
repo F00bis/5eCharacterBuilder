@@ -17,6 +17,7 @@ import { getModifier } from '../../../utils/abilityScores';
 import { getArmorClass } from '../../../utils/armorClass';
 import type { ArmorClassBreakdown } from '../../../utils/armorClass';
 import { calculateInitiative } from '../../../utils/combatStats';
+import { srdClasses } from '../../../data/srdClasses';
 
 const ABILITY_ORDER: Ability[] = ['strength', 'dexterity', 'constitution', 'intelligence', 'wisdom', 'charisma'];
 
@@ -36,6 +37,7 @@ interface PartialCharacterDraft {
   invocationChoices?: InvocationChoiceStore;
   mysticArcanumChoices?: MysticArcanumChoiceStore;
   raceStatSelections?: RaceStatSelection[];
+  featureChoices?: Record<string, string | string[]>;
 }
 
 function calculateRaceBonus(draft: PartialCharacterDraft): Record<Ability, number> {
@@ -96,11 +98,11 @@ export function getArmorClassForDraft(draft: PartialCharacterDraft & { abilitySc
     race: '',
     background: '',
     alignment: '',
-    classes: [],
+    classes: draft.classes ?? [],
     raceStatSelections: draft.raceStatSelections ?? [],
     baseAbilityScores: { strength: 10, dexterity: 10, constitution: 10, intelligence: 10, wisdom: 10, charisma: 10 },
     abilityScores: draft.abilityScores ?? calculateFinalAbilityScores(draft),
-    featureChoices: {},
+    featureChoices: draft.featureChoices ?? {},
     hpRolls: [],
     level: 0,
     xp: 0,
@@ -131,7 +133,8 @@ export function getArmorClassForDraft(draft: PartialCharacterDraft & { abilitySc
     createdAt: new Date(),
     updatedAt: new Date(),
   };
-  return getArmorClass(fakeCharacter);
+  const classMap = new Map(srdClasses.map(c => [c.name, c]));
+  return getArmorClass(fakeCharacter, classMap);
 }
 
 export function useReviewStep() {

@@ -42,6 +42,19 @@ export interface FeatureAction {
   requirements?: string;
 }
 
+export interface ArmorClassCalculation {
+  base: number;
+  abilityModifiers: Ability[];
+  requiresNoArmor: boolean;
+  requiresNoShield: boolean;
+  allowShield: boolean;
+}
+
+export interface FeatureDependency {
+  featureKey: string;
+  expectedValue: string;
+}
+
 export interface ClassFeature {
   name: string;
   description: string;
@@ -53,9 +66,10 @@ export interface ClassFeature {
     optionDetails?: Record<string, string>;
     optionSources?: Record<string, string>;
   };
+  requiredFeatureChoice?: FeatureDependency;
   effects?: {
     abilityScores?: Partial<Record<Ability, number>>;
-    ac?: number;
+    acCalculation?: ArmorClassCalculation;
     hpPerLevel?: number;
     proficiencyBonus?: number;
     savingThrows?: Ability[];
