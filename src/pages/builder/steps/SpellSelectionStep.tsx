@@ -27,7 +27,7 @@ function getSchoolColor(school: SpellSchool): string {
 
 export default function SpellSelectionStep({ isVisible }: SpellSelectionStepProps) {
   const { state, dispatch } = useCharacterBuilder();
-  const { classes, subclass } = state.draft;
+  const { classes, subclass, abilityScores } = state.draft;
 
   const isLoadedRef = useRef(false);
 
@@ -39,8 +39,8 @@ export default function SpellSelectionStep({ isVisible }: SpellSelectionStepProp
   }, [isVisible]);
 
   const entitlements = useMemo(() => {
-    return calculateSpellEntitlements(classes || [], subclass);
-  }, [classes, subclass]);
+    return calculateSpellEntitlements(classes || [], abilityScores, subclass);
+  }, [classes, abilityScores, subclass]);
 
   const maxSpellLevel = useMemo(() => {
     return getMaxAccessibleSpellLevel(classes || [], subclass);
