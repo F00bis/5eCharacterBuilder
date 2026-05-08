@@ -171,19 +171,19 @@ function EquipmentItem({
   return (
     <Tooltip>
       <TooltipTrigger asChild>
-        <div 
-          className={`flex items-center gap-2 px-2 py-1 rounded hover:bg-slate-50 ${canEquip ? 'cursor-pointer' : ''}`}
+        <div
+          className={`flex items-center gap-2 px-2 py-1 rounded hover:bg-slate-50 min-w-0 ${canEquip ? 'cursor-pointer' : ''}`}
           onClick={handleToggle}
         >
           {canEquip && (
-            <input 
-              type="checkbox" 
+            <input
+              type="checkbox"
               checked={item.equipped ?? false}
               onChange={handleToggle}
-              className="w-3 h-3"
+              className="w-3 h-3 shrink-0"
             />
           )}
-          <span className="flex-1 text-sm truncate">{item.name}</span>
+          <span className="flex-1 text-sm break-words">{item.name}</span>
           {item.attuned && (
             <span className="text-[10px] bg-purple-600 text-white px-1 rounded">A</span>
           )}

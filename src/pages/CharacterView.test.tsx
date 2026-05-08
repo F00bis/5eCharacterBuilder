@@ -1,4 +1,4 @@
-import { render, screen } from '@testing-library/react';
+import { fireEvent, render, screen } from '@testing-library/react';
 import { MemoryRouter, Route, Routes } from 'react-router-dom';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import type { Character } from '../types';
@@ -8,6 +8,10 @@ let mockQueryResult: Character | null | undefined = undefined;
 
 vi.mock('dexie-react-hooks', () => ({
   useLiveQuery: () => mockQueryResult,
+}));
+
+vi.mock('../components/SpellsPanel', () => ({
+  SpellsPanel: () => <div data-testid="spells-panel">Spells Panel</div>,
 }));
 
 function baseCharacter(overrides: Partial<Character> = {}): Character {
@@ -788,5 +792,93 @@ describe('CharacterView ability scores section', () => {
       expect(screen.getAllByText('19').length).toBeGreaterThanOrEqual(1);
       expect(screen.getAllByText('14').length).toBeGreaterThanOrEqual(1);
     });
+  });
+});
+
+describe('CharacterView tabbed right column layout', () => {
+  afterEach(() => {
+    mockQueryResult = undefined;
+  });
+
+  it('renders three tab buttons with correct labels', () => {
+    mockQueryResult = baseCharacter();
+    renderCharacterView();
+
+    expect(screen.getByRole('button', { name: 'Features' })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'Inv' })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'Spellbook' })).toBeInTheDocument();
+  });
+
+  it('only mounts one panel at a time', () => {
+    mockQueryResult = baseCharacter();
+    renderCharacterView();
+
+    // Default active tab is Features; FeaturesPanel heading + tab button = 2 matches
+    expect(screen.queryAllByText('Features')).toHaveLength(2);
+    // InventoryPanel root heading (tab says 'Inv')
+    expect(screen.queryByText('Inventory')).not.toBeInTheDocument();
+    // Mocked SpellsPanel
+    expect(screen.queryByTestId('spells-panel')).not.toBeInTheDocument();
+  });
+
+  it('clicking Inventory tab renders InventoryPanel', () => {
+    mockQueryResult = baseCharacter();
+    renderCharacterView();
+
+    fireEvent.click(screen.getByRole('button', { name: 'Inv' }));
+
+    expect(screen.getByText('Inventory')).toBeInTheDocument();
+    // Features tab button remains; panel heading is gone
+    expect(screen.queryAllByText('Features')).toHaveLength(1);
+    expect(screen.queryByTestId('spells-panel')).not.toBeInTheDocument();
+  });
+
+  it('clicking Spellbook tab renders SpellsPanel', () => {
+    mockQueryResult = baseCharacter();
+    renderCharacterView();
+
+    fireEvent.click(screen.getByRole('button', { name: 'Spellbook' }));
+
+    expect(screen.getByTestId('spells-panel')).toBeInTheDocument();
+    // Features tab button remains; panel heading is gone
+    expect(screen.queryAllByText('Features')).toHaveLength(1);
+    expect(screen.queryByText('Inventory')).not.toBeInTheDocument();
+  });
+
+  it('clicking Features tab renders FeaturesPanel', () => {
+    mockQueryResult = baseCharacter();
+    renderCharacterView();
+
+    fireEvent.click(screen.getByRole('button', { name: 'Inv' }));
+    fireEvent.click(screen.getByRole('button', { name: 'Features' }));
+
+    // Features tab button + panel heading = 2 matches
+    expect(screen.queryAllByText('Features')).toHaveLength(2);
+    expect(screen.queryByText('Inventory')).not.toBeInTheDocument();
+    expect(screen.queryByTestId('spells-panel')).not.toBeInTheDocument();
+  });
+
+  it('active tab has distinct styling and inactive tabs do not', () => {
+    mockQueryResult = baseCharacter();
+    renderCharacterView();
+
+    const featuresTab = screen.getByRole('button', { name: 'Features' });
+    const invTab = screen.getByRole('button', { name: 'Inv' });
+    const spellbookTab = screen.getByRole('button', { name: 'Spellbook' });
+
+    // Features is active by default
+    expect(featuresTab).toHaveClass('bg-slate-700');
+    expect(featuresTab).toHaveClass('text-white');
+    expect(invTab).not.toHaveClass('bg-slate-700');
+    expect(invTab).not.toHaveClass('text-white');
+    expect(spellbookTab).not.toHaveClass('bg-slate-700');
+    expect(spellbookTab).not.toHaveClass('text-white');
+
+    fireEvent.click(invTab);
+
+    expect(invTab).toHaveClass('bg-slate-700');
+    expect(invTab).toHaveClass('text-white');
+    expect(featuresTab).not.toHaveClass('bg-slate-700');
+    expect(featuresTab).not.toHaveClass('text-white');
   });
 });

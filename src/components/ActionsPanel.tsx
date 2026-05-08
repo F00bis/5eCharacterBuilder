@@ -51,7 +51,7 @@ const FILTER_TABS: { key: ActionFilter; label: string; icon?: React.ReactNode }[
   { key: 'bonus-action', label: 'Bonus', icon: <Zap className="w-3 h-3" /> },
   { key: 'reaction', label: 'React', icon: <Sparkles className="w-3 h-3" /> },
   { key: 'weapon', label: 'Weapons', icon: <Sword className="w-3 h-3" /> },
-  { key: 'spell', label: 'Spells', icon: <Sparkles className="w-3 h-3" /> },
+  { key: 'spell', label: 'Spell Actions', icon: <Sparkles className="w-3 h-3" /> },
 ];
 
 const SOURCE_COLORS: Record<string, string> = {
