@@ -9,6 +9,7 @@ import {
 import { Check } from 'lucide-react';
 import { groupSpellsByLevel } from '../utils/spellCalculations';
 import { useCharacter } from '../contexts/CharacterContext';
+import { SpellTooltipDetail } from './SpellTooltipDetail';
 
 function getLevelLabel(level: number): string {
   if (level === 0) return 'Cantrips';
@@ -62,8 +63,8 @@ export function SpellsPanel() {
                                 {spell.name}
                               </span>
                             </TooltipTrigger>
-                            <TooltipContent side="top">
-                              <span className="text-xs">{spell.name}</span>
+                            <TooltipContent side="top" className="w-80 max-w-80 p-0">
+                              <SpellTooltipDetail spell={spell} />
                             </TooltipContent>
                           </Tooltip>
                           <Badge variant="outline" className="text-[10px] px-1.5 py-0 shrink-0">
