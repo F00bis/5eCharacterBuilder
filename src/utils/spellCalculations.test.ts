@@ -451,7 +451,7 @@ describe('spellCalculations', () => {
         defaultAbilityScores()
       )!;
 
-      const result = buildUpdatedSpells(spells, { spellId: 1, prepared: true }, entitlement);
+      const result = buildUpdatedSpells(spells, { spellName: 'Magic Missile', prepared: true }, entitlement);
 
       expect(result).toHaveLength(2);
       expect(result[0].prepared).toBe(true);
@@ -468,7 +468,7 @@ describe('spellCalculations', () => {
         defaultAbilityScores()
       )!;
 
-      const result = buildUpdatedSpells(spells, { spellId: 2, prepared: false }, entitlement);
+      const result = buildUpdatedSpells(spells, { spellName: 'Shield', prepared: false }, entitlement);
 
       expect(result).toHaveLength(2);
       expect(result[0].prepared).toBe(true);
@@ -484,14 +484,14 @@ describe('spellCalculations', () => {
         defaultAbilityScores()
       )!;
 
-      const result = buildUpdatedSpells(spells, { spellId: 1, prepared: true }, entitlement);
+      const result = buildUpdatedSpells(spells, { spellName: 'Magic Missile', prepared: true }, entitlement);
 
       expect(result).not.toBe(spells);
       expect(spells[0].prepared).toBe(false);
       expect(result[0].prepared).toBe(true);
     });
 
-    it('should not change spells when spellId does not match', () => {
+    it('should not change spells when spell name does not match', () => {
       const spells: CharacterSpell[] = [
         createMockCharacterSpell({ id: 1, name: 'Magic Missile', prepared: false }),
       ];
@@ -500,7 +500,7 @@ describe('spellCalculations', () => {
         defaultAbilityScores()
       )!;
 
-      const result = buildUpdatedSpells(spells, { spellId: 999, prepared: true }, entitlement);
+      const result = buildUpdatedSpells(spells, { spellName: 'Nonexistent Spell', prepared: true }, entitlement);
 
       expect(result[0].prepared).toBe(false);
     });

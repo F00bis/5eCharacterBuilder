@@ -51,7 +51,7 @@ export interface AvailableSpellResult {
 }
 
 export type SpellMutation = {
-  spellId: number;
+  spellName: string;
   prepared: boolean;
 };
 
@@ -367,7 +367,7 @@ export function buildUpdatedSpells(
   _entitlement: SpellEntitlement
 ): CharacterSpell[] {
   return currentSpells.map((spell) => {
-    if (spell.id === mutation.spellId) {
+    if (spell.name === mutation.spellName) {
       return { ...spell, prepared: mutation.prepared };
     }
     return spell;
