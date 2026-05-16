@@ -373,3 +373,19 @@ export function buildUpdatedSpells(
     return spell;
   });
 }
+
+export function groupSpellsByLevel(
+  spells: CharacterSpell[]
+): Map<number, CharacterSpell[]> {
+  const grouped = new Map<number, CharacterSpell[]>();
+  const sorted = [...spells].sort((a, b) => a.level - b.level);
+
+  for (const spell of sorted) {
+    if (!grouped.has(spell.level)) {
+      grouped.set(spell.level, []);
+    }
+    grouped.get(spell.level)?.push(spell);
+  }
+
+  return grouped;
+}
