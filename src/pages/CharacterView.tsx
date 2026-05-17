@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { AbilityScoresPanel } from '../components/AbilityScoresPanel';
 import { ActionsPanel } from '../components/ActionsPanel';
 import { CharacterHeader } from '../components/CharacterHeader';
@@ -10,13 +11,12 @@ import { SkillsPanel } from '../components/SkillsPanel';
 import { SpellsPanel } from '../components/SpellsPanel';
 import { useCharacter } from '../contexts/CharacterContext';
 import { CharacterProvider } from '../contexts/CharacterContextProvider';
-import { useState } from 'react';
 
 type RightPanelTab = 'features' | 'inventory' | 'spellbook';
 
 const TABS: { key: RightPanelTab; label: string }[] = [
   { key: 'features', label: 'Features' },
-  { key: 'inventory', label: 'Inv' },
+  { key: 'inventory', label: 'Inventory' },
   { key: 'spellbook', label: 'Spellbook' },
 ];
 

@@ -15,6 +15,15 @@ vi.mock('../components/SpellsPanel', () => ({
 }));
 
 function baseCharacter(overrides: Partial<Character> = {}): Character {
+  const { abilityScores: overrideAbilityScores, baseAbilityScores: overrideBaseAbilityScores, ...rest } = overrides;
+  const abilityScores = overrideAbilityScores ?? {
+    strength: 10,
+    dexterity: 10,
+    constitution: 10,
+    intelligence: 10,
+    wisdom: 10,
+    charisma: 10,
+  };
   return {
     id: 1,
     name: 'Test Hero',
@@ -22,22 +31,8 @@ function baseCharacter(overrides: Partial<Character> = {}): Character {
     background: 'Soldier',
     alignment: 'Neutral',
     classes: [{ className: 'Fighter', level: 5 }],
-    abilityScores: {
-      strength: 10,
-      dexterity: 10,
-      constitution: 10,
-      intelligence: 10,
-      wisdom: 10,
-      charisma: 10,
-    },
-    baseAbilityScores: {
-      strength: 10,
-      dexterity: 10,
-      constitution: 10,
-      intelligence: 10,
-      wisdom: 10,
-      charisma: 10,
-    },
+    abilityScores,
+    baseAbilityScores: overrideBaseAbilityScores ?? abilityScores,
     level: 5,
     xp: 3500,
     portrait: null,
@@ -69,7 +64,7 @@ function baseCharacter(overrides: Partial<Character> = {}): Character {
     toolProficiencies: [],
     raceChoices: {},
     backgroundChoices: {},
-    ...overrides,
+    ...rest,
   };
 }
 
