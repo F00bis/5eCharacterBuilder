@@ -1,9 +1,10 @@
 import { srdClasses } from '../data/srdClasses';
 import { srdSubclassSpells } from '../data/srdSubclassSpells';
 import { db, type SpellProgression } from '../db';
-import { getSpellsByClass } from '../db/spells';
 import { DEFAULT_SPELL_PROGRESSIONS } from '../db/spellProgressions';
+import { getSpellsByClass } from '../db/spells';
 import type { Ability, AbilityScores, Character, CharacterSpell, ClassEntry } from '../types';
+import type { DndSpell } from '../types/spells';
 import { getModifier } from './abilityScores';
 
 let spellProgressionCache: Map<string, SpellProgression> | null = null;
@@ -302,7 +303,6 @@ export function getMaxAccessibleSpellLevel(
 
 export async function getAvailableSpellsForCaster(
   character: Character,
-  _progressionData?: SpellProgression[]
 ): Promise<AvailableSpellResult> {
   const classes = character.classes;
   const subclass = character.subclass;
@@ -364,7 +364,6 @@ export async function getAvailableSpellsForCaster(
 export function buildUpdatedSpells(
   currentSpells: CharacterSpell[],
   mutation: SpellMutation,
-  _entitlement: SpellEntitlement
 ): CharacterSpell[] {
   return currentSpells.map((spell) => {
     if (spell.name === mutation.spellName) {
@@ -388,4 +387,27 @@ export function groupSpellsByLevel(
   }
 
   return grouped;
+}
+
+export interface AddSpellResult {
+  spell: DndSpell;
+  addedAt: Date;
+}
+
+export interface RemoveSpellParams {
+  spellId: number;
+  wasPrepared: boolean;
+}
+
+export function filterAvailableWizardSpells(
+  allWizardSpells: DndSpell[],
+  currentSpellbook: CharacterSpell[]
+): DndSpell[] {
+  const knownNames = new Set(currentSpellbook.map((spell) => spell.name));
+  return allWizardSpells
+    .filter((spell) => !knownNames.has(spell.name))
+    .sort((a, b) => {
+      if (a.level !== b.level) return a.level - b.level;
+      return a.name.localeCompare(b.name);
+    });
 }

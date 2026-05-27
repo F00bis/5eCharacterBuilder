@@ -8,11 +8,14 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from '@/components/ui/tooltip';
+import * as Tabs from '@radix-ui/react-tabs';
 import { Check } from 'lucide-react';
 import { useCharacter } from '../contexts/CharacterContext';
 import { useSpellPreparation, type DisplaySpell } from '../hooks/useSpellPreparation';
+import { useWizardSpellbook } from '../hooks/useWizardSpellbook';
 import { groupSpellsByLevel } from '../utils/spellCalculations';
 import { SpellTooltipDetail } from './SpellTooltipDetail';
+import { WizardSpellbookManager } from './WizardSpellbookManager';
 
 function getLevelLabel(level: number): string {
   if (level === 0) return 'Cantrips';
@@ -125,11 +128,109 @@ function SpellRowControls({ spell, canPrepare, onToggle }: SpellRowControlsProps
   return null;
 }
 
+function SpellList({
+  groupedSpells,
+  hasNoSpells,
+  canPrepare,
+  togglePrepare,
+}: {
+  groupedSpells: Map<number, DisplaySpell[]>;
+  hasNoSpells: boolean;
+  canPrepare: boolean;
+  togglePrepare: (spellName: string) => void;
+}) {
+  if (hasNoSpells) {
+    return (
+      <div className="text-xs text-slate-400 text-center py-4">
+        No spells recorded for this character.
+      </div>
+    );
+  }
+
+  return (
+    <div className="space-y-2">
+      {Array.from(groupedSpells.entries()).map(([level, spells]) => (
+        <div key={level}>
+          <div className="sticky top-0 bg-white z-10 flex items-center justify-between px-2 py-1 border-b border-slate-200">
+            <span className="text-xs font-bold text-slate-700">
+              {getLevelLabel(level)}
+            </span>
+            <Badge variant="outline" className="text-[10px] px-1.5 py-0">
+              {spells.length}
+            </Badge>
+          </div>
+          <ul className="space-y-0">
+            {spells.map((spell) => (
+              <li
+                key={spell.name}
+                role="listitem"
+                className="flex items-center justify-between px-2 h-8 hover:bg-slate-50"
+              >
+                <div className="flex items-center gap-2 min-w-0 flex-1">
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <span className="text-xs font-medium text-slate-700 truncate min-w-0 flex-1 cursor-default">
+                        {spell.name}
+                      </span>
+                    </TooltipTrigger>
+                    <TooltipContent side="top" className="w-80 max-w-80 p-0">
+                      <SpellTooltipDetail spell={spell} />
+                    </TooltipContent>
+                  </Tooltip>
+                  <Badge variant="outline" className="text-[10px] px-1.5 py-0 shrink-0">
+                    {spell.school}
+                  </Badge>
+                </div>
+                <div className="flex items-center gap-1.5 shrink-0 ml-2">
+                  {spell.concentration && (
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <div
+                          aria-label="Concentration"
+                          className="w-2 h-2 rounded-full bg-purple-500"
+                        />
+                      </TooltipTrigger>
+                      <TooltipContent side="top">
+                        <span className="text-xs">Concentration</span>
+                      </TooltipContent>
+                    </Tooltip>
+                  )}
+                  {spell.ritual && (
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <div
+                          aria-label="Ritual"
+                          className="w-2 h-2 rounded-full bg-blue-500"
+                        />
+                      </TooltipTrigger>
+                      <TooltipContent side="top">
+                        <span className="text-xs">Ritual</span>
+                      </TooltipContent>
+                    </Tooltip>
+                  )}
+                  <SpellRowControls
+                    spell={spell as DisplaySpell}
+                    canPrepare={canPrepare}
+                    onToggle={togglePrepare}
+                  />
+                </div>
+              </li>
+            ))}
+          </ul>
+        </div>
+      ))}
+    </div>
+  );
+}
+
 export function SpellsPanel() {
   const { character } = useCharacter();
   const preparation = useSpellPreparation();
+  const spellbook = useWizardSpellbook();
 
   if (!character) return null;
+
+  const isWizard = character.classes.some((c) => c.className === 'Wizard');
 
   if (preparation.isLoading) {
     return (
@@ -153,6 +254,27 @@ export function SpellsPanel() {
     ? preparation.displaySpells.size === 0
     : character.spells.length === 0;
 
+  const prepareContent = (
+    <>
+      {preparation.canPrepare && (
+        <QuotaBar
+          preparedCount={preparation.preparedCount}
+          preparedMax={preparation.preparedMax}
+          quotaColor={preparation.quotaColor}
+          warningMessage={preparation.warningMessage}
+        />
+      )}
+      <div className="flex-1 overflow-y-auto min-h-0">
+        <SpellList
+          groupedSpells={groupedSpells as Map<number, DisplaySpell[]>}
+          hasNoSpells={hasNoSpells}
+          canPrepare={preparation.canPrepare}
+          togglePrepare={preparation.togglePrepare}
+        />
+      </div>
+    </>
+  );
+
   return (
     <TooltipProvider delayDuration={200}>
       <Card className="w-full h-full p-2 flex flex-col">
@@ -160,95 +282,46 @@ export function SpellsPanel() {
           Spellbook
         </div>
 
-        {preparation.canPrepare && (
-          <QuotaBar
-            preparedCount={preparation.preparedCount}
-            preparedMax={preparation.preparedMax}
-            quotaColor={preparation.quotaColor}
-            warningMessage={preparation.warningMessage}
-          />
-        )}
-
-        <div className="flex-1 overflow-y-auto min-h-0">
-          {hasNoSpells ? (
-            <div className="text-xs text-slate-400 text-center py-4">
-              No spells recorded for this character.
-            </div>
-          ) : (
-            <div className="space-y-2">
-              {Array.from(groupedSpells.entries()).map(([level, spells]) => (
-                <div key={level}>
-                  <div className="sticky top-0 bg-white z-10 flex items-center justify-between px-2 py-1 border-b border-slate-200">
-                    <span className="text-xs font-bold text-slate-700">
-                      {getLevelLabel(level)}
-                    </span>
-                    <Badge variant="outline" className="text-[10px] px-1.5 py-0">
-                      {spells.length}
-                    </Badge>
-                  </div>
-                  <ul className="space-y-0">
-                    {spells.map((spell) => (
-                      <li
-                        key={spell.name}
-                        role="listitem"
-                        className="flex items-center justify-between px-2 h-8 hover:bg-slate-50"
-                      >
-                        <div className="flex items-center gap-2 min-w-0 flex-1">
-                          <Tooltip>
-                            <TooltipTrigger asChild>
-                              <span className="text-xs font-medium text-slate-700 truncate min-w-0 flex-1 cursor-default">
-                                {spell.name}
-                              </span>
-                            </TooltipTrigger>
-                            <TooltipContent side="top" className="w-80 max-w-80 p-0">
-                              <SpellTooltipDetail spell={spell} />
-                            </TooltipContent>
-                          </Tooltip>
-                          <Badge variant="outline" className="text-[10px] px-1.5 py-0 shrink-0">
-                            {spell.school}
-                          </Badge>
-                        </div>
-                        <div className="flex items-center gap-1.5 shrink-0 ml-2">
-                          {spell.concentration && (
-                            <Tooltip>
-                              <TooltipTrigger asChild>
-                                <div
-                                  aria-label="Concentration"
-                                  className="w-2 h-2 rounded-full bg-purple-500"
-                                />
-                              </TooltipTrigger>
-                              <TooltipContent side="top">
-                                <span className="text-xs">Concentration</span>
-                              </TooltipContent>
-                            </Tooltip>
-                          )}
-                          {spell.ritual && (
-                            <Tooltip>
-                              <TooltipTrigger asChild>
-                                <div
-                                  aria-label="Ritual"
-                                  className="w-2 h-2 rounded-full bg-blue-500"
-                                />
-                              </TooltipTrigger>
-                              <TooltipContent side="top">
-                                <span className="text-xs">Ritual</span>
-                              </TooltipContent>
-                            </Tooltip>
-                          )}
-                          <SpellRowControls
-                            spell={spell as DisplaySpell}
-                            canPrepare={preparation.canPrepare}
-                            onToggle={preparation.togglePrepare}
-                          />
-                        </div>
-                      </li>
-                    ))}
-                  </ul>
+        {isWizard ? (
+          <Tabs.Root defaultValue="prepare" className="flex flex-col flex-1 min-h-0">
+            <Tabs.List className="shrink-0 flex border-b border-slate-200 mb-2">
+              <Tabs.Trigger
+                value="prepare"
+                className="flex-1 text-xs font-medium py-1 border-b-2 border-transparent data-[state=active]:border-purple-700 data-[state=active]:text-purple-700 text-slate-600"
+              >
+                Prepare
+              </Tabs.Trigger>
+              <Tabs.Trigger
+                value="manage"
+                className="flex-1 text-xs font-medium py-1 border-b-2 border-transparent data-[state=active]:border-purple-700 data-[state=active]:text-purple-700 text-slate-600"
+              >
+                Manage Book
+              </Tabs.Trigger>
+            </Tabs.List>
+            <Tabs.Content value="prepare" className="flex flex-col flex-1 min-h-0 overflow-hidden">
+              {prepareContent}
+            </Tabs.Content>
+            <Tabs.Content value="manage" className="flex flex-col flex-1 min-h-0 overflow-hidden">
+              {spellbook.isLoading ? (
+                <div className="text-xs text-slate-400 text-center py-4">
+                  Loading spells...
                 </div>
-              ))}
-            </div>
-          )}
-        </div>
+              ) : (
+                <WizardSpellbookManager
+                  spellbookSpells={spellbook.spellbookSpells}
+                  spellbookCount={spellbook.spellbookCount}
+                  spellbookMax={spellbook.spellbookMax}
+                  nearCap={spellbook.nearCap}
+                  availableToAdd={spellbook.availableToAdd}
+                  onAdd={spellbook.addSpell}
+                  onRemove={spellbook.removeSpell}
+                />
+              )}
+            </Tabs.Content>
+          </Tabs.Root>
+        ) : (
+          prepareContent
+        )}
       </Card>
     </TooltipProvider>
   );

@@ -11,8 +11,20 @@ vi.mock('../hooks/useSpellPreparation', () => ({
   useSpellPreparation: vi.fn(),
 }));
 
+vi.mock('../hooks/useWizardSpellbook', () => ({
+  useWizardSpellbook: vi.fn(),
+}));
+
 import { useSpellPreparation } from '../hooks/useSpellPreparation';
+import { useWizardSpellbook } from '../hooks/useWizardSpellbook';
+
 const mockUseSpellPreparation = vi.mocked(useSpellPreparation);
+const mockUseWizardSpellbook = vi.mocked(useWizardSpellbook);
+
+// Provide a default mock so existing tests that render Wizard characters don't crash
+beforeEach(() => {
+  mockUseWizardSpellbook.mockReturnValue(createMockWizardSpellbookResult());
+});
 
 function renderWithCharacter(
   ui: React.ReactElement,
@@ -137,6 +149,23 @@ function createMockHookResult(overrides: Partial<UseSpellPreparationResult> = {}
     isLoading: false,
     togglePrepare: vi.fn(),
     warningMessage: null,
+    ...overrides,
+  };
+}
+
+function createMockWizardSpellbookResult(
+  overrides: Partial<ReturnType<typeof useWizardSpellbook>> = {}
+): ReturnType<typeof useWizardSpellbook> {
+  return {
+    isWizard: true,
+    spellbookSpells: [],
+    spellbookCount: 0,
+    spellbookMax: 9,
+    nearCap: false,
+    availableToAdd: [],
+    isLoading: false,
+    addSpell: vi.fn(),
+    removeSpell: vi.fn(),
     ...overrides,
   };
 }
@@ -501,5 +530,126 @@ describe('SpellsPanel toggle controls', () => {
     renderWithCharacter(<SpellsPanel />, character);
 
     expect(screen.getByText('Loading spells...')).toBeInTheDocument();
+  });
+});
+
+describe('SpellsPanel Wizard tabs', () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+  });
+
+  it('does not render tabs for non-Wizard characters', () => {
+    mockUseSpellPreparation.mockReturnValue(createMockHookResult({
+      canPrepare: true,
+      displaySpells: new Map([
+        [1, [createDisplaySpell({ name: 'Bless', level: 1, prepared: true, canToggle: true })]],
+      ]),
+      preparedCount: 1,
+      preparedMax: 4,
+      quotaColor: 'green',
+    }));
+    mockUseWizardSpellbook.mockReturnValue(createMockWizardSpellbookResult({ isWizard: false }));
+
+    const character = baseCharacter({ classes: [{ className: 'Cleric', level: 1 }] });
+    renderWithCharacter(<SpellsPanel />, character);
+
+    expect(screen.queryByRole('tab', { name: /Prepare/i })).not.toBeInTheDocument();
+    expect(screen.queryByRole('tab', { name: /Manage Book/i })).not.toBeInTheDocument();
+    expect(screen.getByText('Prepared 1 / 4')).toBeInTheDocument();
+  });
+
+  it('renders Prepare and Manage Book tabs for Wizard characters', () => {
+    mockUseSpellPreparation.mockReturnValue(createMockHookResult({
+      canPrepare: true,
+      displaySpells: new Map([
+        [1, [createDisplaySpell({ name: 'Magic Missile', level: 1, prepared: true, canToggle: true })]],
+      ]),
+      preparedCount: 1,
+      preparedMax: 8,
+      quotaColor: 'green',
+    }));
+    mockUseWizardSpellbook.mockReturnValue(createMockWizardSpellbookResult());
+
+    const character = baseCharacter({ classes: [{ className: 'Wizard', level: 5 }] });
+    renderWithCharacter(<SpellsPanel />, character);
+
+    expect(screen.getByRole('tab', { name: /Prepare/i })).toBeInTheDocument();
+    expect(screen.getByRole('tab', { name: /Manage Book/i })).toBeInTheDocument();
+  });
+
+  it('default active tab is Prepare for Wizard characters', () => {
+    mockUseSpellPreparation.mockReturnValue(createMockHookResult({
+      canPrepare: true,
+      displaySpells: new Map([
+        [1, [createDisplaySpell({ name: 'Magic Missile', level: 1, prepared: true, canToggle: true })]],
+      ]),
+      preparedCount: 1,
+      preparedMax: 8,
+      quotaColor: 'green',
+    }));
+    mockUseWizardSpellbook.mockReturnValue(createMockWizardSpellbookResult());
+
+    const character = baseCharacter({ classes: [{ className: 'Wizard', level: 5 }] });
+    renderWithCharacter(<SpellsPanel />, character);
+
+    const prepareTab = screen.getByRole('tab', { name: /Prepare/i });
+    expect(prepareTab).toHaveAttribute('data-state', 'active');
+  });
+
+  it('clicking Manage Book tab shows the spellbook manager', async () => {
+    const user = userEvent.setup();
+
+    mockUseSpellPreparation.mockReturnValue(createMockHookResult({
+      canPrepare: true,
+      displaySpells: new Map([
+        [1, [createDisplaySpell({ name: 'Magic Missile', level: 1, prepared: true, canToggle: true })]],
+      ]),
+      preparedCount: 1,
+      preparedMax: 8,
+      quotaColor: 'green',
+    }));
+    mockUseWizardSpellbook.mockReturnValue(createMockWizardSpellbookResult({
+      spellbookSpells: [createCharacterSpell({ id: 1, name: 'Shield', source: 'Class' })],
+      spellbookCount: 1,
+    }));
+
+    const character = baseCharacter({ classes: [{ className: 'Wizard', level: 5 }] });
+    renderWithCharacter(<SpellsPanel />, character);
+
+    const manageTab = screen.getByRole('tab', { name: /Manage Book/i });
+    await user.click(manageTab);
+
+    expect(screen.getByText('Shield')).toBeInTheDocument();
+  });
+
+  it('clicking Prepare tab shows the spell list after switching', async () => {
+    const user = userEvent.setup();
+
+    mockUseSpellPreparation.mockReturnValue(createMockHookResult({
+      canPrepare: true,
+      displaySpells: new Map([
+        [1, [createDisplaySpell({ name: 'Magic Missile', level: 1, prepared: true, canToggle: true })]],
+      ]),
+      preparedCount: 1,
+      preparedMax: 8,
+      quotaColor: 'green',
+    }));
+    mockUseWizardSpellbook.mockReturnValue(createMockWizardSpellbookResult({
+      spellbookSpells: [createCharacterSpell({ id: 1, name: 'Shield', source: 'Class' })],
+      spellbookCount: 1,
+    }));
+
+    const character = baseCharacter({ classes: [{ className: 'Wizard', level: 5 }] });
+    renderWithCharacter(<SpellsPanel />, character);
+
+    // Switch to Manage Book first
+    const manageTab = screen.getByRole('tab', { name: /Manage Book/i });
+    await user.click(manageTab);
+
+    // Then switch back to Prepare
+    const prepareTab = screen.getByRole('tab', { name: /Prepare/i });
+    await user.click(prepareTab);
+
+    expect(screen.getByText('Magic Missile')).toBeInTheDocument();
   });
 });

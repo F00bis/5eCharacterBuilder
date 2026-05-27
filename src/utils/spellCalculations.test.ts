@@ -4,6 +4,7 @@ import {
   getSpellListForClass,
   getAvailableSpellsForCaster,
   buildUpdatedSpells,
+  filterAvailableWizardSpells,
 } from './spellCalculations';
 import type { ClassEntry, Character, CharacterSpell, AbilityScores } from '../types';
 import type { DndSpell } from '../types/spells';
@@ -503,6 +504,63 @@ describe('spellCalculations', () => {
       const result = buildUpdatedSpells(spells, { spellName: 'Nonexistent Spell', prepared: true }, entitlement);
 
       expect(result[0].prepared).toBe(false);
+    });
+  });
+
+  describe('filterAvailableWizardSpells', () => {
+    it('returns spells not in current spellbook', () => {
+      const allSpells: DndSpell[] = [
+        createMockDndSpell({ name: 'Fireball', level: 3, classes: ['Wizard'] }),
+        createMockDndSpell({ name: 'Magic Missile', level: 1, classes: ['Wizard'] }),
+        createMockDndSpell({ name: 'Shield', level: 1, classes: ['Wizard'] }),
+      ];
+      const currentSpellbook: CharacterSpell[] = [
+        createMockCharacterSpell({ name: 'Magic Missile', prepared: true }),
+      ];
+
+      const result = filterAvailableWizardSpells(allSpells, currentSpellbook);
+
+      expect(result).toHaveLength(2);
+      expect(result.map((s: DndSpell) => s.name)).toContain('Fireball');
+      expect(result.map((s: DndSpell) => s.name)).toContain('Shield');
+      expect(result.map((s: DndSpell) => s.name)).not.toContain('Magic Missile');
+    });
+
+    it('returns empty array when all spells are already known', () => {
+      const allSpells: DndSpell[] = [
+        createMockDndSpell({ name: 'Magic Missile', level: 1, classes: ['Wizard'] }),
+        createMockDndSpell({ name: 'Shield', level: 1, classes: ['Wizard'] }),
+      ];
+      const currentSpellbook: CharacterSpell[] = [
+        createMockCharacterSpell({ name: 'Magic Missile', prepared: false }),
+        createMockCharacterSpell({ name: 'Shield', prepared: true }),
+      ];
+
+      const result = filterAvailableWizardSpells(allSpells, currentSpellbook);
+
+      expect(result).toHaveLength(0);
+    });
+
+    it('preserves sort order by level then name', () => {
+      const allSpells: DndSpell[] = [
+        createMockDndSpell({ name: 'Zone of Truth', level: 2, classes: ['Wizard'] }),
+        createMockDndSpell({ name: 'Acid Splash', level: 0, classes: ['Wizard'] }),
+        createMockDndSpell({ name: 'Burning Hands', level: 1, classes: ['Wizard'] }),
+        createMockDndSpell({ name: 'Alarm', level: 1, classes: ['Wizard'] }),
+        createMockDndSpell({ name: 'Fireball', level: 3, classes: ['Wizard'] }),
+      ];
+      const currentSpellbook: CharacterSpell[] = [];
+
+      const result = filterAvailableWizardSpells(allSpells, currentSpellbook);
+
+      expect(result.map((s: DndSpell) => s.name)).toEqual([
+        'Acid Splash',
+        'Alarm',
+        'Burning Hands',
+        'Zone of Truth',
+        'Fireball',
+      ]);
+      expect(result.map((s: DndSpell) => s.level)).toEqual([0, 1, 1, 2, 3]);
     });
   });
 });
