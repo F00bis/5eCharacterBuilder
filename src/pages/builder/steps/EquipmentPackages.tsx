@@ -382,7 +382,7 @@ export default function EquipmentPackages({ currentClassName, isLevel1 }: Equipm
                   {isSelected && hasSelectableItems && !isBundle && (
                     <div className="ml-6 mt-2">
                       <label className="text-sm text-slate-600 mb-1 block">
-                        Select {requiredCount} item{requiredCount > 1 ? 's' : ''}:
+                        {requiredCount > 1 ? `Select ${requiredCount} items:` : 'Select Item:'}
                       </label>
                       <MultiSelectAutocomplete
                         selectedItems={selectedItems}

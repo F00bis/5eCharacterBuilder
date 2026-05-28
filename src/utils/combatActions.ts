@@ -174,14 +174,8 @@ export async function getFeatureActions(character: Character): Promise<CombatAct
 
 export function getSpells(character: Character): CombatAction[] {
   const actions: CombatAction[] = [];
-  
+
   for (const spell of character.spells) {
-    const isPrepared = spell.prepared || character.classes.some(c => c.className === 'Sorcerer' || c.className === 'Bard');
-    
-    if (!isPrepared && character.classes.every(c => c.className !== 'Sorcerer' && c.className !== 'Bard')) {
-      continue;
-    }
-    
     const spellAttack = getSpellAttack(character);
     const spellcastingMod = spellAttack.attackBreakdown[0]?.value ?? 0;
     const spellDamage = buildSpellDamageDisplay(spell, spellcastingMod);

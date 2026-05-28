@@ -32,12 +32,13 @@ export default function CharacterCreator({ mode }: CharacterCreatorProps) {
   const showSpellSelection = useMemo(() => {
     const classes = state.draft.classes || [];
     const subclass = state.draft.subclass;
-    
+    const abilityScores = state.draft.abilityScores;
+
     if (classes.length === 0) return false;
-    
-    const entitlements = calculateSpellEntitlements(classes, subclass);
+
+    const entitlements = calculateSpellEntitlements(classes, abilityScores, subclass);
     return entitlements !== null;
-  }, [state.draft.classes, state.draft.subclass]);
+  }, [state.draft.classes, state.draft.subclass, state.draft.abilityScores]);
 
   const showFeatsAsi = useMemo(() => {
     const entitlements = calculateFeatEntitlements(state.draft, mode, asiLevelsByClass);

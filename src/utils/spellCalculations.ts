@@ -2,7 +2,10 @@ import { srdClasses } from '../data/srdClasses';
 import { srdSubclassSpells } from '../data/srdSubclassSpells';
 import { db, type SpellProgression } from '../db';
 import { DEFAULT_SPELL_PROGRESSIONS } from '../db/spellProgressions';
-import type { Ability, ClassEntry } from '../types';
+import { getSpellsByClass } from '../db/spells';
+import type { Ability, AbilityScores, Character, CharacterSpell, ClassEntry } from '../types';
+import type { DndSpell } from '../types/spells';
+import { getModifier } from './abilityScores';
 
 let spellProgressionCache: Map<string, SpellProgression> | null = null;
 
@@ -39,6 +42,19 @@ export interface SpellEntitlement {
     spellList: string;
   };
 }
+
+export interface AvailableSpellResult {
+  availableSpells: CharacterSpell[];
+  spellbook: CharacterSpell[];
+  preparedSpellsMax: number;
+  canPrepare: boolean;
+  spellcastingAbility: Ability;
+}
+
+export type SpellMutation = {
+  spellName: string;
+  prepared: boolean;
+};
 
 const WARLOCK_PACT_SLOTS = [1, 1, 2, 2, 2, 2, 2, 2, 2, 2, 3, 3, 3, 3, 3, 4, 4, 4, 4, 4];
 const WARLOCK_PACT_LEVEL = [1, 1, 1, 1, 2, 2, 2, 2, 3, 3, 4, 4, 4, 4, 4, 5, 5, 5, 5, 5];
@@ -102,6 +118,7 @@ function getSubclassSpellData(subclassName: string, totalLevel: number): { cantr
 
 export function calculateSpellEntitlements(
   classes: ClassEntry[],
+  abilityScores: AbilityScores,
   subclass?: string,
 ): SpellEntitlement | null {
   if (classes.length === 0) {
@@ -164,9 +181,10 @@ export function calculateSpellEntitlements(
         const levelIndex = Math.min(primarySpellcastingLevel - 1, 19);
         cantripsKnown = classData.cantrips[levelIndex] || 0;
         spellsKnown = classData.spellsKnown[levelIndex] || 0;
-        canPrepare = classData.spellPrepType === 'prepared';
+        canPrepare = classData.spellPrepType === 'prepared' || primarySpellcastingClass === 'Wizard';
         if (canPrepare) {
-          preparedSpellsMax = primarySpellcastingLevel + (spellcastingAbility === 'charisma' || spellcastingAbility === 'wisdom' ? 1 : 0);
+          const abilityModifier = getModifier(abilityScores[spellcastingAbility]);
+          preparedSpellsMax = primarySpellcastingLevel + abilityModifier;
         }
       }
     }
@@ -281,4 +299,115 @@ export function getMaxAccessibleSpellLevel(
   }
 
   return null;
+}
+
+export async function getAvailableSpellsForCaster(
+  character: Character,
+): Promise<AvailableSpellResult> {
+  const classes = character.classes;
+  const subclass = character.subclass;
+
+  const entitlement = calculateSpellEntitlements(classes, character.abilityScores, subclass);
+  if (!entitlement) {
+    return {
+      availableSpells: [],
+      spellbook: [],
+      preparedSpellsMax: 0,
+      canPrepare: false,
+      spellcastingAbility: 'intelligence',
+    };
+  }
+
+  const primarySpellcastingClass = classes.find((entry) => {
+    const classData = getClassSpellData(entry.className);
+    return classData !== null;
+  })?.className ?? '';
+
+  if (primarySpellcastingClass === 'Wizard') {
+    return {
+      availableSpells: character.spells,
+      spellbook: character.spells,
+      preparedSpellsMax: entitlement.preparedSpellsMax ?? 0,
+      canPrepare: true,
+      spellcastingAbility: entitlement.spellcastingAbility,
+    };
+  }
+
+  const classLists = getSpellListForClass(primarySpellcastingClass, subclass);
+  const allClassSpells: CharacterSpell[] = [];
+
+  for (const listClass of classLists) {
+    const spells = await getSpellsByClass(listClass);
+    for (const spell of spells) {
+      const existing = character.spells.find((s) => s.name === spell.name);
+      if (existing) {
+        allClassSpells.push(existing);
+      } else {
+        allClassSpells.push({
+          ...spell,
+          prepared: false,
+          source: primarySpellcastingClass,
+        });
+      }
+    }
+  }
+
+  return {
+    availableSpells: allClassSpells,
+    spellbook: [],
+    preparedSpellsMax: entitlement.preparedSpellsMax ?? 0,
+    canPrepare: true,
+    spellcastingAbility: entitlement.spellcastingAbility,
+  };
+}
+
+export function buildUpdatedSpells(
+  currentSpells: CharacterSpell[],
+  mutation: SpellMutation,
+): CharacterSpell[] {
+  return currentSpells.map((spell) => {
+    if (spell.name === mutation.spellName) {
+      return { ...spell, prepared: mutation.prepared };
+    }
+    return spell;
+  });
+}
+
+export function groupSpellsByLevel(
+  spells: CharacterSpell[]
+): Map<number, CharacterSpell[]> {
+  const grouped = new Map<number, CharacterSpell[]>();
+  const sorted = [...spells].sort((a, b) => a.level - b.level);
+
+  for (const spell of sorted) {
+    if (!grouped.has(spell.level)) {
+      grouped.set(spell.level, []);
+    }
+    grouped.get(spell.level)?.push(spell);
+  }
+
+  return grouped;
+}
+
+export interface AddSpellResult {
+  spell: DndSpell;
+  addedAt: Date;
+}
+
+export interface RemoveSpellParams {
+  spellId: number;
+  wasPrepared: boolean;
+}
+
+export function filterAvailableWizardSpells(
+  allWizardSpells: DndSpell[],
+  currentSpellbook: CharacterSpell[]
+): DndSpell[] {
+  const knownNames = new Set(currentSpellbook.map((spell) => spell.name));
+  return allWizardSpells
+    .filter((spell) => !knownNames.has(spell.name))
+    .sort((a, b) => {
+      if (a.level !== b.level) return a.level - b.level;
+      return a.name.localeCompare(b.name);
+    });
 }
