@@ -1,4 +1,4 @@
-import { render, screen } from '@testing-library/react';
+import { fireEvent, render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { describe, expect, it, vi } from 'vitest';
 import { CharacterContext, type CharacterContextValue } from '../contexts/CharacterContext';
@@ -651,5 +651,457 @@ describe('SpellsPanel Wizard tabs', () => {
     await user.click(prepareTab);
 
     expect(screen.getByText('Magic Missile')).toBeInTheDocument();
+  });
+});
+
+describe('SpellsPanel spell detail dialog', () => {
+  beforeEach(() => {
+    mockUseWizardSpellbook.mockReturnValue(createMockWizardSpellbookResult({ isWizard: false }));
+  });
+
+  it('clicking a spell row body opens the detail dialog', async () => {
+    const user = userEvent.setup();
+    const spell = createDisplaySpell({
+      name: 'Fireball',
+      level: 3,
+      school: 'Evocation',
+      castingTime: '1 action',
+      range: '150 feet',
+      components: 'V, S, M',
+      duration: 'Instantaneous',
+      description: 'A bright streak flashes from your pointing finger.',
+    });
+
+    mockUseSpellPreparation.mockReturnValue(createMockHookResult({
+      canPrepare: true,
+      displaySpells: new Map([[3, [spell]]]),
+      preparedCount: 0,
+      preparedMax: 8,
+      quotaColor: 'green',
+    }));
+
+    const character = baseCharacter({ classes: [{ className: 'Wizard', level: 5 }] });
+    renderWithCharacter(<SpellsPanel />, character);
+
+    const row = screen.getAllByText('Fireball')[0];
+    await user.click(row);
+
+    expect(screen.getByRole('dialog')).toBeInTheDocument();
+    expect(screen.getByRole('dialog')).toHaveTextContent('Fireball');
+  });
+
+  it('dialog title is spell name only', async () => {
+    const user = userEvent.setup();
+    const spell = createDisplaySpell({ name: 'Fireball', level: 3, school: 'Evocation' });
+
+    mockUseSpellPreparation.mockReturnValue(createMockHookResult({
+      canPrepare: true,
+      displaySpells: new Map([[3, [spell]]]),
+      preparedCount: 0,
+      preparedMax: 8,
+      quotaColor: 'green',
+    }));
+
+    const character = baseCharacter({ classes: [{ className: 'Wizard', level: 5 }] });
+    renderWithCharacter(<SpellsPanel />, character);
+
+    await user.click(screen.getByText('Fireball'));
+
+    const dialog = screen.getByRole('dialog');
+    expect(dialog).toHaveTextContent('Fireball');
+    // Title should NOT include level/school — those belong in the body
+    const title = screen.getByRole('heading', { level: 2 });
+    expect(title).toHaveTextContent('Fireball');
+    expect(title).not.toHaveTextContent('3rd Level');
+    expect(title).not.toHaveTextContent('Evocation');
+  });
+
+  it('dialog shows casting time, range, components, duration', async () => {
+    const user = userEvent.setup();
+    const spell = createDisplaySpell({
+      name: 'Fireball',
+      level: 3,
+      castingTime: '1 action',
+      range: '150 feet',
+      components: 'V, S, M',
+      duration: 'Instantaneous',
+    });
+
+    mockUseSpellPreparation.mockReturnValue(createMockHookResult({
+      canPrepare: true,
+      displaySpells: new Map([[3, [spell]]]),
+      preparedCount: 0,
+      preparedMax: 8,
+      quotaColor: 'green',
+    }));
+
+    const character = baseCharacter({ classes: [{ className: 'Wizard', level: 5 }] });
+    renderWithCharacter(<SpellsPanel />, character);
+
+    await user.click(screen.getByText('Fireball'));
+
+    const dialog = screen.getByRole('dialog');
+    expect(dialog).toHaveTextContent('1 action');
+    expect(dialog).toHaveTextContent('150 feet');
+    expect(dialog).toHaveTextContent('V, S, M');
+    expect(dialog).toHaveTextContent('Instantaneous');
+  });
+
+  it('dialog shows description text', async () => {
+    const user = userEvent.setup();
+    const spell = createDisplaySpell({
+      name: 'Fireball',
+      level: 3,
+      description: 'A bright streak flashes from your pointing finger.',
+    });
+
+    mockUseSpellPreparation.mockReturnValue(createMockHookResult({
+      canPrepare: true,
+      displaySpells: new Map([[3, [spell]]]),
+      preparedCount: 0,
+      preparedMax: 8,
+      quotaColor: 'green',
+    }));
+
+    const character = baseCharacter({ classes: [{ className: 'Wizard', level: 5 }] });
+    renderWithCharacter(<SpellsPanel />, character);
+
+    await user.click(screen.getByText('Fireball'));
+
+    expect(screen.getByRole('dialog')).toHaveTextContent('A bright streak flashes from your pointing finger.');
+  });
+
+  it('dialog can be dismissed with close button', async () => {
+    const user = userEvent.setup();
+    const spell = createDisplaySpell({ name: 'Fireball', level: 3 });
+
+    mockUseSpellPreparation.mockReturnValue(createMockHookResult({
+      canPrepare: true,
+      displaySpells: new Map([[3, [spell]]]),
+      preparedCount: 0,
+      preparedMax: 8,
+      quotaColor: 'green',
+    }));
+
+    const character = baseCharacter({ classes: [{ className: 'Wizard', level: 5 }] });
+    renderWithCharacter(<SpellsPanel />, character);
+
+    await user.click(screen.getByText('Fireball'));
+    expect(screen.getByRole('dialog')).toBeInTheDocument();
+
+    const closeButton = screen.getByRole('button', { name: /close/i });
+    await user.click(closeButton);
+
+    expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
+  });
+
+  it('clicking the toggle control does NOT open the dialog', async () => {
+    const user = userEvent.setup();
+    const spell = createDisplaySpell({ name: 'Fireball', level: 3, canToggle: true });
+
+    mockUseSpellPreparation.mockReturnValue(createMockHookResult({
+      canPrepare: true,
+      displaySpells: new Map([[3, [spell]]]),
+      preparedCount: 0,
+      preparedMax: 8,
+      quotaColor: 'green',
+    }));
+
+    const character = baseCharacter({ classes: [{ className: 'Wizard', level: 5 }] });
+    renderWithCharacter(<SpellsPanel />, character);
+
+    const toggle = screen.getByRole('switch', { name: /Prepare Fireball/i });
+    await user.click(toggle);
+
+    expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
+  });
+});
+
+describe('SpellsPanel keyboard navigation', () => {
+  beforeEach(() => {
+    mockUseWizardSpellbook.mockReturnValue(createMockWizardSpellbookResult({ isWizard: false }));
+  });
+
+  it('Arrow Down moves focus from row N to row N+1', () => {
+    const spells = [
+      createDisplaySpell({ name: 'Spell A', level: 1 }),
+      createDisplaySpell({ name: 'Spell B', level: 1 }),
+    ];
+
+    mockUseSpellPreparation.mockReturnValue(createMockHookResult({
+      canPrepare: true,
+      displaySpells: new Map([[1, spells]]),
+      preparedCount: 0,
+      preparedMax: 8,
+      quotaColor: 'green',
+    }));
+
+    const character = baseCharacter({ classes: [{ className: 'Wizard', level: 5 }] });
+    renderWithCharacter(<SpellsPanel />, character);
+
+    const rows = screen.getAllByRole('listitem');
+    rows[0].focus();
+    fireEvent.keyDown(rows[0], { key: 'ArrowDown' });
+
+    expect(document.activeElement).toBe(rows[1]);
+  });
+
+  it('Arrow Up moves focus from row N to row N-1', () => {
+    const spells = [
+      createDisplaySpell({ name: 'Spell A', level: 1 }),
+      createDisplaySpell({ name: 'Spell B', level: 1 }),
+    ];
+
+    mockUseSpellPreparation.mockReturnValue(createMockHookResult({
+      canPrepare: true,
+      displaySpells: new Map([[1, spells]]),
+      preparedCount: 0,
+      preparedMax: 8,
+      quotaColor: 'green',
+    }));
+
+    const character = baseCharacter({ classes: [{ className: 'Wizard', level: 5 }] });
+    renderWithCharacter(<SpellsPanel />, character);
+
+    const rows = screen.getAllByRole('listitem');
+    rows[1].focus();
+    fireEvent.keyDown(rows[1], { key: 'ArrowUp' });
+
+    expect(document.activeElement).toBe(rows[0]);
+  });
+
+  it('Arrow Down does nothing on last row', () => {
+    const spells = [
+      createDisplaySpell({ name: 'Spell A', level: 1 }),
+      createDisplaySpell({ name: 'Spell B', level: 1 }),
+    ];
+
+    mockUseSpellPreparation.mockReturnValue(createMockHookResult({
+      canPrepare: true,
+      displaySpells: new Map([[1, spells]]),
+      preparedCount: 0,
+      preparedMax: 8,
+      quotaColor: 'green',
+    }));
+
+    const character = baseCharacter({ classes: [{ className: 'Wizard', level: 5 }] });
+    renderWithCharacter(<SpellsPanel />, character);
+
+    const rows = screen.getAllByRole('listitem');
+    rows[1].focus();
+    fireEvent.keyDown(rows[1], { key: 'ArrowDown' });
+
+    expect(document.activeElement).toBe(rows[1]);
+  });
+
+  it('Arrow Up does nothing on first row', () => {
+    const spells = [
+      createDisplaySpell({ name: 'Spell A', level: 1 }),
+      createDisplaySpell({ name: 'Spell B', level: 1 }),
+    ];
+
+    mockUseSpellPreparation.mockReturnValue(createMockHookResult({
+      canPrepare: true,
+      displaySpells: new Map([[1, spells]]),
+      preparedCount: 0,
+      preparedMax: 8,
+      quotaColor: 'green',
+    }));
+
+    const character = baseCharacter({ classes: [{ className: 'Wizard', level: 5 }] });
+    renderWithCharacter(<SpellsPanel />, character);
+
+    const rows = screen.getAllByRole('listitem');
+    rows[0].focus();
+    fireEvent.keyDown(rows[0], { key: 'ArrowUp' });
+
+    expect(document.activeElement).toBe(rows[0]);
+  });
+
+  it('Arrow Right jumps to first spell of next level group', () => {
+    const spells = [
+      createDisplaySpell({ name: 'Cantrip A', level: 0 }),
+      createDisplaySpell({ name: 'Spell A', level: 1 }),
+    ];
+
+    mockUseSpellPreparation.mockReturnValue(createMockHookResult({
+      canPrepare: true,
+      displaySpells: new Map([
+        [0, [spells[0]]],
+        [1, [spells[1]]],
+      ]),
+      preparedCount: 0,
+      preparedMax: 8,
+      quotaColor: 'green',
+    }));
+
+    const character = baseCharacter({ classes: [{ className: 'Wizard', level: 5 }] });
+    renderWithCharacter(<SpellsPanel />, character);
+
+    const rows = screen.getAllByRole('listitem');
+    rows[0].focus();
+    fireEvent.keyDown(rows[0], { key: 'ArrowRight' });
+
+    expect(document.activeElement).toBe(rows[1]);
+  });
+
+  it('Arrow Left jumps to first spell of previous level group', () => {
+    const spells = [
+      createDisplaySpell({ name: 'Cantrip A', level: 0 }),
+      createDisplaySpell({ name: 'Spell A', level: 1 }),
+    ];
+
+    mockUseSpellPreparation.mockReturnValue(createMockHookResult({
+      canPrepare: true,
+      displaySpells: new Map([
+        [0, [spells[0]]],
+        [1, [spells[1]]],
+      ]),
+      preparedCount: 0,
+      preparedMax: 8,
+      quotaColor: 'green',
+    }));
+
+    const character = baseCharacter({ classes: [{ className: 'Wizard', level: 5 }] });
+    renderWithCharacter(<SpellsPanel />, character);
+
+    const rows = screen.getAllByRole('listitem');
+    rows[1].focus();
+    fireEvent.keyDown(rows[1], { key: 'ArrowLeft' });
+
+    expect(document.activeElement).toBe(rows[0]);
+  });
+
+  it('Space toggles prepare on focused row', () => {
+    const togglePrepare = vi.fn();
+    const spells = [
+      createDisplaySpell({ name: 'Spell A', level: 1, canToggle: true }),
+    ];
+
+    mockUseSpellPreparation.mockReturnValue(createMockHookResult({
+      canPrepare: true,
+      displaySpells: new Map([[1, spells]]),
+      preparedCount: 0,
+      preparedMax: 8,
+      quotaColor: 'green',
+      togglePrepare,
+    }));
+
+    const character = baseCharacter({ classes: [{ className: 'Wizard', level: 5 }] });
+    renderWithCharacter(<SpellsPanel />, character);
+
+    const rows = screen.getAllByRole('listitem');
+    rows[0].focus();
+    fireEvent.keyDown(rows[0], { key: ' ' });
+
+    expect(togglePrepare).toHaveBeenCalledWith('Spell A');
+  });
+
+  it('Enter opens detail dialog when row body is focused', async () => {
+    const spells = [
+      createDisplaySpell({ name: 'Spell A', level: 1 }),
+    ];
+
+    mockUseSpellPreparation.mockReturnValue(createMockHookResult({
+      canPrepare: true,
+      displaySpells: new Map([[1, spells]]),
+      preparedCount: 0,
+      preparedMax: 8,
+      quotaColor: 'green',
+    }));
+
+    const character = baseCharacter({ classes: [{ className: 'Wizard', level: 5 }] });
+    renderWithCharacter(<SpellsPanel />, character);
+
+    const rows = screen.getAllByRole('listitem');
+    rows[0].focus();
+    fireEvent.keyDown(rows[0], { key: 'Enter' });
+
+    expect(screen.getByRole('dialog')).toBeInTheDocument();
+  });
+
+  it('first row has tabIndex=0, all others have tabIndex=-1', () => {
+    const spells = [
+      createDisplaySpell({ name: 'Spell A', level: 1 }),
+      createDisplaySpell({ name: 'Spell B', level: 1 }),
+    ];
+
+    mockUseSpellPreparation.mockReturnValue(createMockHookResult({
+      canPrepare: true,
+      displaySpells: new Map([[1, spells]]),
+      preparedCount: 0,
+      preparedMax: 8,
+      quotaColor: 'green',
+    }));
+
+    const character = baseCharacter({ classes: [{ className: 'Wizard', level: 5 }] });
+    renderWithCharacter(<SpellsPanel />, character);
+
+    const rows = screen.getAllByRole('listitem');
+    expect(rows[0]).toHaveAttribute('tabIndex', '0');
+    expect(rows[1]).toHaveAttribute('tabIndex', '-1');
+  });
+});
+
+describe('SpellsPanel visual states and accessibility', () => {
+  beforeEach(() => {
+    mockUseWizardSpellbook.mockReturnValue(createMockWizardSpellbookResult({ isWizard: false }));
+  });
+
+  it('spell toggle has aria-label containing spell name', () => {
+    const spells = [
+      createDisplaySpell({ name: 'Magic Missile', level: 1, canToggle: true }),
+    ];
+
+    mockUseSpellPreparation.mockReturnValue(createMockHookResult({
+      canPrepare: true,
+      displaySpells: new Map([[1, spells]]),
+      preparedCount: 0,
+      preparedMax: 8,
+      quotaColor: 'green',
+    }));
+
+    const character = baseCharacter({ classes: [{ className: 'Wizard', level: 5 }] });
+    renderWithCharacter(<SpellsPanel />, character);
+
+    expect(screen.getByRole('switch', { name: 'Prepare Magic Missile' })).toBeInTheDocument();
+  });
+
+  it('concentration indicator has aria-label="Concentration"', () => {
+    const spells = [
+      createDisplaySpell({ name: 'Hold Person', level: 2, concentration: true }),
+    ];
+
+    mockUseSpellPreparation.mockReturnValue(createMockHookResult({
+      canPrepare: true,
+      displaySpells: new Map([[2, spells]]),
+      preparedCount: 0,
+      preparedMax: 8,
+      quotaColor: 'green',
+    }));
+
+    const character = baseCharacter({ classes: [{ className: 'Wizard', level: 5 }] });
+    renderWithCharacter(<SpellsPanel />, character);
+
+    expect(screen.getByLabelText('Concentration')).toBeInTheDocument();
+  });
+
+  it('ritual indicator has aria-label="Ritual"', () => {
+    const spells = [
+      createDisplaySpell({ name: 'Detect Magic', level: 1, ritual: true }),
+    ];
+
+    mockUseSpellPreparation.mockReturnValue(createMockHookResult({
+      canPrepare: true,
+      displaySpells: new Map([[1, spells]]),
+      preparedCount: 0,
+      preparedMax: 8,
+      quotaColor: 'green',
+    }));
+
+    const character = baseCharacter({ classes: [{ className: 'Wizard', level: 5 }] });
+    renderWithCharacter(<SpellsPanel />, character);
+
+    expect(screen.getByLabelText('Ritual')).toBeInTheDocument();
   });
 });

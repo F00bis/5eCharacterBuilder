@@ -799,9 +799,9 @@ describe('CharacterView tabbed right column layout', () => {
     mockQueryResult = baseCharacter();
     renderCharacterView();
 
-    expect(screen.getByRole('button', { name: 'Features' })).toBeInTheDocument();
-    expect(screen.getByRole('button', { name: 'Inv' })).toBeInTheDocument();
-    expect(screen.getByRole('button', { name: 'Spellbook' })).toBeInTheDocument();
+    expect(screen.getByRole('tab', { name: 'Features' })).toBeInTheDocument();
+    expect(screen.getByRole('tab', { name: 'Inventory' })).toBeInTheDocument();
+    expect(screen.getByRole('tab', { name: 'Spellbook' })).toBeInTheDocument();
   });
 
   it('only mounts one panel at a time', () => {
@@ -810,8 +810,8 @@ describe('CharacterView tabbed right column layout', () => {
 
     // Default active tab is Features; FeaturesPanel heading + tab button = 2 matches
     expect(screen.queryAllByText('Features')).toHaveLength(2);
-    // InventoryPanel root heading (tab says 'Inv')
-    expect(screen.queryByText('Inventory')).not.toBeInTheDocument();
+    // InventoryPanel root heading
+    expect(screen.queryByRole('heading', { name: 'Inventory' })).not.toBeInTheDocument();
     // Mocked SpellsPanel
     expect(screen.queryByTestId('spells-panel')).not.toBeInTheDocument();
   });
@@ -820,9 +820,9 @@ describe('CharacterView tabbed right column layout', () => {
     mockQueryResult = baseCharacter();
     renderCharacterView();
 
-    fireEvent.click(screen.getByRole('button', { name: 'Inv' }));
+    fireEvent.click(screen.getByRole('tab', { name: 'Inventory' }));
 
-    expect(screen.getByText('Inventory')).toBeInTheDocument();
+    expect(screen.getByRole('heading', { name: 'Inventory' })).toBeInTheDocument();
     // Features tab button remains; panel heading is gone
     expect(screen.queryAllByText('Features')).toHaveLength(1);
     expect(screen.queryByTestId('spells-panel')).not.toBeInTheDocument();
@@ -832,24 +832,24 @@ describe('CharacterView tabbed right column layout', () => {
     mockQueryResult = baseCharacter();
     renderCharacterView();
 
-    fireEvent.click(screen.getByRole('button', { name: 'Spellbook' }));
+    fireEvent.click(screen.getByRole('tab', { name: 'Spellbook' }));
 
     expect(screen.getByTestId('spells-panel')).toBeInTheDocument();
     // Features tab button remains; panel heading is gone
     expect(screen.queryAllByText('Features')).toHaveLength(1);
-    expect(screen.queryByText('Inventory')).not.toBeInTheDocument();
+    expect(screen.queryByRole('heading', { name: 'Inventory' })).not.toBeInTheDocument();
   });
 
   it('clicking Features tab renders FeaturesPanel', () => {
     mockQueryResult = baseCharacter();
     renderCharacterView();
 
-    fireEvent.click(screen.getByRole('button', { name: 'Inv' }));
-    fireEvent.click(screen.getByRole('button', { name: 'Features' }));
+    fireEvent.click(screen.getByRole('tab', { name: 'Inventory' }));
+    fireEvent.click(screen.getByRole('tab', { name: 'Features' }));
 
     // Features tab button + panel heading = 2 matches
     expect(screen.queryAllByText('Features')).toHaveLength(2);
-    expect(screen.queryByText('Inventory')).not.toBeInTheDocument();
+    expect(screen.queryByRole('heading', { name: 'Inventory' })).not.toBeInTheDocument();
     expect(screen.queryByTestId('spells-panel')).not.toBeInTheDocument();
   });
 
@@ -857,9 +857,9 @@ describe('CharacterView tabbed right column layout', () => {
     mockQueryResult = baseCharacter();
     renderCharacterView();
 
-    const featuresTab = screen.getByRole('button', { name: 'Features' });
-    const invTab = screen.getByRole('button', { name: 'Inv' });
-    const spellbookTab = screen.getByRole('button', { name: 'Spellbook' });
+    const featuresTab = screen.getByRole('tab', { name: 'Features' });
+    const invTab = screen.getByRole('tab', { name: 'Inventory' });
+    const spellbookTab = screen.getByRole('tab', { name: 'Spellbook' });
 
     // Features is active by default
     expect(featuresTab).toHaveClass('bg-slate-700');
@@ -875,5 +875,125 @@ describe('CharacterView tabbed right column layout', () => {
     expect(invTab).toHaveClass('text-white');
     expect(featuresTab).not.toHaveClass('bg-slate-700');
     expect(featuresTab).not.toHaveClass('text-white');
+  });
+});
+
+describe('CharacterView tab persistence', () => {
+  beforeEach(() => {
+    localStorage.clear();
+    mockQueryResult = undefined;
+  });
+
+  afterEach(() => {
+    localStorage.clear();
+    mockQueryResult = undefined;
+  });
+
+  it('defaults to features when no stored value', () => {
+    mockQueryResult = baseCharacter();
+    renderCharacterView();
+
+    // Features active: tab button + panel heading = 2 matches
+    expect(screen.queryAllByText('Features')).toHaveLength(2);
+    // Inventory inactive: only tab button = 1 match
+    expect(screen.queryAllByText('Inventory')).toHaveLength(1);
+  });
+
+  it('reads stored tab on mount — stored "spellbook" activates Spellbook', () => {
+    mockQueryResult = baseCharacter({ id: 1 });
+    localStorage.setItem('char-tabs-1', 'spellbook');
+    renderCharacterView();
+
+    expect(screen.getByTestId('spells-panel')).toBeInTheDocument();
+    // Features inactive: only tab button = 1 match
+    expect(screen.queryAllByText('Features')).toHaveLength(1);
+  });
+
+  it('reads stored tab on mount — stored "inventory" activates Inventory', () => {
+    mockQueryResult = baseCharacter({ id: 1 });
+    localStorage.setItem('char-tabs-1', 'inventory');
+    renderCharacterView();
+
+    // Inventory active: tab button + panel heading = 2 matches
+    expect(screen.queryAllByText('Inventory')).toHaveLength(2);
+    // Features inactive: only tab button = 1 match
+    expect(screen.queryAllByText('Features')).toHaveLength(1);
+  });
+
+  it('writes tab key to localStorage when tab is changed', () => {
+    mockQueryResult = baseCharacter({ id: 1 });
+    renderCharacterView();
+
+    fireEvent.click(screen.getByRole('tab', { name: 'Inventory' }));
+
+    expect(localStorage.getItem('char-tabs-1')).toBe('inventory');
+  });
+
+  it('keys storage by character.id to avoid cross-character pollution', () => {
+    mockQueryResult = baseCharacter({ id: 2 });
+    localStorage.setItem('char-tabs-1', 'spellbook');
+    renderCharacterView();
+
+    // Character 2 should default to features, not use character 1's stored tab
+    expect(screen.queryAllByText('Features')).toHaveLength(2);
+    expect(screen.queryByTestId('spells-panel')).not.toBeInTheDocument();
+  });
+
+  it('ignores invalid stored values and defaults to features', () => {
+    mockQueryResult = baseCharacter({ id: 1 });
+    localStorage.setItem('char-tabs-1', 'invalid-tab');
+    renderCharacterView();
+
+    // Features active: tab button + panel heading = 2 matches
+    expect(screen.queryAllByText('Features')).toHaveLength(2);
+  });
+});
+
+describe('CharacterView right-column loading state', () => {
+  afterEach(() => {
+    mockQueryResult = undefined;
+  });
+
+  it('shows skeleton in right column when isLoading is true, not the tab bar', () => {
+    mockQueryResult = undefined;
+    renderCharacterView();
+
+    expect(screen.getByLabelText('Loading character panel')).toBeInTheDocument();
+    expect(screen.queryByRole('tablist')).not.toBeInTheDocument();
+  });
+
+  it('shows tab bar when isLoading is false', () => {
+    mockQueryResult = baseCharacter();
+    renderCharacterView();
+
+    expect(screen.queryByLabelText('Loading character panel')).not.toBeInTheDocument();
+    expect(screen.getByRole('tablist')).toBeInTheDocument();
+  });
+});
+
+describe('CharacterView tab ARIA roles', () => {
+  afterEach(() => {
+    mockQueryResult = undefined;
+  });
+
+  it('tab list has role="tablist"', () => {
+    mockQueryResult = baseCharacter();
+    renderCharacterView();
+
+    expect(screen.getByRole('tablist')).toBeInTheDocument();
+  });
+
+  it('each tab button has role="tab" and aria-selected', () => {
+    mockQueryResult = baseCharacter();
+    renderCharacterView();
+
+    const featuresTab = screen.getByRole('tab', { name: 'Features' });
+    expect(featuresTab).toHaveAttribute('aria-selected', 'true');
+
+    const invTab = screen.getByRole('tab', { name: 'Inventory' });
+    expect(invTab).toHaveAttribute('aria-selected', 'false');
+
+    const spellbookTab = screen.getByRole('tab', { name: 'Spellbook' });
+    expect(spellbookTab).toHaveAttribute('aria-selected', 'false');
   });
 });

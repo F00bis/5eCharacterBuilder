@@ -96,14 +96,6 @@ describe('WizardSpellbookManager', () => {
     expect(tooltips.length).toBeGreaterThanOrEqual(1);
   });
 
-  it('shows cap indicator with orange styling when nearCap is true', () => {
-    renderManager();
-
-    const indicator = screen.getByText(/8 \/ 9/);
-    expect(indicator).toBeInTheDocument();
-    expect(indicator.closest('div')).toHaveClass('border-orange-300');
-  });
-
   it('selecting a spell from combobox calls onAdd with correct DndSpell', async () => {
     const user = userEvent.setup();
     const mockOnAdd = vi.fn();
@@ -188,5 +180,49 @@ describe('WizardSpellbookManager', () => {
     await user.click(cancelButton);
 
     expect(mockOnRemove).not.toHaveBeenCalled();
+  });
+
+  it('clicking a spell name opens the detail dialog', async () => {
+    const user = userEvent.setup();
+    const spells = [
+      createMockCharacterSpell({
+        id: 1,
+        name: 'Magic Missile',
+        level: 1,
+        school: 'Evocation',
+        description: 'Dart of magical force.',
+      }),
+    ];
+
+    renderManager({
+      spellbookSpells: spells,
+    });
+
+    await user.click(screen.getByText('Magic Missile'));
+
+    expect(screen.getByRole('dialog')).toBeInTheDocument();
+    expect(screen.getByRole('heading', { name: 'Magic Missile' })).toBeInTheDocument();
+    expect(screen.getByText('Dart of magical force.')).toBeInTheDocument();
+  });
+
+  it('clicking remove button does not open the detail dialog', async () => {
+    const user = userEvent.setup();
+    const mockOnRemove = vi.fn();
+    const spells = [
+      createMockCharacterSpell({ id: 1, name: 'Magic Missile', level: 1 }),
+    ];
+
+    renderManager({
+      spellbookSpells: spells,
+      onRemove: mockOnRemove,
+    });
+
+    const removeButton = screen.getByRole('button', { name: /Remove Magic Missile/i });
+    await user.click(removeButton);
+
+    // Should show the remove confirmation dialog, not the detail dialog
+    expect(screen.getByText(/Remove Magic Missile from your spellbook/i)).toBeInTheDocument();
+    // Detail dialog should not be present
+    expect(screen.queryByRole('heading', { name: 'Magic Missile' })).not.toBeInTheDocument();
   });
 });

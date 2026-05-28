@@ -26,9 +26,11 @@ function formatSpellDamage(damage?: SpellDamage): string {
 
 interface SpellTooltipDetailProps {
   spell: CharacterSpell;
+  showName?: boolean;
+  className?: string;
 }
 
-export function SpellTooltipDetail({ spell }: SpellTooltipDetailProps) {
+export function SpellTooltipDetail({ spell, showName = true, className = 'w-80' }: SpellTooltipDetailProps) {
   const levelLabel = spell.level === 0 ? 'Cantrip' : formatOrdinal(spell.level);
 
   const attackOrSave = spell.requiresAttackRoll
@@ -40,10 +42,12 @@ export function SpellTooltipDetail({ spell }: SpellTooltipDetailProps) {
   const damageOrEffect = formatSpellDamage(spell.damage) || formatSpellDamage(spell.healing) || '—';
 
   return (
-    <div className="w-80">
-      <div className="px-3 pt-2 pb-1 border-b border-slate-200">
-        <h3 className="text-sm font-bold text-slate-900">{spell.name}</h3>
-      </div>
+    <div className={className}>
+      {showName && (
+        <div className="px-3 pt-2 pb-1 border-b border-slate-200">
+          <h3 className="text-sm font-bold text-slate-900">{spell.name}</h3>
+        </div>
+      )}
 
       <div className="px-3 py-2 grid grid-cols-2 gap-x-4 gap-y-1 text-xs text-slate-700">
         <div>

@@ -17,6 +17,7 @@ import { Trash2 } from 'lucide-react';
 import { useState } from 'react';
 import type { CharacterSpell, DndSpell } from '../types';
 import { groupSpellsByLevel } from '../utils/spellCalculations';
+import { SpellDetailDialog } from './SpellDetailDialog';
 import { SpellTooltipDetail } from './SpellTooltipDetail';
 
 export interface WizardSpellbookManagerProps {
@@ -42,6 +43,7 @@ export function WizardSpellbookManager({
 }: WizardSpellbookManagerProps) {
   const [selectedSpellName, setSelectedSpellName] = useState('');
   const [spellToRemove, setSpellToRemove] = useState<CharacterSpell | null>(null);
+  const [viewingSpell, setViewingSpell] = useState<CharacterSpell | null>(null);
 
   const addOptions: ComboboxOption[] = availableToAdd.map((spell) => ({
     value: spell.name,
@@ -113,10 +115,13 @@ export function WizardSpellbookManager({
                       role="listitem"
                       className="flex items-center justify-between px-2 h-8 hover:bg-slate-50"
                     >
-                      <div className="flex items-center gap-2 min-w-0 flex-1">
+                      <div
+                        className="flex items-center gap-2 min-w-0 flex-1 cursor-pointer"
+                        onClick={() => setViewingSpell(spell)}
+                      >
                         <Tooltip>
                           <TooltipTrigger asChild>
-                            <span className="text-xs font-medium text-slate-700 truncate min-w-0 flex-1 cursor-default">
+                            <span className="text-xs font-medium text-slate-700 truncate min-w-0 flex-1">
                               {spell.name}
                             </span>
                           </TooltipTrigger>
@@ -176,6 +181,12 @@ export function WizardSpellbookManager({
           </DialogFooter>
         </DialogContent>
       </Dialog>
+
+      <SpellDetailDialog
+        spell={viewingSpell}
+        open={viewingSpell !== null}
+        onOpenChange={(open) => !open && setViewingSpell(null)}
+      />
     </div>
   );
 }
