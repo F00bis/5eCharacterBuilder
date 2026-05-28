@@ -309,9 +309,6 @@ export function SpellsPanel() {
               ) : (
                 <WizardSpellbookManager
                   spellbookSpells={spellbook.spellbookSpells}
-                  spellbookCount={spellbook.spellbookCount}
-                  spellbookMax={spellbook.spellbookMax}
-                  nearCap={spellbook.nearCap}
                   availableToAdd={spellbook.availableToAdd}
                   onAdd={spellbook.addSpell}
                   onRemove={spellbook.removeSpell}

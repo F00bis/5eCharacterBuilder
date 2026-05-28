@@ -215,7 +215,6 @@ export function useSpellPreparation(): UseSpellPreparationResult {
       const updatedSpells = buildUpdatedSpells(
         character.spells,
         { spellName, prepared: mutation.prepared },
-        entitlement,
       );
 
       // Persist to DB; on failure, remove this specific mutation to revert

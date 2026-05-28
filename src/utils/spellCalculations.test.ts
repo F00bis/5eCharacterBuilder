@@ -447,12 +447,8 @@ describe('spellCalculations', () => {
         createMockCharacterSpell({ id: 1, name: 'Magic Missile', prepared: false }),
         createMockCharacterSpell({ id: 2, name: 'Shield', prepared: false }),
       ];
-      const entitlement = calculateSpellEntitlements(
-        [{ className: 'Wizard', level: 1 }],
-        defaultAbilityScores()
-      )!;
 
-      const result = buildUpdatedSpells(spells, { spellName: 'Magic Missile', prepared: true }, entitlement);
+      const result = buildUpdatedSpells(spells, { spellName: 'Magic Missile', prepared: true });
 
       expect(result).toHaveLength(2);
       expect(result[0].prepared).toBe(true);
@@ -464,12 +460,8 @@ describe('spellCalculations', () => {
         createMockCharacterSpell({ id: 1, name: 'Magic Missile', prepared: true }),
         createMockCharacterSpell({ id: 2, name: 'Shield', prepared: true }),
       ];
-      const entitlement = calculateSpellEntitlements(
-        [{ className: 'Wizard', level: 1 }],
-        defaultAbilityScores()
-      )!;
 
-      const result = buildUpdatedSpells(spells, { spellName: 'Shield', prepared: false }, entitlement);
+      const result = buildUpdatedSpells(spells, { spellName: 'Shield', prepared: false });
 
       expect(result).toHaveLength(2);
       expect(result[0].prepared).toBe(true);
@@ -480,12 +472,8 @@ describe('spellCalculations', () => {
       const spells: CharacterSpell[] = [
         createMockCharacterSpell({ id: 1, name: 'Magic Missile', prepared: false }),
       ];
-      const entitlement = calculateSpellEntitlements(
-        [{ className: 'Wizard', level: 1 }],
-        defaultAbilityScores()
-      )!;
 
-      const result = buildUpdatedSpells(spells, { spellName: 'Magic Missile', prepared: true }, entitlement);
+      const result = buildUpdatedSpells(spells, { spellName: 'Magic Missile', prepared: true });
 
       expect(result).not.toBe(spells);
       expect(spells[0].prepared).toBe(false);
@@ -496,12 +484,8 @@ describe('spellCalculations', () => {
       const spells: CharacterSpell[] = [
         createMockCharacterSpell({ id: 1, name: 'Magic Missile', prepared: false }),
       ];
-      const entitlement = calculateSpellEntitlements(
-        [{ className: 'Wizard', level: 1 }],
-        defaultAbilityScores()
-      )!;
 
-      const result = buildUpdatedSpells(spells, { spellName: 'Nonexistent Spell', prepared: true }, entitlement);
+      const result = buildUpdatedSpells(spells, { spellName: 'Nonexistent Spell', prepared: true });
 
       expect(result[0].prepared).toBe(false);
     });
