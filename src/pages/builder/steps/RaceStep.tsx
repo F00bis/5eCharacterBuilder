@@ -383,7 +383,7 @@ case 'skill':
 
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 gap-8 text-left h-full overflow-hidden">
-      <div className="space-y-6 overflow-y-auto pr-4 h-full">
+      <div data-testid="race-step-left-panel" className="space-y-6 overflow-y-auto px-4 pb-8 min-h-0 h-full">
         <div>
           <label className="block text-sm font-medium text-slate-700 mb-1">Select Race</label>
           <select
@@ -554,8 +554,8 @@ case 'skill':
         )}
       </div>
 
-      <div className="h-full">
-        <div className="bg-white border border-slate-200 rounded-lg shadow-sm p-6 h-full overflow-y-auto">
+      <div data-testid="race-step-right-panel" className="min-h-0 h-full">
+        <div className="bg-white border border-slate-200 rounded-lg shadow-sm p-6 pb-8 h-full overflow-y-auto">
           <h2 className="text-xl font-bold border-b pb-2 mb-4">Summary</h2>
 
           {!selectedRace && (

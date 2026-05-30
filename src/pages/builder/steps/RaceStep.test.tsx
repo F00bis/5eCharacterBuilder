@@ -133,6 +133,49 @@ describe('RaceStep', () => {
     });
   });
 
+
+  it('renders cantrip choice with bottom padding in the left panel for high elf', async () => {
+    render(
+      <CharacterBuilderProvider>
+        <RaceStep />
+      </CharacterBuilderProvider>
+    );
+
+    const raceSelect = screen.getAllByRole('combobox')[0];
+    fireEvent.change(raceSelect, { target: { value: 'elf' } });
+
+    const subraceSelect = await screen.findByDisplayValue('None (Base Elf)');
+    fireEvent.change(subraceSelect, { target: { value: 'high-elf' } });
+
+    await waitFor(() => {
+      expect(screen.getByText('Choose a Cantrip')).toBeInTheDocument();
+    });
+
+    const leftPanel = screen.getByTestId('race-step-left-panel');
+    expect(leftPanel.className).toContain('pb-');
+    expect(leftPanel.className).toContain('min-h-0');
+    expect(leftPanel.className).toContain('px-4');
+    expect(leftPanel.className).toContain('overflow-y-auto');
+  });
+
+  it('renders right panel with constrained height and scrollable content', async () => {
+    render(
+      <CharacterBuilderProvider>
+        <RaceStep />
+      </CharacterBuilderProvider>
+    );
+
+    const rightPanel = screen.getByTestId('race-step-right-panel');
+    expect(rightPanel.className).toContain('min-h-0');
+    expect(rightPanel.className).toContain('h-full');
+
+    const rightInner = rightPanel.querySelector('div');
+    expect(rightInner).not.toBeNull();
+    if (!rightInner) throw new Error('Expected rightInner to exist');
+    expect(rightInner.className).toContain('overflow-y-auto');
+    expect(rightInner.className).toContain('pb-');
+  });
+
   it('preserves race validation after race step remount with persisted draft selections', async () => {
     render(
       <CharacterBuilderProvider>
