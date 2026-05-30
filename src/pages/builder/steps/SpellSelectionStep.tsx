@@ -4,7 +4,10 @@ import { srdSpells } from '../../../data/srdSpells';
 import { calculateSpellEntitlements, getMaxAccessibleSpellLevel, getSpellListForClass, loadSpellProgressions } from '../../../utils/spellCalculations';
 import { MultiSelectAutocomplete } from '@/components/ui/multi-select-autocomplete';
 import type { ComboboxOption } from '@/components/ui/combobox';
+import { Tooltip, TooltipTrigger, TooltipContent } from '@/components/ui/tooltip';
+import { SpellTooltipDetail } from '../../../components/SpellTooltipDetail';
 import type { SpellSchool } from '@/types/spells';
+import type { CharacterSpell } from '../../../types';
 
 interface SpellSelectionStepProps {
   isVisible: boolean;
@@ -63,7 +66,10 @@ export default function SpellSelectionStep({ isVisible }: SpellSelectionStepProp
   }, [classNames, subclass]);
 
   const availableCantrips = useMemo<ComboboxOption[]>(() => {
-    const selectedNames = new Set([...selectedCantrips.map(s => s.name)]);
+    const selectedNames = new Set([
+      ...selectedCantrips.map(s => s.name),
+      ...(state.draft.spells || []).map(s => s.name),
+    ]);
     return srdSpells
       .filter(spell => spell.classes.some(c => spellLists.includes(c)) && spell.level === 0)
       .filter(spell => !selectedNames.has(spell.name))
@@ -71,10 +77,13 @@ export default function SpellSelectionStep({ isVisible }: SpellSelectionStepProp
         value: spell.name,
         label: spell.name,
       }));
-  }, [spellLists, selectedCantrips]);
+  }, [spellLists, selectedCantrips, state.draft.spells]);
 
   const availableSpells = useMemo<ComboboxOption[]>(() => {
-    const selectedNames = new Set([...selectedSpells.map(s => s.name)]);
+    const selectedNames = new Set([
+      ...selectedSpells.map(s => s.name),
+      ...(state.draft.spells || []).map(s => s.name),
+    ]);
     
     let filteredSpells = srdSpells
       .filter(spell => spell.classes.some(c => spellLists.includes(c)) && spell.level > 0)
@@ -89,7 +98,7 @@ export default function SpellSelectionStep({ isVisible }: SpellSelectionStepProp
         value: spell.name,
         label: `${spell.name} (Lv ${spell.level})`,
       }));
-  }, [spellLists, selectedSpells, maxSpellLevel]);
+  }, [spellLists, selectedSpells, maxSpellLevel, state.draft.spells]);
 
   const handleAddCantrip = useCallback((spellName: string) => {
     const spell = srdSpells.find(s => s.name === spellName);
@@ -113,24 +122,21 @@ export default function SpellSelectionStep({ isVisible }: SpellSelectionStepProp
     setSelectedSpells(prev => prev.filter(s => s.name !== spellName));
   }, []);
 
-  const saveToDraft = useCallback(() => {
+  useEffect(() => {
+    if (!isVisible || !entitlements) return;
+
+    const nonClassSpells = (state.draft.spells || []).filter(spell => spell.source !== 'Class');
     const characterSpells = [
-      ...selectedCantrips.map(s => ({ ...s, prepared: false, source: 'Class' })),
-      ...selectedSpells.map(s => ({ ...s, prepared: false, source: 'Class' })),
+      ...nonClassSpells,
+      ...selectedCantrips.map(s => ({ ...s, prepared: false, source: 'Class' as const })),
+      ...selectedSpells.map(s => ({ ...s, prepared: false, source: 'Class' as const })),
     ];
     dispatch({
       type: 'UPDATE_DRAFT',
-      updates: {
-        spells: characterSpells,
-      },
+      updates: { spells: characterSpells },
     });
-  }, [selectedCantrips, selectedSpells, dispatch]);
-
-  useEffect(() => {
-    if (isVisible && entitlements) {
-      saveToDraft();
-    }
-  }, [isVisible, entitlements, saveToDraft]);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isVisible, entitlements, selectedCantrips, selectedSpells, dispatch]);
 
   if (!isVisible || !entitlements) {
     return null;
@@ -165,23 +171,33 @@ export default function SpellSelectionStep({ isVisible }: SpellSelectionStepProp
           availableOptions={availableCantrips}
           maxSelections={entitlements.cantripsKnown}
           onAdd={handleAddCantrip}
-          renderBadge={(spell) => (
-            <div className="cursor-pointer">
-              <div className="flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-semibold border bg-slate-100 text-slate-900 border-slate-300">
-                {spell.name}
-                <button
-                  type="button"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    handleRemoveCantrip(spell.name);
-                  }}
-                  className="ml-1 inline-flex h-3.5 w-3.5 items-center justify-center rounded-full hover:bg-black/10"
-                >
-                  ×
-                </button>
-              </div>
-            </div>
-          )}
+          renderBadge={(spell) => {
+            const characterSpell: CharacterSpell = { ...spell, prepared: false, source: 'Class' };
+            return (
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <div className="cursor-pointer">
+                    <div className="flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-semibold border bg-slate-100 text-slate-900 border-slate-300">
+                      {spell.name}
+                      <button
+                        type="button"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleRemoveCantrip(spell.name);
+                        }}
+                        className="ml-1 inline-flex h-3.5 w-3.5 items-center justify-center rounded-full hover:bg-black/10"
+                      >
+                        ×
+                      </button>
+                    </div>
+                  </div>
+                </TooltipTrigger>
+                <TooltipContent>
+                  <SpellTooltipDetail spell={characterSpell} />
+                </TooltipContent>
+              </Tooltip>
+            );
+          }}
           placeholder="Select cantrip..."
           disabled={!canAddCantrips}
         />
@@ -197,23 +213,33 @@ export default function SpellSelectionStep({ isVisible }: SpellSelectionStepProp
           availableOptions={availableSpells}
           maxSelections={entitlements.spellsKnown}
           onAdd={handleAddSpell}
-          renderBadge={(spell) => (
-            <div className="cursor-pointer">
-              <div className={`flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-semibold border ${getSchoolColor(spell.school)}`}>
-                {spell.name}
-                <button
-                  type="button"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    handleRemoveSpell(spell.name);
-                  }}
-                  className="ml-1 inline-flex h-3.5 w-3.5 items-center justify-center rounded-full hover:bg-black/10"
-                >
-                  ×
-                </button>
-              </div>
-            </div>
-          )}
+          renderBadge={(spell) => {
+            const characterSpell: CharacterSpell = { ...spell, prepared: false, source: 'Class' };
+            return (
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <div className="cursor-pointer">
+                    <div className={`flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-semibold border ${getSchoolColor(spell.school)}`}>
+                      {spell.name}
+                      <button
+                        type="button"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleRemoveSpell(spell.name);
+                        }}
+                        className="ml-1 inline-flex h-3.5 w-3.5 items-center justify-center rounded-full hover:bg-black/10"
+                      >
+                        ×
+                      </button>
+                    </div>
+                  </div>
+                </TooltipTrigger>
+                <TooltipContent>
+                  <SpellTooltipDetail spell={characterSpell} />
+                </TooltipContent>
+              </Tooltip>
+            );
+          }}
           placeholder="Select spell..."
           disabled={!canAddSpells}
         />
@@ -221,7 +247,7 @@ export default function SpellSelectionStep({ isVisible }: SpellSelectionStepProp
 
       {entitlements.canPrepare && entitlements.preparedSpellsMax && (
         <div className="text-sm text-slate-600">
-          Prepared Spells: 0 / {entitlements.preparedSpellsMax} (reference only)
+          You can prepare up to {entitlements.preparedSpellsMax} spells after character creation.
         </div>
       )}
     </div>

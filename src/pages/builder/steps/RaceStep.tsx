@@ -1,7 +1,8 @@
 import { useMemo, useState, useEffect, useCallback } from 'react';
 import { useCharacterBuilder } from '../../../contexts/CharacterBuilderContextTypes';
 import { srdRaces } from '../../../data/srdRaces';
-import type { Ability, Skill, SkillProficiency } from '../../../types';
+import { srdSpells } from '../../../data/srdSpells';
+import type { Ability, CharacterSpell, Skill, SkillProficiency } from '../../../types';
 import type { RaceChoice } from '../../../types/races';
 import { isValidRaceStep } from '../../../utils/validation';
 import { SKILL_ABILITY_MAP } from '../../../utils/skills';
@@ -247,6 +248,7 @@ export default function RaceStep() {
     });
     dispatch({ type: 'CLEAR_RACE_CHOICES' });
     removeRaceSkillProficiencies();
+    removeRaceSpells();
 
     setPlus2(null);
     setPlus1(null);
@@ -265,6 +267,7 @@ export default function RaceStep() {
     });
     dispatch({ type: 'CLEAR_RACE_CHOICES' });
     removeRaceSkillProficiencies();
+    removeRaceSpells();
 
     setPlus2(null);
     setPlus1(null);
@@ -329,10 +332,44 @@ export default function RaceStep() {
     });
   }, [state.draft.skills, selectedRace?.name, selectedSubrace?.name, dispatch]);
 
+  const removeRaceSpells = useCallback(() => {
+    const updatedSpells = (state.draft.spells || []).filter(
+      (spell) => spell.source !== 'Race' && !(spell.source?.startsWith('Race:') ?? false)
+    );
+
+    dispatch({ type: 'UPDATE_DRAFT', updates: { spells: updatedSpells } });
+  }, [state.draft.spells, dispatch]);
+
+  const syncRaceCantripChoiceToDraft = useCallback((cantripName: string) => {
+    const selectedRaceName = selectedSubrace?.name ?? selectedRace?.name;
+    if (!selectedRaceName || !cantripName) return;
+
+    const filteredSpells = (state.draft.spells || []).filter(
+      (spell) => spell.source !== 'Race' && !(spell.source?.startsWith('Race:') ?? false)
+    );
+
+    const spell = srdSpells.find(s => s.name.toLowerCase() === cantripName.toLowerCase());
+    if (!spell) return;
+
+    const raceSpell: CharacterSpell = {
+      ...spell,
+      prepared: false,
+      source: `Race: ${selectedRaceName}`,
+    };
+
+    dispatch({
+      type: 'UPDATE_DRAFT',
+      updates: { spells: [...filteredSpells, raceSpell] }
+    });
+  }, [state.draft.spells, selectedRace?.name, selectedSubrace?.name, dispatch]);
+
   const handleRaceChoiceChange = (choiceType: string, value: string | string[]) => {
     if (choiceType === 'skill') {
       const skills = Array.isArray(value) ? value : [value];
       syncRaceSkillChoicesToDraft(skills);
+    }
+    if (choiceType === 'cantrip') {
+      syncRaceCantripChoiceToDraft(value as string);
     }
     dispatch({ type: 'SET_RACE_CHOICE', choiceType, value });
   };
