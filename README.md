@@ -24,19 +24,26 @@ The implementation is actively evolving and does **not** yet represent the final
   - Character creation and level-up wizard
   - Character view sheet
 - **Builder step system**: `src/pages/builder/steps`
+  - Race, class, background, ability scores, proficiencies, equipment, spells, ASIs/feats, progression choices, and review
+- **Character sheet panels**: `src/components`
+  - Ability scores, skills, saving throws, combat stats, features, inventory, spells, status effects, and passives
 - **State and context**: `src/contexts`
 - **Persistence layer**: `src/db` (Dexie + IndexedDB)
 - **Rules and domain logic**: `src/utils`
 - **Reference data and SRD seeds**: `src/data`
+  - Classes, subclasses, races, backgrounds, feats, spells, equipment, maneuvers, invocations, metamagic, and status effects
 - **Domain and shared types**: `src/types`
 - **Reusable UI components**: `src/components`
+- **Custom hooks**: `src/hooks`
+- **Library helpers**: `src/lib`
 
 ## Tech Stack
 
 - React 19
 - TypeScript
-- Vite
+- Vite (with PWA support via `vite-plugin-pwa`)
 - Tailwind CSS with Radix UI/shadcn patterns
+- `react-router-dom` for client-side routing
 - Dexie (IndexedDB wrapper)
 - Vitest + React Testing Library + jsdom
 
@@ -78,9 +85,12 @@ Then open the local Vite URL shown in your terminal (usually `http://localhost:5
 ```text
 src/
   components/        Reusable UI and sheet panels
+  components/ui/     shadcn-based UI primitives (button, card, dialog, etc.)
   contexts/          Context state, hooks, and providers
   data/              SRD/reference datasets and seeds
   db/                Dexie database and persistence helpers
+  hooks/             Custom React hooks (e.g., spellbook, spell preparation)
+  lib/               Shared library utilities (e.g., shadcn cn helper)
   pages/             Route-level screens and builder flows
   test/              Shared test setup
   types/             Core domain types
