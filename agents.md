@@ -1,7 +1,7 @@
 # Development Practices
 
 ## Git operations
-Agents are not permitted to use git commands on this project. Human developers must first review the code generated and are the only users permitted to use git commands within the scope of this project.
+Agents are permitted to create git worktrees on this project but are not permitted to make commits or push to branches without developer review of the changes
 
 ## TypeScript Compilation
 

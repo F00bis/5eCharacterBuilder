@@ -26,6 +26,7 @@ spec*.md
 *.sln
 *.sw?
 .opencode/*
+..worktree*
 
 # tsconfig cache
 tsconfig.tsbuildinfo
