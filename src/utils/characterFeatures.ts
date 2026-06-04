@@ -177,7 +177,13 @@ export async function getCharacterFeatures(character: Character): Promise<Groupe
                   selectedChoice,
                   feature.choices.optionDetails
                 );
-              } else {
+              }
+            }
+
+            if (feature.requiredFeatureChoice) {
+              const dependencyValue = character.featureChoices[feature.requiredFeatureChoice.featureKey];
+              const selectedValue = Array.isArray(dependencyValue) ? dependencyValue[0] : dependencyValue;
+              if (selectedValue !== feature.requiredFeatureChoice.expectedValue) {
                 continue;
               }
             }

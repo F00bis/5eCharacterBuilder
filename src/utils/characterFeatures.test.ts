@@ -128,7 +128,7 @@ describe('getCharacterFeatures', () => {
     expect(result.classFeatures[0].features[0].description).toBe('Fighting Style: Defense');
   });
 
-  it('skips features without user selection', async () => {
+  it('shows base description for features without user selection', async () => {
     const { db } = await import('../db/index');
     const { getClassByName } = await import('../db/classes');
 
@@ -178,8 +178,10 @@ describe('getCharacterFeatures', () => {
     });
 
     const result = await getCharacterFeatures(character);
-    expect(result.classFeatures[0].features).toHaveLength(1);
-    expect(result.classFeatures[0].features[0].name).toBe('Second Wind');
+    expect(result.classFeatures[0].features).toHaveLength(2);
+    expect(result.classFeatures[0].features[0].name).toBe('Fighting Style');
+    expect(result.classFeatures[0].features[0].description).toBe('Choose a fighting style.');
+    expect(result.classFeatures[0].features[1].name).toBe('Second Wind');
   });
 
   it('handles multiple feature choices', async () => {
@@ -479,5 +481,161 @@ describe('getCharacterFeatures', () => {
     expect(result.classFeatures[0].features[0].description).toBe(
       'Sacred Oath: Oath of Devotion: A classic holy knight dedicated to honesty, courage, and justice.'
     );
+  });
+
+  it('includes subclass features when requiredFeatureChoice matches', async () => {
+    const { db } = await import('../db/index');
+    const { getClassByName } = await import('../db/classes');
+
+    vi.mocked(db.races.get).mockResolvedValue({
+      id: 'human',
+      name: 'Human',
+      abilityScoreIncreases: [],
+      speed: 30,
+      size: 'Medium' as const,
+      languages: ['Common'],
+      additionalLanguages: 1,
+      features: [],
+      savingThrowFeatures: [],
+    });
+
+    vi.mocked(getClassByName).mockResolvedValue({
+      name: 'Fighter',
+      hitDie: 10,
+      primaryAbility: 'strength' as const,
+      savingThrows: ['strength' as const, 'constitution' as const],
+      skillProficienciesChoices: 2,
+      skillOptions: ['athletics', 'acrobatics'],
+      asiLevels: [4, 6, 8, 12, 14, 16, 19],
+      features: [
+        {
+          name: 'Martial Archetype',
+          description: 'Choose an archetype.',
+          levelAcquired: 3,
+          choices: {
+            count: 1,
+            options: ['Champion', 'Battle Master'],
+            optionDetails: {
+              'Champion': 'A straightforward warrior.',
+              'Battle Master': 'A tactical fighter.',
+            },
+          },
+        },
+        {
+          name: 'Improved Critical',
+          description: 'Critical on 19-20.',
+          levelAcquired: 3,
+          requiredFeatureChoice: {
+            featureKey: 'fighter-3-martial-archetype',
+            expectedValue: 'Champion',
+          },
+        },
+        {
+          name: 'Combat Superiority',
+          description: 'Maneuvers and superiority dice.',
+          levelAcquired: 3,
+          requiredFeatureChoice: {
+            featureKey: 'fighter-3-martial-archetype',
+            expectedValue: 'Battle Master',
+          },
+        },
+      ],
+      startingEquipment: {
+        startingGoldFormula: '5d4×10',
+        startingGoldAverage: 125,
+        choices: [],
+        fixedEquipment: [],
+      },
+    });
+
+    const character = baseCharacter({
+      classes: [{ className: 'Fighter', level: 3 }],
+      featureChoices: {
+        'fighter-3-martial-archetype': 'Champion',
+      },
+    });
+
+    const result = await getCharacterFeatures(character);
+    expect(result.classFeatures[0].features).toHaveLength(2);
+    expect(result.classFeatures[0].features[0].name).toBe('Martial Archetype');
+    expect(result.classFeatures[0].features[1].name).toBe('Improved Critical');
+  });
+
+  it('excludes subclass features when requiredFeatureChoice does not match', async () => {
+    const { db } = await import('../db/index');
+    const { getClassByName } = await import('../db/classes');
+
+    vi.mocked(db.races.get).mockResolvedValue({
+      id: 'human',
+      name: 'Human',
+      abilityScoreIncreases: [],
+      speed: 30,
+      size: 'Medium' as const,
+      languages: ['Common'],
+      additionalLanguages: 1,
+      features: [],
+      savingThrowFeatures: [],
+    });
+
+    vi.mocked(getClassByName).mockResolvedValue({
+      name: 'Fighter',
+      hitDie: 10,
+      primaryAbility: 'strength' as const,
+      savingThrows: ['strength' as const, 'constitution' as const],
+      skillProficienciesChoices: 2,
+      skillOptions: ['athletics', 'acrobatics'],
+      asiLevels: [4, 6, 8, 12, 14, 16, 19],
+      features: [
+        {
+          name: 'Martial Archetype',
+          description: 'Choose an archetype.',
+          levelAcquired: 3,
+          choices: {
+            count: 1,
+            options: ['Champion', 'Battle Master'],
+            optionDetails: {
+              'Champion': 'A straightforward warrior.',
+              'Battle Master': 'A tactical fighter.',
+            },
+          },
+        },
+        {
+          name: 'Improved Critical',
+          description: 'Critical on 19-20.',
+          levelAcquired: 3,
+          requiredFeatureChoice: {
+            featureKey: 'fighter-3-martial-archetype',
+            expectedValue: 'Champion',
+          },
+        },
+        {
+          name: 'Combat Superiority',
+          description: 'Maneuvers and superiority dice.',
+          levelAcquired: 3,
+          requiredFeatureChoice: {
+            featureKey: 'fighter-3-martial-archetype',
+            expectedValue: 'Battle Master',
+          },
+        },
+      ],
+      startingEquipment: {
+        startingGoldFormula: '5d4×10',
+        startingGoldAverage: 125,
+        choices: [],
+        fixedEquipment: [],
+      },
+    });
+
+    const character = baseCharacter({
+      classes: [{ className: 'Fighter', level: 3 }],
+      featureChoices: {
+        'fighter-3-martial-archetype': 'Battle Master',
+      },
+    });
+
+    const result = await getCharacterFeatures(character);
+    expect(result.classFeatures[0].features).toHaveLength(2);
+    expect(result.classFeatures[0].features[0].name).toBe('Martial Archetype');
+    expect(result.classFeatures[0].features[1].name).toBe('Combat Superiority');
   });
 });
