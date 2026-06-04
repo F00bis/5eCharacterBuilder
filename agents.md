@@ -3,6 +3,19 @@
 ## Git operations
 Agents are permitted to create git worktrees on this project but are not permitted to make commits or push to branches without developer review of the changes
 
+### Branching conventions
+Git branches should follow the convention `<activity>/<branch description>`.
+
+Activities can be one of the following and should be lowercase
+- `fix`: for bugfixes
+- `chore`: for general bookkeeping and small maintanence tasks
+- `feat`: for full-fledged features
+
+Branch-descriptions should be lowercase and delimited by dashes
+
+### Worktree behavior
+Agents should create worktrees under the `.worktrees` directory. Worktree sub-directories should be cleaned up after confirming that the task they are implementing is completed with a human developer.
+
 ## TypeScript Compilation
 
 When verifying TypeScript types during development, use `npm run typecheck` instead of `npm run build`. The `typecheck` script runs only TypeScript compilation (`tsc -b`) without the full Vite production build, providing faster feedback on type errors.
