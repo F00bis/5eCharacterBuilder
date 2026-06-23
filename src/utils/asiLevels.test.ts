@@ -103,11 +103,11 @@ describe('getNextAsiLevel', () => {
 
 describe('getAsiChoiceType', () => {
   it('returns ASI-or-Feat for valid ASI levels', () => {
-    expect(getAsiChoiceType([4, 6, 8, 12, 14, 16, 19], 4)).toBe('ASI-or-Feat');
-    expect(getAsiChoiceType([4, 8, 12, 16, 19], 8)).toBe('ASI-or-Feat');
+    expect(getAsiChoiceType()).toBe('ASI-or-Feat');
+    expect(getAsiChoiceType()).toBe('ASI-or-Feat');
   });
 
   it('returns ASI-or-Feat for custom class ASI level', () => {
-    expect(getAsiChoiceType([3, 7, 11, 15, 18], 3)).toBe('ASI-or-Feat');
+    expect(getAsiChoiceType()).toBe('ASI-or-Feat');
   });
 });

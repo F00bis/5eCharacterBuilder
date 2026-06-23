@@ -31,6 +31,6 @@ export function getNextAsiLevel(asiLevels: number[], currentLevel: number): numb
  * Returns the type of choice available at an ASI level.
  * Currently all ASI levels grant an ASI-or-Feat choice.
  */
-export function getAsiChoiceType(_asiLevels: number[], _level: number): 'ASI' | 'Feat' | 'ASI-or-Feat' {
+export function getAsiChoiceType(): 'ASI' | 'Feat' | 'ASI-or-Feat' {
   return 'ASI-or-Feat';
 }

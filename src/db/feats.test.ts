@@ -2,6 +2,7 @@ import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { getAllFeats, getFeatById, getFeatByName, getSRDFeats, getFeatsByPrerequisite, seedFeats } from './feats';
 import { db } from './index';
 import type { Feat } from '../types/feats';
+import type { Collection } from 'dexie';
 
 vi.mock('./index', () => ({
   db: {
@@ -77,7 +78,7 @@ describe('feats db', () => {
       equals: vi.fn().mockReturnThis(),
       first: vi.fn().mockResolvedValue(mockFeats[0])
     };
-    vi.mocked(db.feats.where).mockReturnValue(mockWhere as any);
+    vi.mocked(db.feats.where).mockReturnValue(mockWhere as unknown as Collection<Feat, number>);
 
     const result = await getFeatByName('Alert');
 
@@ -89,7 +90,7 @@ describe('feats db', () => {
   it('getSRDFeats filters feats by isSRD flag', async () => {
     vi.mocked(db.feats.filter).mockReturnValue({
       toArray: vi.fn().mockResolvedValue(mockFeats.filter(f => f.isSRD))
-    } as any);
+    } as unknown as Collection<Feat, number>);
 
     const result = await getSRDFeats();
 
@@ -113,7 +114,7 @@ describe('feats db', () => {
       equals: vi.fn().mockReturnThis(),
       toArray: vi.fn().mockResolvedValue([mockFeats[0]])
     };
-    vi.mocked(db.feats.where).mockReturnValue(mockWhere as any);
+    vi.mocked(db.feats.where).mockReturnValue(mockWhere as unknown as Collection<Feat, number>);
 
     const result = await getFeatsByPrerequisite('Dexterity 13 or higher');
 
@@ -124,7 +125,7 @@ describe('feats db', () => {
 
   it('seedFeats adds feats when database is empty', async () => {
     vi.mocked(db.feats.count).mockResolvedValue(0);
-    vi.mocked(db.feats.bulkAdd).mockResolvedValue([1, 2, 3] as any);
+    vi.mocked(db.feats.bulkAdd).mockResolvedValue(1);
 
     await seedFeats();
 
