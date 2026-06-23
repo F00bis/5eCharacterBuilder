@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import type { Character, Equipment } from '../types';
-import { getWeaponAttack } from './attackCalculations';
+import { getUnarmedStrike, getWeaponAttack } from './attackCalculations';
 
 function baseCharacter(overrides: Partial<Character> = {}): Character {
   return {
@@ -217,5 +217,147 @@ describe('getWeaponAttack finesse ability selection', () => {
     expect(attack.toHit).toBe(7);
     expect(attack.damage).toBe('1d8+4');
     expect(attack.toHitBreakdown[0]).toEqual({ name: 'Strength modifier', value: 4 });
+    expect(attack.damageBonusSources).toContainEqual({ name: 'Strength modifier', value: 4 });
+  });
+});
+
+describe('getUnarmedStrike', () => {
+  it('uses STR for non-monk unarmed strike', () => {
+    const character = baseCharacter({
+      abilityScores: {
+        strength: 18,
+        dexterity: 14,
+        constitution: 10,
+        intelligence: 10,
+        wisdom: 10,
+        charisma: 10,
+      },
+    });
+
+    const attack = getUnarmedStrike(character);
+
+    expect(attack.toHit).toBe(7);
+    expect(attack.toHitBreakdown[0]).toEqual({ name: 'Strength modifier', value: 4 });
+    expect(attack.damage).toBe('1+4');
+    expect(attack.damageBonusSources).toContainEqual({ name: 'Strength modifier', value: 4 });
+  });
+
+  it('uses DEX for monk level 1 with 1d4 martial arts die', () => {
+    const character = baseCharacter({
+      classes: [{ className: 'Monk', level: 1 }],
+      abilityScores: {
+        strength: 14,
+        dexterity: 18,
+        constitution: 10,
+        intelligence: 10,
+        wisdom: 10,
+        charisma: 10,
+      },
+    });
+
+    const attack = getUnarmedStrike(character);
+
+    expect(attack.toHit).toBe(7);
+    expect(attack.toHitBreakdown[0]).toEqual({ name: 'Dexterity modifier', value: 4 });
+    expect(attack.damage).toBe('1d4+4');
+    expect(attack.damageBonusSources).toContainEqual({ name: 'Dexterity modifier', value: 4 });
+    expect(attack.damageBreakdown[0]).toEqual({ name: 'Martial Arts', value: '1d4' });
+  });
+
+  it('uses 1d6 martial arts die for monk level 5', () => {
+    const character = baseCharacter({
+      classes: [{ className: 'Monk', level: 5 }],
+      abilityScores: {
+        strength: 10,
+        dexterity: 14,
+        constitution: 10,
+        intelligence: 10,
+        wisdom: 10,
+        charisma: 10,
+      },
+    });
+
+    const attack = getUnarmedStrike(character);
+
+    expect(attack.damage).toBe('1d6+2');
+    expect(attack.damageBreakdown[0]).toEqual({ name: 'Martial Arts', value: '1d6' });
+  });
+
+  it('uses 1d8 martial arts die for monk level 11', () => {
+    const character = baseCharacter({
+      classes: [{ className: 'Monk', level: 11 }],
+      abilityScores: {
+        strength: 10,
+        dexterity: 14,
+        constitution: 10,
+        intelligence: 10,
+        wisdom: 10,
+        charisma: 10,
+      },
+    });
+
+    const attack = getUnarmedStrike(character);
+
+    expect(attack.damage).toBe('1d8+2');
+    expect(attack.damageBreakdown[0]).toEqual({ name: 'Martial Arts', value: '1d8' });
+  });
+
+  it('uses 1d10 martial arts die for monk level 17', () => {
+    const character = baseCharacter({
+      classes: [{ className: 'Monk', level: 17 }],
+      abilityScores: {
+        strength: 10,
+        dexterity: 14,
+        constitution: 10,
+        intelligence: 10,
+        wisdom: 10,
+        charisma: 10,
+      },
+    });
+
+    const attack = getUnarmedStrike(character);
+
+    expect(attack.damage).toBe('1d10+2');
+    expect(attack.damageBreakdown[0]).toEqual({ name: 'Martial Arts', value: '1d10' });
+  });
+
+  it('handles negative DEX modifier for monk', () => {
+    const character = baseCharacter({
+      classes: [{ className: 'Monk', level: 1 }],
+      abilityScores: {
+        strength: 10,
+        dexterity: 8,
+        constitution: 10,
+        intelligence: 10,
+        wisdom: 10,
+        charisma: 10,
+      },
+    });
+
+    const attack = getUnarmedStrike(character);
+
+    expect(attack.damage).toBe('1d4-1');
+    expect(attack.damageBonusSources).toContainEqual({ name: 'Dexterity modifier', value: -1 });
+    expect(attack.damageBreakdown[0]).toEqual({ name: 'Martial Arts', value: '1d4' });
+  });
+
+  it('handles zero DEX modifier for monk without bonus sources', () => {
+    const character = baseCharacter({
+      classes: [{ className: 'Monk', level: 1 }],
+      abilityScores: {
+        strength: 10,
+        dexterity: 10,
+        constitution: 10,
+        intelligence: 10,
+        wisdom: 10,
+        charisma: 10,
+      },
+    });
+
+    const attack = getUnarmedStrike(character);
+
+    expect(attack.damage).toBe('1d4');
+    expect(attack.damageBonusSources).toEqual([]);
+    expect(attack.damageBreakdown[0]).toEqual({ name: 'Martial Arts', value: '1d4' });
   });
 });

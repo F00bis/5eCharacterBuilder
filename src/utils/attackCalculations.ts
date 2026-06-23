@@ -5,7 +5,7 @@ export interface AttackResult {
   damage: string;
   damageType: string;
   toHitBreakdown: { name: string; value: number }[];
-  damageBreakdown: { name: string; value: number }[];
+  damageBreakdown: { name: string; value: number | string }[];
   damageBonusSources: { name: string; value: number }[];
 }
 
@@ -174,41 +174,52 @@ export function getWeaponAttack(character: Character, weapon: Equipment): Attack
 }
 
 export function getUnarmedStrike(character: Character): AttackResult {
-  let baseDamage = '1';
-  const strMod = getAbilityModifier(character, 'strength');
-  
   const isMonk = character.classes.some(c => c.className === 'Monk');
+  const ability = isMonk ? 'dexterity' : 'strength';
+  const mod = getAbilityModifier(character, ability);
+  const prof = getProficiencyBonus(character);
+
+  let baseDamage: string;
+  let damageBreakdown: { name: string; value: number | string }[];
+
   if (isMonk) {
     const monkLevel = character.classes.find(c => c.className === 'Monk')?.level || 1;
     if (monkLevel >= 17) {
-      baseDamage = '10';
+      baseDamage = '1d10';
     } else if (monkLevel >= 11) {
-      baseDamage = '8';
+      baseDamage = '1d8';
     } else if (monkLevel >= 5) {
-      baseDamage = '6';
+      baseDamage = '1d6';
     } else {
-      baseDamage = '4';
+      baseDamage = '1d4';
     }
+
+    damageBreakdown = [{ name: 'Martial Arts', value: baseDamage }];
+  } else {
+    baseDamage = '1';
+    damageBreakdown = [{ name: 'Base damage', value: baseDamage }];
   }
-  
-  const damage = strMod > 0 ? baseDamage + '+' + strMod : baseDamage;
-  
-  const damageBonusSources = strMod > 0 
-    ? [{ name: 'Strength modifier', value: strMod }]
-    : [];
-  
+
+  const damage = mod === 0 ? baseDamage : baseDamage + (mod > 0 ? '+' : '') + mod;
+
+  const damageBonusSources: { name: string; value: number }[] = [];
+  if (mod !== 0) {
+    damageBonusSources.push({ name: ability.charAt(0).toUpperCase() + ability.slice(1) + ' modifier', value: mod });
+  }
+
+  if (mod !== 0) {
+    damageBreakdown.push({ name: ability.charAt(0).toUpperCase() + ability.slice(1) + ' modifier', value: mod });
+  }
+
   return {
-    toHit: strMod + getProficiencyBonus(character),
+    toHit: mod + prof,
     damage,
     damageType: 'bludgeoning',
     toHitBreakdown: [
-      { name: 'Strength modifier', value: strMod },
-      { name: 'Proficiency', value: getProficiencyBonus(character) },
+      { name: ability.charAt(0).toUpperCase() + ability.slice(1) + ' modifier', value: mod },
+      { name: 'Proficiency', value: prof },
     ],
-    damageBreakdown: [
-      { name: isMonk ? 'Martial Arts' : 'Base damage', value: parseInt(baseDamage, 10) },
-      { name: 'Strength modifier', value: strMod },
-    ],
+    damageBreakdown,
     damageBonusSources,
   };
 }
