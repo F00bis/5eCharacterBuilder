@@ -97,7 +97,7 @@ export default function EquipmentShop({ classEquipment, isLevel1 }: EquipmentSho
       const rolled = rollStartingGold(classEquipment.startingGoldFormula);
       setStartingGold(rolled);
     }
-  }, [classEquipment?.startingGoldFormula]);
+  }, [classEquipment]);
 
   const handlePurchaseItem = useCallback((item: SrdEquipment) => {
     const cost = parseCost(item.cost);

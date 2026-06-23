@@ -28,7 +28,9 @@ export async function getFeatsByPrerequisite(prerequisite: string): Promise<Feat
 export async function seedFeats(): Promise<void> {
   const count = await db.feats.count();
   if (count === 0) {
-    const featsWithoutId = srdFeats.map(({ id, ...rest }) => rest);
+    const featsWithoutId = srdFeats.map((feat) =>
+      Object.fromEntries(Object.entries(feat).filter(([key]) => key !== 'id'))
+    ) as Omit<Feat, 'id'>[];
     await db.feats.bulkAdd(featsWithoutId);
   }
 }
