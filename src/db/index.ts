@@ -70,6 +70,33 @@ export class CharacterDatabase extends Dexie {
       }
     });
 
+    this.version(12).stores(storeSchema).upgrade(async tx => {
+      const equipment = await tx.table('equipment').toArray();
+      const updates = equipment.filter((item: SrdEquipment) => item.quantity === undefined).map((item: SrdEquipment) => ({
+        name: item.name,
+        changes: {
+          quantity: 1,
+        },
+      }));
+      for (const update of updates) {
+        await tx.table('equipment').update(update.name, update.changes);
+      }
+    });
+
+    this.version(13).stores(storeSchema).upgrade(async tx => {
+      const equipmentQuantityUpdates: Record<string, number> = {
+        Arrows: 20,
+        Bolts: 20,
+        'Bullets, Firearm': 10,
+        'Bullets, Sling': 20,
+        Needles: 50,
+      };
+
+      for (const [name, quantity] of Object.entries(equipmentQuantityUpdates)) {
+        await tx.table('equipment').update(name, { quantity });
+      }
+    });
+
     this.on('populate', tx => {
       tx.table('classes').bulkAdd(srdClasses);
       

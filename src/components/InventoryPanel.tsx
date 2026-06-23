@@ -1,20 +1,20 @@
 import { Card } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
+import { useEffect, useRef, useState } from 'react';
 import { useCharacter } from '../contexts/CharacterContext';
 import type { Currency, Equipment as EquipmentType } from '../types';
 import {
-  isEquippable,
-  getTotalWeight,
+  formatCurrencyTotal,
+  getAttunedCount,
   getCarryingCapacity,
   getEncumbranceStatus,
-  getAttunedCount,
   getEquippedItems,
   getNonEquippedItems,
   getRarityColor,
-  formatCurrencyTotal,
+  getTotalWeight,
+  isEquippable,
 } from '../utils/inventory';
-import { useEffect, useRef, useState } from 'react';
 
 interface EditableFieldProps {
   value: string;
@@ -174,6 +174,7 @@ function EquipmentItem({
         <div
           className={`flex items-center gap-2 px-2 py-1 rounded hover:bg-slate-50 min-w-0 ${canEquip ? 'cursor-pointer' : ''}`}
           onClick={handleToggle}
+          data-testid="equipment-item-row"
         >
           {canEquip && (
             <input
@@ -183,11 +184,12 @@ function EquipmentItem({
               className="w-3 h-3 shrink-0"
             />
           )}
-          <span className="flex-1 text-sm break-words">{item.name}</span>
+          <span className="flex-1 text-sm wrap-break-word">{item.name}</span>
           {item.attuned && (
             <span className="text-[10px] bg-purple-600 text-white px-1 rounded">A</span>
           )}
-          <span className="text-xs text-slate-500 w-10 text-right">{item.weight}lb</span>
+          <span className="text-xs text-slate-500 w-10 text-right">{item.quantity || 1}x</span>
+          <span className="text-xs text-slate-500 w-10 text-right">{(item.quantity || 1) * (item.weight || 0)}lb</span>
           <span className="text-xs text-slate-500 w-12 text-right">{item.cost || '—'}</span>
           <div className={`w-2 h-2 rounded-full ${getRarityColor(item.rarity)}`} />
         </div>

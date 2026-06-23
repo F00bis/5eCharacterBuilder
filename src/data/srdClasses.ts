@@ -203,12 +203,12 @@ export const srdClasses: DndClass[] = [
         {
           label: 'Choose your secondary weapons:',
           options: [
-            { label: '(a) Two Handaxes', items: ['Handaxe', 'Handaxe'], type: 'bundle' },
+            { label: '(a) Two Handaxes', items: [{ name: 'Handaxe', quantity: 2 }], type: 'bundle' },
             { label: '(b) Simple Weapon', type: 'choice', weaponClasses: ['Simple'] }
           ]
         }
       ],
-      fixedEquipment: ['Explorer\'s Pack', 'Javelin']
+      fixedEquipment: ['Explorer\'s Pack', { name: 'Javelin', quantity: 4 }]
     }
   },
   {
@@ -509,7 +509,7 @@ export const srdClasses: DndClass[] = [
         {
           label: 'Choose your weapon:',
           options: [
-            { label: '(a) Light Crossbow and Bolts', items: ['Light Crossbow', 'Bolts'], type: 'bundle' },
+            { label: '(a) Light Crossbow and Bolts', items: ['Light Crossbow', { name: 'Bolts', quantity: 20 }], type: 'bundle' },
             { label: '(b) Simple Weapon', type: 'choice', weaponCategories: ['Simple Melee', 'Simple Ranged'] }
           ]
         }
@@ -872,7 +872,7 @@ export const srdClasses: DndClass[] = [
           label: 'Choose your armor:',
           options: [
             { label: '(a) Chain Mail', items: ['Chain Mail'], type: 'bundle' },
-            { label: '(b) Leather Armor, Longbow, and Arrows', items: ['Leather Armor', 'Longbow', 'Arrows'], type: 'bundle' }
+            { label: '(b) Leather Armor, Longbow, and Arrows', items: ['Leather Armor', 'Longbow', { name: 'Arrows', quantity: 20 }], type: 'bundle' }
           ]
         },
         {
@@ -1481,12 +1481,12 @@ export const srdClasses: DndClass[] = [
         {
           label: 'Choose your weapons:',
           options: [
-            { label: '(a) Two Shortswords', items: ['Shortsword', 'Shortsword'], type: 'bundle' },
+            { label: '(a) Two Shortswords', items: [{ name: 'Shortsword', quantity: 2 }], type: 'bundle' },
             { label: '(b) Two Simple Melee Weapons', type: 'choice', weaponClasses: ['Simple'], weaponForms: ['Melee'], count: 2 }
           ]
         }
       ],
-      fixedEquipment: ['Explorer\'s Pack', 'Longbow', 'Arrows']
+      fixedEquipment: ['Explorer\'s Pack', 'Longbow', { name: 'Arrows', quantity: 20 }]
     },
     spellcastingAbility: 'wisdom',
     spellPrepType: 'prepared',
@@ -1659,7 +1659,7 @@ export const srdClasses: DndClass[] = [
           ]
         }
       ],
-      fixedEquipment: ['Leather Armor', 'Burglar\'s Pack', 'Thieves\' Tools', 'Dagger', 'Dagger']
+      fixedEquipment: ['Leather Armor', 'Burglar\'s Pack', 'Thieves\' Tools', { name: 'Dagger', quantity: 2 }]
     }
   },
   {
@@ -1778,12 +1778,12 @@ export const srdClasses: DndClass[] = [
         {
           label: 'Choose your weapon:',
           options: [
-            { label: '(a) Light Crossbow and Bolts', items: ['Light Crossbow', 'Bolts'], type: 'bundle' },
+            { label: '(a) Light Crossbow and Bolts', items: ['Light Crossbow', { name: 'Bolts', quantity: 20 }], type: 'bundle' },
             { label: '(b) Simple Weapon', type: 'choice', weaponClasses: ['Simple'] }
           ]
         }
       ],
-      fixedEquipment: ['Leather Armor', 'Component Pouch', 'Dungeoneer\'s Pack', 'Dagger', 'Dagger']
+      fixedEquipment: ['Leather Armor', 'Component Pouch', 'Dungeoneer\'s Pack', { name: 'Dagger', quantity: 2 }]
     }
   },
   {
@@ -1911,12 +1911,12 @@ export const srdClasses: DndClass[] = [
         {
           label: 'Choose your weapon:',
           options: [
-            { label: '(a) Light Crossbow and Bolts', items: ['Light Crossbow', 'Bolts'], type: 'bundle' },
+            { label: '(a) Light Crossbow and Bolts', items: ['Light Crossbow', { name: 'Bolts', quantity: 20 }], type: 'bundle' },
             { label: '(b) Simple Weapon', type: 'choice', weaponClasses: ['Simple'] }
           ]
         }
       ],
-      fixedEquipment: ['Leather Armor', 'Component Pouch', 'Dungeoneer\'s Pack', 'Dagger', 'Dagger']
+      fixedEquipment: ['Leather Armor', 'Component Pouch', 'Dungeoneer\'s Pack', { name: 'Dagger', quantity: 2 }]
     }
   },
   {

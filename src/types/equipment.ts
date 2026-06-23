@@ -86,4 +86,6 @@ export interface SrdEquipment {
 
   // Marks this as SRD base data
   isSRD: boolean;
+
+  quantity?: number;
 }

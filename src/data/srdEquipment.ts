@@ -1708,6 +1708,7 @@ export const srdEquipment: SrdEquipment[] = [
     cost: '1 GP',
     weight: '1 lb.',
     description: 'A bundle of 20 arrows. Stored in a Quiver.',
+    quantity: 20,
     isSRD: true
   },
   {
@@ -1716,6 +1717,7 @@ export const srdEquipment: SrdEquipment[] = [
     cost: '1 GP',
     weight: '1 1/2 lb.',
     description: 'A bundle of 20 crossbow bolts. Stored in a Case.',
+    quantity: 20,
     isSRD: true
   },
   {
@@ -1724,6 +1726,7 @@ export const srdEquipment: SrdEquipment[] = [
     cost: '3 GP',
     weight: '2 lb.',
     description: 'A bundle of 10 firearm bullets. Stored in a Pouch.',
+    quantity: 10,
     isSRD: true
   },
   {
@@ -1732,6 +1735,7 @@ export const srdEquipment: SrdEquipment[] = [
     cost: '4 CP',
     weight: '1 1/2 lb.',
     description: 'A bundle of 20 sling bullets. Stored in a Pouch.',
+    quantity: 20,
     isSRD: true
   },
   {
@@ -1740,6 +1744,7 @@ export const srdEquipment: SrdEquipment[] = [
     cost: '1 GP',
     weight: '1 lb.',
     description: 'A bundle of 50 blowgun needles. Stored in a Pouch.',
+    quantity: 50,
     isSRD: true
   },
 

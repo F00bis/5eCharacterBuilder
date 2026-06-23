@@ -56,6 +56,15 @@ vi.mock('../../../db/equipment', () => ({
       weight: '59 lb.',
       description: "An Explorer's Pack contains the following items.",
       isSRD: true
+    },
+    {
+      name: 'Arrows',
+      equipmentCategory: 'Ammunition',
+      cost: '1 GP',
+      weight: '1 lb.',
+      description: 'A bundle of arrows.',
+      quantity: 20,
+      isSRD: true
     }
   ])
 }));
@@ -315,6 +324,48 @@ describe('EquipmentFeatsStep - Starting Gold Mode', () => {
     await waitFor(() => {
       expect(screen.getByPlaceholderText(/Search equipment/i)).toBeInTheDocument();
     });
+  });
+
+  it('adds purchased shop items with their SRD quantity', async () => {
+    const randomSpy = vi.spyOn(Math, 'random').mockReturnValue(0.99);
+    const testEquipment: { name: string; quantity?: number }[] = [];
+
+    function TestConsumer() {
+      const { state } = useCharacterBuilder();
+      useEffect(() => {
+        testEquipment.length = 0;
+        testEquipment.push(...state.draft.equipment);
+      }, [state.draft.equipment]);
+      return null;
+    }
+
+    render(
+      <CharacterBuilderProvider>
+        <EquipmentStepWithClass className="Fighter" />
+        <TestConsumer />
+      </CharacterBuilderProvider>
+    );
+
+    await waitFor(() => {
+      expect(screen.getByRole('button', { name: 'Starting Gold' })).toBeInTheDocument();
+    });
+    fireEvent.click(screen.getByRole('button', { name: 'Starting Gold' }));
+
+    await waitFor(() => {
+      expect(screen.getByRole('button', { name: /Roll Gold/i })).toBeInTheDocument();
+    });
+    fireEvent.click(screen.getByRole('button', { name: /Roll Gold/i }));
+
+    await waitFor(() => {
+      expect(screen.getByText('Arrows')).toBeInTheDocument();
+    });
+    fireEvent.click(screen.getByText('Arrows'));
+
+    await waitFor(() => {
+      expect(testEquipment.find(item => item.name === 'Arrows')?.quantity).toBe(20);
+    });
+
+    randomSpy.mockRestore();
   });
 });
 

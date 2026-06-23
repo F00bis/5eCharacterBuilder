@@ -5,6 +5,7 @@ import type { Equipment } from '../../../types';
 import type { SrdEquipment } from '../../../types/equipment';
 import type { StartingEquipment } from '../../../types/classes';
 import { DollarSign, Sword, Shield, Package, Search } from 'lucide-react';
+import { createEquipmentFromSrd } from '../../../utils/equipmentMapping';
 
 interface EquipmentShopProps {
   classEquipment?: StartingEquipment | null;
@@ -101,28 +102,7 @@ export default function EquipmentShop({ classEquipment, isLevel1 }: EquipmentSho
   const handlePurchaseItem = useCallback((item: SrdEquipment) => {
     const cost = parseCost(item.cost);
     if (remainingGold >= cost) {
-      const newItem: Equipment = {
-        name: item.name,
-        rarity: 'common',
-        weight: parseFloat(item.weight) || 0,
-        description: item.description,
-        cost: item.cost,
-        equippable: item.weaponCategory !== undefined || item.armorCategory !== undefined,
-        equipped: false,
-        source: 'Gold Purchase'
-      };
-      
-      if (item.weaponCategory) {
-        newItem.weaponCategory = item.weaponCategory;
-        newItem.damage = item.damage;
-        newItem.properties = item.properties;
-        newItem.mastery = item.mastery;
-      }
-      
-      if (item.armorCategory) {
-        newItem.armorCategory = item.armorCategory;
-        newItem.armorClass = item.armorClass ? parseInt(item.armorClass, 10) : undefined;
-      }
+      const newItem: Equipment = createEquipmentFromSrd(item, { source: 'Gold Purchase' });
       
       setPurchasedItems(prev => [...prev, newItem]);
     }

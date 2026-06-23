@@ -1,7 +1,9 @@
-import { fireEvent, render, screen } from '@testing-library/react';
+import { fireEvent, render, screen, waitFor } from '@testing-library/react';
+import { useEffect } from 'react';
 import { BrowserRouter } from 'react-router-dom';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { CharacterBuilderProvider } from '../../../contexts/CharacterBuilderProvider';
+import { useCharacterBuilder } from '../../../contexts/CharacterBuilderContextTypes';
 import ReviewStep from './ReviewStep';
 
 vi.mock('../../../db/characters', () => ({
@@ -70,5 +72,43 @@ describe('ReviewStep', () => {
   it('button text reflects mode', () => {
     renderComponent();
     expect(screen.getByRole('button', { name: /save character/i })).toBeInTheDocument();
+  });
+
+  it('displays equipment quantities in the session summary', async () => {
+    function SetupEquipment() {
+      const { dispatch } = useCharacterBuilder();
+
+      useEffect(() => {
+        dispatch({
+          type: 'UPDATE_DRAFT',
+          updates: {
+            equipment: [
+              {
+                name: 'Arrows',
+                rarity: 'common',
+                weight: 1,
+                description: 'A bundle of arrows.',
+                quantity: 20,
+              },
+            ],
+          },
+        });
+      }, [dispatch]);
+
+      return null;
+    }
+
+    render(
+      <BrowserRouter>
+        <CharacterBuilderProvider>
+          <SetupEquipment />
+          <ReviewStep />
+        </CharacterBuilderProvider>
+      </BrowserRouter>
+    );
+
+    await waitFor(() => {
+      expect(screen.getByText('Arrows x20')).toBeInTheDocument();
+    });
   });
 });

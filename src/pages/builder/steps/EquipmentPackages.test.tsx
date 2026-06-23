@@ -8,14 +8,14 @@ import EquipmentPackages from './EquipmentPackages';
 vi.mock('../../../db/equipment', () => ({
   getAllEquipment: vi.fn().mockResolvedValue([
     { name: 'Light Crossbow', weight: '5', equipmentCategory: 'Weapon', weaponCategory: 'Martial', damage: '1d8', cost: '25 gp' },
-    { name: 'Bolts', weight: '0.5', equipmentCategory: 'Ammo', cost: '1 gp' },
+    { name: 'Bolts', weight: '0.5', equipmentCategory: 'Ammo', cost: '1 gp', quantity: 20 },
     { name: 'Simple Weapon', weight: '2', equipmentCategory: 'Weapon', weaponCategory: 'Simple', damage: '1d6' },
     { name: 'Club', weight: '2', equipmentCategory: 'Weapon', weaponCategory: 'Simple', damage: '1d4', cost: '1 sp' },
     { name: 'Dagger', weight: '1', equipmentCategory: 'Weapon', weaponCategory: 'Simple', damage: '1d4', cost: '2 gp' },
     { name: 'Greataxe', weight: '7', equipmentCategory: 'Weapon', weaponCategory: 'Martial', damage: '1d12', cost: '30 gp' },
     { name: 'Leather Armor', weight: '10', equipmentCategory: 'Armor', armorCategory: 'Light', armorClass: '11', cost: '10 gp' },
     { name: 'Longbow', weight: '2', equipmentCategory: 'Weapon', weaponCategory: 'Martial', damage: '1d8', cost: '50 gp' },
-    { name: 'Arrows', weight: '0.5', equipmentCategory: 'Ammo', cost: '1 gp' },
+    { name: 'Arrows', weight: '0.5', equipmentCategory: 'Ammo', cost: '1 gp', quantity: 20 },
     { name: "Dungeoneer's Pack", equipmentCategory: 'Pack', cost: '12 gp', weight: '55 lb.', description: 'A Dungeoneer\'s Pack', contents: [
       { name: 'Backpack' },
       { name: 'Caltrops' },
@@ -178,6 +178,38 @@ describe('EquipmentPackages', () => {
     });
   });
 
+  it('adds bundle items with their SRD quantity', async () => {
+    const testEquipment: { name: string; quantity?: number }[] = [];
+
+    function TestConsumer() {
+      const { state } = useCharacterBuilder();
+      useEffect(() => {
+        testEquipment.length = 0;
+        testEquipment.push(...state.draft.equipment);
+      }, [state.draft.equipment]);
+      return null;
+    }
+
+    render(
+      <CharacterBuilderProvider>
+        <EquipmentPackagesWithSetup className="Sorcerer" />
+        <TestConsumer />
+      </CharacterBuilderProvider>
+    );
+
+    await waitFor(() => {
+      expect(screen.getByText('(a) Light Crossbow and Bolts')).toBeInTheDocument();
+    });
+
+    const radioButton = screen.getByRole('radio', { name: '(a) Light Crossbow and Bolts' });
+    radioButton.click();
+
+    await waitFor(() => {
+      const bolts = testEquipment.find(item => item.name === 'Bolts');
+      expect(bolts?.quantity).toBe(20);
+    });
+  });
+
   it('requires dropdown selection for choice options', async () => {
     render(
       <CharacterBuilderProvider>
@@ -256,7 +288,7 @@ describe('EquipmentPackages', () => {
   });
 
   it('expands pack contents into individual items', async () => {
-    const testEquipment: { name: string }[] = [];
+    const testEquipment: { name: string; quantity?: number }[] = [];
     
     function TestConsumer() {
       const { state } = useCharacterBuilder();
@@ -308,6 +340,8 @@ describe('EquipmentPackages', () => {
     expect(itemNames).toContain('Crowbar');
     expect(itemNames).toContain('Torch');
     expect(itemNames).not.toContain("Dungeoneer's Pack");
+
+    expect(testEquipment.find(e => e.name === 'Torch')?.quantity).toBe(10);
   });
 
   it('shows tooltip with pack contents when hovering over pack item', async () => {

@@ -1,8 +1,8 @@
 import { render, screen } from '@testing-library/react';
-import { describe, it, expect, vi } from 'vitest';
-import { InventoryPanel } from './InventoryPanel';
+import { describe, expect, it, vi } from 'vitest';
 import { CharacterContext, type CharacterContextValue } from '../contexts/CharacterContext';
 import type { Character, Equipment } from '../types';
+import { InventoryPanel } from './InventoryPanel';
 
 function renderWithCharacter(
   ui: React.ReactElement,
@@ -223,5 +223,19 @@ describe('InventoryPanel', () => {
 
     const checkboxes = screen.queryAllByRole('checkbox');
     expect(checkboxes.length).toBe(0);
+  });
+
+  it('shows stacked items using quantity', () => {
+    const character = baseCharacter({
+      equipment: [
+        createEquipment({ name: 'Arrow', quantity: 20 }),
+      ],
+      abilityScores: { strength: 10, dexterity: 10, constitution: 10, intelligence: 10, wisdom: 10, charisma: 10 },
+    });
+
+    renderWithCharacter(<InventoryPanel />, character);
+
+    const itemRow = screen.getByText('Arrow').closest('[data-testid="equipment-item-row"]');
+    expect(itemRow).toHaveTextContent('20');
   });
 });

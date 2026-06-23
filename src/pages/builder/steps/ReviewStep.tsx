@@ -90,7 +90,7 @@ export default function ReviewStep() {
               <span className="font-medium">Equipment: </span>
               {finalCharacter.equipment.map((item, i) => (
                 <span key={i} className="inline-block bg-green-100 px-2 py-1 rounded mr-1">
-                  {item.name}
+                  {item.quantity && item.quantity > 1 ? `${item.name} x${item.quantity}` : item.name}
                 </span>
               ))}
             </div>

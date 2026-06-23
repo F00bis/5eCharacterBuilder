@@ -1,12 +1,19 @@
 import type { ArmorCategory, EquipmentCategory, WeaponCategory, WeaponClass, WeaponForm, WeaponProperty } from './equipment';
 import type { Ability } from './index';
 
+export interface StartingEquipmentItem {
+  name: string;
+  quantity?: number;
+}
+
+export type StartingEquipmentItemRef = string | StartingEquipmentItem;
+
 export interface StartingEquipmentOption {
   label: string;
   options: {
     label: string;
     count?: number;
-    items?: string[];
+    items?: StartingEquipmentItemRef[];
     type: 'bundle' | 'choice';
     // Legacy fields (backward compatibility)
     weaponCategories?: WeaponCategory[];
@@ -23,7 +30,7 @@ export interface StartingEquipment {
   startingGoldFormula: string;
   startingGoldAverage: number;
   choices: StartingEquipmentOption[];
-  fixedEquipment: string[];
+  fixedEquipment: StartingEquipmentItemRef[];
 }
 
 export type ActionType = 'action' | 'bonus-action' | 'reaction';

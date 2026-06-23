@@ -6,8 +6,23 @@ import { useCharacterBuilder } from '../../../contexts/CharacterBuilderContextTy
 import { getClassByName } from '../../../db/classes';
 import { getAllEquipment } from '../../../db/equipment';
 import type { Equipment } from '../../../types';
-import type { StartingEquipmentOption } from '../../../types/classes';
+import type { StartingEquipmentItemRef, StartingEquipmentOption } from '../../../types/classes';
 import type { SrdEquipment } from '../../../types/equipment';
+import { createEquipmentFromSrd } from '../../../utils/equipmentMapping';
+
+function getEquipmentRefName(ref: StartingEquipmentItemRef): string {
+  return typeof ref === 'string' ? ref : ref.name;
+}
+
+function getEquipmentRefQuantity(ref: StartingEquipmentItemRef): number | undefined {
+  return typeof ref === 'string' ? undefined : ref.quantity;
+}
+
+function formatEquipmentRef(ref: StartingEquipmentItemRef): string {
+  const quantity = getEquipmentRefQuantity(ref);
+  const name = getEquipmentRefName(ref);
+  return quantity && quantity > 1 ? `${name} x${quantity}` : name;
+}
 
 interface EquipmentPackagesProps {
   currentClassName: string;
@@ -76,7 +91,7 @@ export default function EquipmentPackages({ currentClassName, isLevel1 }: Equipm
       return equipmentData.filter(e => e.equipmentCategory && categorySet.has(e.equipmentCategory));
     }
     
-    const itemNames = option.items || [];
+    const itemNames = (option.items || []).map(getEquipmentRefName);
     return equipmentData.filter(e => itemNames.includes(e.name));
   }, []);
 
@@ -96,74 +111,35 @@ export default function EquipmentPackages({ currentClassName, isLevel1 }: Equipm
     });
   }, []);
 
-  const addEquipmentItem = useCallback((item: SrdEquipment) => {
+  const addEquipmentItem = useCallback((item: SrdEquipment, quantity?: number) => {
     if (item.equipmentCategory === 'Pack' && item.contents) {
       item.contents.forEach(content => {
         const contentItem = shopItems.find(i => i.name === content.name);
         if (contentItem) {
-          const equipment: Equipment = {
-            name: contentItem.name,
-            rarity: 'common',
-            weight: parseFloat(contentItem.weight) || 0,
-            description: contentItem.description,
-            cost: contentItem.cost,
+          const equipment = createEquipmentFromSrd(contentItem, {
+            source: 'Starting Equipment',
             quantity: content.quantity || 1,
-            source: 'Starting Equipment'
-          };
-          
-          if (contentItem.weaponCategory) {
-            equipment.weaponCategory = contentItem.weaponCategory;
-            equipment.damage = contentItem.damage;
-            equipment.properties = contentItem.properties;
-            equipment.mastery = contentItem.mastery;
-            equipment.equippable = true;
-            equipment.equipped = false;
-          }
-          
-          if (contentItem.armorCategory) {
-            equipment.armorCategory = contentItem.armorCategory;
-            equipment.armorClass = contentItem.armorClass ? parseInt(contentItem.armorClass, 10) : undefined;
-            equipment.equippable = true;
-            equipment.equipped = false;
-          }
-          
+          });
           dispatch({ type: 'ADD_ITEM_WITH_SOURCE', listName: 'equipment', item: equipment });
         }
       });
       return;
     }
-    
-    const equipment: Equipment = {
-      name: item.name,
-      rarity: 'common',
-      weight: parseFloat(item.weight) || 0,
-      description: item.description,
-      cost: item.cost,
-      source: 'Starting Equipment'
-    };
-    
-    if (item.weaponCategory) {
-      equipment.weaponCategory = item.weaponCategory;
-      equipment.damage = item.damage;
-      equipment.properties = item.properties;
-      equipment.mastery = item.mastery;
-      equipment.equippable = true;
-      equipment.equipped = false;
-    }
-    
-    if (item.armorCategory) {
-      equipment.armorCategory = item.armorCategory;
-      equipment.armorClass = item.armorClass ? parseInt(item.armorClass, 10) : undefined;
-      equipment.equippable = true;
-      equipment.equipped = false;
-    }
-    
-    if (item.equipmentCategory === 'Pack') {
-      equipment.description = item.description;
-    }
-    
+
+    const equipment: Equipment = createEquipmentFromSrd(item, {
+      source: 'Starting Equipment',
+      quantity,
+    });
+
     dispatch({ type: 'ADD_ITEM_WITH_SOURCE', listName: 'equipment', item: equipment });
   }, [shopItems, dispatch]);
+
+  const addEquipmentRef = useCallback((ref: StartingEquipmentItemRef) => {
+    const matchingItem = shopItems.find(i => i.name === getEquipmentRefName(ref));
+    if (matchingItem) {
+      addEquipmentItem(matchingItem, getEquipmentRefQuantity(ref));
+    }
+  }, [shopItems, addEquipmentItem]);
 
   const handleEquipFixedItems = useCallback(() => {
     if (!classEquipment || shopItems.length === 0) return;
@@ -174,12 +150,7 @@ export default function EquipmentPackages({ currentClassName, isLevel1 }: Equipm
       source: 'Starting Equipment'
     });
     
-    classEquipment.fixedEquipment.forEach(itemName => {
-      const matchingItem = shopItems.find(i => i.name === itemName);
-      if (matchingItem) {
-        addEquipmentItem(matchingItem);
-      }
-    });
+    classEquipment.fixedEquipment.forEach(addEquipmentRef);
     
     classEquipment.choices.forEach((choice, choiceIdx) => {
       const selectedOptionIdx = equipmentChoices[choiceIdx];
@@ -188,7 +159,10 @@ export default function EquipmentPackages({ currentClassName, isLevel1 }: Equipm
         const optionItems = getOptionItems(option, shopItems);
         
         if (option.type === 'bundle') {
-          optionItems.forEach(item => addEquipmentItem(item));
+          const bundleRefs = option.items && option.items.length > 0
+            ? option.items
+            : optionItems.map(item => item.name);
+          bundleRefs.forEach(addEquipmentRef);
         } else {
           const selectionKey = `${choiceIdx}-${selectedOptionIdx}`;
           const selectedItems = itemSelections[selectionKey] || [];
@@ -196,7 +170,7 @@ export default function EquipmentPackages({ currentClassName, isLevel1 }: Equipm
         }
       }
     });
-  }, [classEquipment, shopItems, dispatch, equipmentChoices, itemSelections, getOptionItems, addEquipmentItem]);
+  }, [classEquipment, shopItems, dispatch, equipmentChoices, itemSelections, getOptionItems, addEquipmentRef, addEquipmentItem]);
 
   useEffect(() => {
     if (!classEquipment || shopItems.length === 0 || !isLevel1) return;
@@ -400,8 +374,11 @@ export default function EquipmentPackages({ currentClassName, isLevel1 }: Equipm
                     <div className="ml-6 mt-2 text-sm text-slate-600">
                       <span className="font-medium">You will receive:</span>
                       <ul className="list-disc list-inside mt-1">
-                        {optionItems.map((item, idx) => (
-                          <li key={idx}>{item.name}</li>
+                        {(option.items && option.items.length > 0
+                          ? option.items
+                          : optionItems.map(item => item.name)
+                        ).map((itemRef, idx) => (
+                          <li key={idx}>{formatEquipmentRef(itemRef)}</li>
                         ))}
                       </ul>
                     </div>
@@ -417,7 +394,8 @@ export default function EquipmentPackages({ currentClassName, isLevel1 }: Equipm
         <div>
           <h3 className="font-semibold mb-3">Fixed Equipment (from class and background)</h3>
           <ul className="list-disc list-inside text-slate-600">
-            {classEquipment.fixedEquipment.map((itemName, idx) => {
+            {classEquipment.fixedEquipment.map((itemRef, idx) => {
+              const itemName = getEquipmentRefName(itemRef);
               const packItem = shopItems.find(i => i.name === itemName && i.equipmentCategory === 'Pack');
               if (packItem) {
                 return (
@@ -443,7 +421,7 @@ export default function EquipmentPackages({ currentClassName, isLevel1 }: Equipm
                   </li>
                 );
               }
-              return <li key={idx}>{itemName}</li>;
+              return <li key={idx}>{formatEquipmentRef(itemRef)}</li>;
             })}
           </ul>
         </div>
