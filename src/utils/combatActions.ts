@@ -16,7 +16,7 @@ export interface CombatAction {
   damageProgression?: { label: string; dice: string }[];
   healing?: string;
   healingProgression?: { label: string; dice: string }[];
-  damageBreakdown?: { name: string; value: number }[];
+  damageBreakdown?: { name: string; value: number | string }[];
   damageBonusSources?: { name: string; value: number }[];
   damageType?: string;
   description?: string;
