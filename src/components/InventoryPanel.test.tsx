@@ -1,4 +1,5 @@
-import { render, screen } from '@testing-library/react';
+import { fireEvent, render, screen } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 import { describe, expect, it, vi } from 'vitest';
 import { CharacterContext, type CharacterContextValue } from '../contexts/CharacterContext';
 import type { Character, Equipment } from '../types';
@@ -20,6 +21,25 @@ function renderWithCharacter(
       {ui}
     </CharacterContext.Provider>
   );
+}
+
+function renderPanelWithUpdate(
+  ui: React.ReactElement,
+  character: Character
+) {
+  const update = vi.fn();
+  const mockContext: CharacterContextValue = {
+    character,
+    isLoading: false,
+    isNotFound: false,
+    update,
+  };
+  const result = render(
+    <CharacterContext.Provider value={mockContext}>
+      {ui}
+    </CharacterContext.Provider>
+  );
+  return { ...result, update };
 }
 
 function baseCharacter(overrides: Partial<Character> = {}): Character {
@@ -237,5 +257,235 @@ describe('InventoryPanel', () => {
 
     const itemRow = screen.getByText('Arrow').closest('[data-testid="equipment-item-row"]');
     expect(itemRow).toHaveTextContent('20');
+  });
+
+  it('does not stack or expose quantity editing for equippable items', () => {
+    const character = baseCharacter({
+      equipment: [
+        createEquipment({ name: 'Sword', quantity: 2, weight: 3, equippable: true }),
+      ],
+    });
+
+    renderWithCharacter(<InventoryPanel />, character);
+
+    const itemRow = screen.getByText('Sword').closest('[data-testid="equipment-item-row"]');
+    expect(itemRow).toHaveTextContent('1x');
+    expect(itemRow).toHaveTextContent('3lb');
+    expect(screen.queryByRole('button', { name: 'Edit quantity for Sword' })).not.toBeInTheDocument();
+  });
+
+  describe('kebab menu', () => {
+    it('renders a kebab menu button for each item row', () => {
+      const character = baseCharacter({
+        equipment: [
+          createEquipment({ name: 'Sword' }),
+          createEquipment({ name: 'Shield' }),
+        ],
+      });
+      renderWithCharacter(<InventoryPanel />, character);
+
+      expect(screen.getByRole('button', { name: 'Actions for Sword' })).toBeInTheDocument();
+      expect(screen.getByRole('button', { name: 'Actions for Shield' })).toBeInTheDocument();
+    });
+
+    it('clicking kebab opens menu with a Delete option', async () => {
+      const user = userEvent.setup();
+      const character = baseCharacter({
+        equipment: [createEquipment({ name: 'Sword' })],
+      });
+      renderWithCharacter(<InventoryPanel />, character);
+
+      await user.click(screen.getByRole('button', { name: 'Actions for Sword' }));
+
+      expect(screen.getByRole('menuitem', { name: /Delete/i })).toBeInTheDocument();
+    });
+
+    it('clicking quantity shows input initialized with current quantity', async () => {
+      const user = userEvent.setup();
+      const character = baseCharacter({
+        equipment: [createEquipment({ name: 'Arrow', quantity: 20 })],
+      });
+      renderWithCharacter(<InventoryPanel />, character);
+
+      await user.click(screen.getByRole('button', { name: 'Edit quantity for Arrow' }));
+
+      const input = screen.getByLabelText('Quantity') as HTMLInputElement;
+      expect(input).toHaveValue(20);
+    });
+
+    it('quantity input width grows with the number of digits typed', async () => {
+      const user = userEvent.setup();
+      const character = baseCharacter({
+        equipment: [createEquipment({ name: 'Arrow', quantity: 2 })],
+      });
+      renderWithCharacter(<InventoryPanel />, character);
+
+      await user.click(screen.getByRole('button', { name: 'Edit quantity for Arrow' }));
+
+      const input = screen.getByLabelText('Quantity') as HTMLInputElement;
+      expect(input).toHaveClass('shrink-0');
+      expect(input.style.width).toContain('2ch');
+
+      await user.clear(input);
+      await user.type(input, '12345');
+
+      expect(input.style.width).toContain('5ch');
+    });
+
+    it('entering new quantity and pressing Enter calls update with updated quantity', async () => {
+      const user = userEvent.setup();
+      const character = baseCharacter({
+        equipment: [createEquipment({ name: 'Arrow', quantity: 20 })],
+      });
+      const { update } = renderPanelWithUpdate(<InventoryPanel />, character);
+
+      await user.click(screen.getByRole('button', { name: 'Edit quantity for Arrow' }));
+
+      const input = screen.getByLabelText('Quantity');
+      await user.clear(input);
+      await user.type(input, '50');
+      await user.keyboard('{Enter}');
+
+      expect(update).toHaveBeenCalledWith({
+        equipment: [expect.objectContaining({ name: 'Arrow', quantity: 50 })],
+      });
+    });
+
+    it('blur saves the entered quantity', async () => {
+      const user = userEvent.setup();
+      const character = baseCharacter({
+        equipment: [createEquipment({ name: 'Arrow', quantity: 20 })],
+      });
+      const { update } = renderPanelWithUpdate(<InventoryPanel />, character);
+
+      await user.click(screen.getByRole('button', { name: 'Edit quantity for Arrow' }));
+
+      const input = screen.getByLabelText('Quantity');
+      await user.clear(input);
+      await user.type(input, '7');
+      fireEvent.blur(input);
+
+      expect(update).toHaveBeenCalledWith({
+        equipment: [expect.objectContaining({ name: 'Arrow', quantity: 7 })],
+      });
+    });
+
+    it('pressing Escape cancels quantity edit without calling update', async () => {
+      const user = userEvent.setup();
+      const character = baseCharacter({
+        equipment: [createEquipment({ name: 'Arrow', quantity: 20 })],
+      });
+      const { update } = renderPanelWithUpdate(<InventoryPanel />, character);
+
+      await user.click(screen.getByRole('button', { name: 'Edit quantity for Arrow' }));
+
+      const input = screen.getByLabelText('Quantity');
+      await user.clear(input);
+      await user.type(input, '99');
+      await user.keyboard('{Escape}');
+
+      expect(update).not.toHaveBeenCalled();
+      expect(screen.queryByLabelText('Quantity')).not.toBeInTheDocument();
+    });
+
+    it('invalid quantity normalizes to at least 1 on save', async () => {
+      const user = userEvent.setup();
+      const character = baseCharacter({
+        equipment: [createEquipment({ name: 'Arrow', quantity: 20 })],
+      });
+      const { update } = renderPanelWithUpdate(<InventoryPanel />, character);
+
+      await user.click(screen.getByRole('button', { name: 'Edit quantity for Arrow' }));
+
+      const input = screen.getByLabelText('Quantity');
+      await user.clear(input);
+      await user.type(input, '0');
+      await user.keyboard('{Enter}');
+
+      expect(update).toHaveBeenCalledWith({
+        equipment: [expect.objectContaining({ name: 'Arrow', quantity: 1 })],
+      });
+    });
+
+    it('negative quantity normalizes to at least 1 on save', async () => {
+      const user = userEvent.setup();
+      const character = baseCharacter({
+        equipment: [createEquipment({ name: 'Arrow', quantity: 20 })],
+      });
+      const { update } = renderPanelWithUpdate(<InventoryPanel />, character);
+
+      await user.click(screen.getByRole('button', { name: 'Edit quantity for Arrow' }));
+
+      const input = screen.getByLabelText('Quantity');
+      await user.clear(input);
+      await user.type(input, '-5');
+      await user.keyboard('{Enter}');
+
+      expect(update).toHaveBeenCalledWith({
+        equipment: [expect.objectContaining({ name: 'Arrow', quantity: 1 })],
+      });
+    });
+
+    it('clicking Delete opens confirmation dialog with item name', async () => {
+      const user = userEvent.setup();
+      const character = baseCharacter({
+        equipment: [createEquipment({ name: 'Sword' })],
+      });
+      renderWithCharacter(<InventoryPanel />, character);
+
+      await user.click(screen.getByRole('button', { name: 'Actions for Sword' }));
+      await user.click(screen.getByRole('menuitem', { name: /Delete/i }));
+
+      expect(screen.getByRole('dialog')).toBeInTheDocument();
+      expect(screen.getByText(/Delete Sword from your inventory/i)).toBeInTheDocument();
+    });
+
+    it('confirming delete calls update with equipment minus the deleted item', async () => {
+      const user = userEvent.setup();
+      const character = baseCharacter({
+        equipment: [
+          createEquipment({ name: 'Sword' }),
+          createEquipment({ name: 'Shield' }),
+        ],
+      });
+      const { update } = renderPanelWithUpdate(<InventoryPanel />, character);
+
+      await user.click(screen.getByRole('button', { name: 'Actions for Sword' }));
+      await user.click(screen.getByRole('menuitem', { name: /Delete/i }));
+
+      await user.click(screen.getByRole('button', { name: 'Delete' }));
+
+      expect(update).toHaveBeenCalledWith({
+        equipment: [expect.objectContaining({ name: 'Shield' })],
+      });
+    });
+
+    it('cancelling delete closes dialog without calling update', async () => {
+      const user = userEvent.setup();
+      const character = baseCharacter({
+        equipment: [createEquipment({ name: 'Sword' })],
+      });
+      const { update } = renderPanelWithUpdate(<InventoryPanel />, character);
+
+      await user.click(screen.getByRole('button', { name: 'Actions for Sword' }));
+      await user.click(screen.getByRole('menuitem', { name: /Delete/i }));
+
+      await user.click(screen.getByRole('button', { name: 'Cancel' }));
+
+      expect(update).not.toHaveBeenCalled();
+      expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
+    });
+
+    it('clicking kebab does not toggle equipped status', async () => {
+      const user = userEvent.setup();
+      const character = baseCharacter({
+        equipment: [createEquipment({ name: 'Sword', equipped: true, equippable: true })],
+      });
+      const { update } = renderPanelWithUpdate(<InventoryPanel />, character);
+
+      await user.click(screen.getByRole('button', { name: 'Actions for Sword' }));
+
+      expect(update).not.toHaveBeenCalled();
+    });
   });
 });
