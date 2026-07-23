@@ -61,6 +61,10 @@ export default function ProgressionChoicesStep() {
     [proficientSkills, alreadyExpertiseSkills]
   );
 
+  const expertiseGlobalSelections = useMemo(() => {
+    return Object.values(state.expertiseChoices).flat();
+  }, [state.expertiseChoices]);
+
   const metamagicGlobalSelections = useMemo(() => {
     return Object.values(state.metamagicChoices).flat();
   }, [state.metamagicChoices]);
@@ -76,6 +80,7 @@ export default function ProgressionChoicesStep() {
       if (new Set(selected).size !== selected.length) return false;
       if (selected.some(skill => !expertiseOptions.includes(skill))) return false;
     }
+    if (new Set(expertiseGlobalSelections).size !== expertiseGlobalSelections.length) return false;
 
     for (const entitlement of metamagicEntitlements) {
       const selected = state.metamagicChoices[entitlement.sourceKey] || [];
@@ -109,6 +114,7 @@ export default function ProgressionChoicesStep() {
     return true;
   }, [
     expertiseEntitlements,
+    expertiseGlobalSelections,
     expertiseOptions,
     invocationEntitlements,
     invocationGlobalSelections,
@@ -147,23 +153,27 @@ export default function ProgressionChoicesStep() {
             <h3 className="font-semibold">Expertise ({sourceLabel(entitlement.className, entitlement.level)})</h3>
             <p className="text-sm text-slate-600">Choose {entitlement.count} proficient skill(s) to gain Expertise.</p>
             <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
-              {expertiseOptions.map(skill => (
-                <button
-                  key={`${entitlement.sourceKey}:${skill}`}
-                  type="button"
-                  onClick={() => {
-                    const next = toggleInList(selected, skill, entitlement.count);
-                    dispatch({ type: 'SET_EXPERTISE_CHOICE', source: entitlement.sourceKey, skills: next });
-                  }}
-                  className={`rounded px-3 py-2 text-sm border ${
-                    selected.includes(skill)
-                      ? 'bg-amber-100 border-amber-300 text-amber-900'
-                      : 'bg-slate-50 border-slate-200 text-slate-700'
-                  }`}
-                >
-                  {SKILL_DISPLAY_NAMES[skill]}
-                </button>
-              ))}
+              {expertiseOptions.map(skill => {
+                const usedElsewhere = expertiseGlobalSelections.includes(skill) && !selected.includes(skill);
+                return (
+                  <button
+                    key={`${entitlement.sourceKey}:${skill}`}
+                    type="button"
+                    disabled={usedElsewhere}
+                    onClick={() => {
+                      const next = toggleInList(selected, skill, entitlement.count);
+                      dispatch({ type: 'SET_EXPERTISE_CHOICE', source: entitlement.sourceKey, skills: next });
+                    }}
+                    className={`rounded px-3 py-2 text-sm border ${
+                      selected.includes(skill)
+                        ? 'bg-amber-100 border-amber-300 text-amber-900'
+                        : 'bg-slate-50 border-slate-200 text-slate-700'
+                    } ${usedElsewhere ? 'opacity-40 cursor-not-allowed' : ''}`}
+                  >
+                    {SKILL_DISPLAY_NAMES[skill]}
+                  </button>
+                );
+              })}
             </div>
             <p className="text-xs text-slate-500">{selected.length}/{entitlement.count} selected</p>
           </section>

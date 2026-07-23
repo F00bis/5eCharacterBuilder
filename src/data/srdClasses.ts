@@ -1511,25 +1511,7 @@ export const srdClasses: DndClass[] = [
       {
         name: 'Expertise',
         description: 'Choose two of your skill proficiencies, or one of your skill proficiencies and your proficiency with thieves\' tools. At 1st level, choose two of your skill proficiencies, or one of your skill proficiencies and your proficiency with thieves\' tools. Your proficiency bonus is doubled for any ability check that uses either of these skills. At 6th level, you can choose another two skills (or thieves\' tools) to gain this benefit.',
-        levelAcquired: 1,
-        choices: {
-          count: 2,
-          options: ['acrobatics', 'athletics', 'deception', 'insight', 'intimidation', 'investigation', 'perception', 'performance', 'persuasion', 'sleightOfHand', 'stealth', 'thieves tools'],
-          optionDetails: {
-            acrobatics: 'Your proficiency bonus is doubled for ability checks you make using Acrobatics.',
-            athletics: 'Your proficiency bonus is doubled for ability checks you make using Athletics.',
-            deception: 'Your proficiency bonus is doubled for ability checks you make using Deception.',
-            insight: 'Your proficiency bonus is doubled for ability checks you make using Insight.',
-            intimidation: 'Your proficiency bonus is doubled for ability checks you make using Intimidation.',
-            investigation: 'Your proficiency bonus is doubled for ability checks you make using Investigation.',
-            perception: 'Your proficiency bonus is doubled for ability checks you make using Perception.',
-            performance: 'Your proficiency bonus is doubled for ability checks you make using Performance.',
-            persuasion: 'Your proficiency bonus is doubled for ability checks you make using Persuasion.',
-            sleightOfHand: 'Your proficiency bonus is doubled for ability checks you make using Sleight of Hand.',
-            stealth: 'Your proficiency bonus is doubled for ability checks you make using Stealth.',
-            'thieves tools': 'Your proficiency bonus is doubled for ability checks you make using thieves\' tools.'
-          }
-        }
+        levelAcquired: 1
       },
       {
         name: 'Sneak Attack',

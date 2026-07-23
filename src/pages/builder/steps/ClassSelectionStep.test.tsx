@@ -80,7 +80,7 @@ describe('ClassSelectionStep', () => {
     expect(screen.getAllByText(/\+2 bonus to attack rolls you make with ranged weapons/i).length).toBeGreaterThan(0);
   });
 
-  it('supports multi-select level 1 features and shows both selected details', async () => {
+  it('describes Rogue Expertise without rendering a class-step choice', async () => {
     renderComponent();
 
     const classSelect = screen.getByRole('combobox');
@@ -89,20 +89,9 @@ describe('ClassSelectionStep', () => {
     });
 
     const selects = screen.getAllByRole('combobox');
-    expect(selects.length).toBe(2);
-
-    await act(async () => {
-      fireEvent.change(selects[1], { target: { value: 'acrobatics' } });
-    });
-
-    const updatedSelects = screen.getAllByRole('combobox');
-    await act(async () => {
-      fireEvent.change(updatedSelects[1], { target: { value: 'stealth' } });
-    });
-
-    expect(screen.getByText('Selected: Acrobatics, Stealth')).toBeInTheDocument();
-    expect(screen.getAllByText(/your proficiency bonus is doubled for ability checks you make using Acrobatics/i).length).toBeGreaterThan(0);
-    expect(screen.getAllByText(/your proficiency bonus is doubled for ability checks you make using Stealth/i).length).toBeGreaterThan(0);
+    expect(selects).toHaveLength(1);
+    expect(screen.getByText(/your proficiency bonus is doubled for any ability check/i)).toBeInTheDocument();
+    expect(screen.queryByText(/Selected: Acrobatics/i)).not.toBeInTheDocument();
   });
 
   it('replaces class selection in create mode when switching classes', async () => {

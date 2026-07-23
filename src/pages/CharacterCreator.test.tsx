@@ -91,6 +91,24 @@ describe('CharacterCreator', () => {
     expect(screen.getByText(/Level Up Character/i)).toBeInTheDocument();
   });
 
+  it('places Rogue level 1 expertise progression after proficiencies', () => {
+    render(
+      <MemoryRouter initialEntries={['/characters/new']}>
+        <CharacterBuilderProvider>
+          <SetupClasses classes={[{ className: 'Rogue', level: 1 }]} />
+          <Routes>
+            <Route path="/characters/new" element={<CharacterCreator mode="create" />} />
+          </Routes>
+        </CharacterBuilderProvider>
+      </MemoryRouter>
+    );
+
+    const labels = screen.getByTestId('mock-stepper').textContent || '';
+    expect(labels).toContain('Proficiencies');
+    expect(labels).toContain('Progression Choices');
+    expect(labels.indexOf('Proficiencies')).toBeLessThan(labels.indexOf('Progression Choices'));
+  });
+
   it('hides the proficiencies step for same-class level up', () => {
     render(
       <MemoryRouter initialEntries={['/characters/1/level-up']}>

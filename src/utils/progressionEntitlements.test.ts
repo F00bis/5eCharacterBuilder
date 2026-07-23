@@ -18,6 +18,16 @@ describe('calculateExpertiseEntitlements', () => {
     expect(result[1]).toMatchObject({ domain: 'expertise', className: 'Rogue', count: 2, level: 1 });
   });
 
+  it.each([
+    ['Bard', 10],
+    ['Rogue', 6],
+  ])('returns two additional %s expertise choices at level %i', (className, level) => {
+    const result = calculateExpertiseEntitlements([{ className, level }]);
+
+    expect(result).toHaveLength(1);
+    expect(result[0]).toMatchObject({ className, level, count: 2 });
+  });
+
   it('keeps multiclass source keys collision-free by class index', () => {
     const result = calculateExpertiseEntitlements([
       { className: 'Rogue', level: 1 },
