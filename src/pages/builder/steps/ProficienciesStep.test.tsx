@@ -58,7 +58,7 @@ describe('ProficienciesStep', () => {
     expect(screen.getByText(/Please complete the Class step first/i)).toBeInTheDocument();
   });
 
-  it('shows expertise section for Rogue class', async () => {
+  it('does not select Rogue Expertise alongside class proficiencies', async () => {
     render(
       <CharacterBuilderProvider>
         <ProficienciesStepWithSetup className="Rogue" />
@@ -69,9 +69,7 @@ describe('ProficienciesStep', () => {
       expect(screen.getByRole('heading', { name: 'Proficiencies & Skills' })).toBeInTheDocument();
     });
     
-    await waitFor(() => {
-      expect(screen.getByRole('heading', { name: /expertise/i })).toBeInTheDocument();
-    });
+    expect(screen.queryByRole('heading', { name: /expertise/i })).not.toBeInTheDocument();
   });
 
   it('does not show expertise section for Fighter class', async () => {

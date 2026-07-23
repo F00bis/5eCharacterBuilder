@@ -104,4 +104,40 @@ describe('useReviewStep', () => {
 
     expect(result.current.finalCharacter.initiative).toBe(2);
   });
+
+  it('materializes progression expertise into canonical character skills', () => {
+    const state = {
+      ...defaultState,
+      mode: 'create' as const,
+      draft: {
+        ...defaultState.draft,
+        name: 'Expertise Test',
+        classes: [{ className: 'Rogue', level: 1 }],
+        skills: [
+          { skill: 'stealth' as const, ability: 'dexterity' as const, level: 'proficient' as const, source: 'Class: Rogue' },
+          { skill: 'perception' as const, ability: 'wisdom' as const, level: 'proficient' as const, source: 'Background' },
+        ],
+      },
+      expertiseChoices: {
+        'expertise:0:rogue:1': ['stealth' as const, 'perception' as const],
+      },
+    };
+    const contextValue: CharacterBuilderContextType = {
+      state,
+      dispatch: vi.fn(),
+      isComplete: true,
+    };
+    const wrapper = ({ children }: { children: ReactNode }) => createElement(
+      MemoryRouter,
+      null,
+      createElement(CharacterBuilderContext.Provider, { value: contextValue }, children)
+    );
+
+    const { result } = renderHook(() => useReviewStep(), { wrapper });
+
+    expect(result.current.finalCharacter.skills).toEqual([
+      { skill: 'stealth', ability: 'dexterity', level: 'expertise', source: 'Class: Rogue' },
+      { skill: 'perception', ability: 'wisdom', level: 'expertise', source: 'Background' },
+    ]);
+  });
 });

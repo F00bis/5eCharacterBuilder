@@ -12,7 +12,6 @@ const remediatedLevelOneChoices: ChoiceTarget[] = [
   { className: 'Fighter', featureName: 'Fighting Style', levelAcquired: 1 },
   { className: 'Ranger', featureName: 'Favored Enemy', levelAcquired: 1 },
   { className: 'Ranger', featureName: 'Natural Explorer', levelAcquired: 1 },
-  { className: 'Rogue', featureName: 'Expertise', levelAcquired: 1 },
   { className: 'Sorcerer', featureName: 'Sorcerous Origin', levelAcquired: 1 },
   { className: 'Warlock', featureName: 'Otherworldly Patron', levelAcquired: 1 },
 ];
@@ -79,5 +78,13 @@ describe('srdClasses remediated choices integrity', () => {
 
   it.each(remediatedNonLevelOneChoices)('has optionDetails for non-level-1 $className $featureName', (target) => {
     assertChoiceIntegrity(target);
+  });
+
+  it('keeps Rogue Expertise descriptive and delegates its choices to progression', () => {
+    const rogue = srdClasses.find(cls => cls.name === 'Rogue');
+    const expertise = rogue?.features.find(feature => feature.name === 'Expertise' && feature.levelAcquired === 1);
+
+    expect(expertise?.description).toMatch(/proficiency bonus is doubled/i);
+    expect(expertise?.choices).toBeUndefined();
   });
 });

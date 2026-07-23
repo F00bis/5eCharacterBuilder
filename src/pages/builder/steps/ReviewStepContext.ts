@@ -17,6 +17,7 @@ import { getModifier } from '../../../utils/abilityScores';
 import { getArmorClass } from '../../../utils/armorClass';
 import type { ArmorClassBreakdown } from '../../../utils/armorClass';
 import { calculateInitiative } from '../../../utils/combatStats';
+import { applyExpertiseChoices } from '../../../utils/expertise';
 import { srdClasses } from '../../../data/srdClasses';
 
 const ABILITY_ORDER: Ability[] = ['strength', 'dexterity', 'constitution', 'intelligence', 'wisdom', 'charisma'];
@@ -148,6 +149,7 @@ export function useReviewStep() {
 
     const draftWithChoices = {
       ...draft,
+      skills: applyExpertiseChoices(draft.skills ?? [], state.expertiseChoices),
       featChoices: state.featChoices,
       expertiseChoices: state.expertiseChoices,
       metamagicChoices: state.metamagicChoices,

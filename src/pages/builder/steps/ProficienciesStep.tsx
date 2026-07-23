@@ -60,22 +60,6 @@ export default function ProficienciesStep() {
     return classData.skillProficienciesChoices;
   }, [classData, state.mode, proficiencyEntitlement.skillChoicesCount]);
 
-  const effectiveClassLevel = useMemo(() => {
-    const entry = (state.draft.classes || []).find(c => c.className === effectiveClassName);
-    return entry?.level ?? 1;
-  }, [state.draft.classes, effectiveClassName]);
-
-  const hasExpertise = useMemo(() => {
-    if (!classData) return false;
-    return classData.name === 'Rogue' && effectiveClassLevel === 1;
-  }, [classData, effectiveClassLevel]);
-
-  const expertiseChoicesCount = useMemo(() => {
-    if (!classData) return 0;
-    if (classData.name === 'Rogue' && effectiveClassLevel === 1) return 2;
-    return 0;
-  }, [classData, effectiveClassLevel]);
-
   const availableSkillsForClass = useMemo(() => {
     if (!classData) return [];
     return classData.skillOptions as Skill[];
@@ -106,44 +90,22 @@ export default function ProficienciesStep() {
       .map(s => s.skill);
   }, [currentClassSkills, effectiveClassName]);
 
-  const expertiseSelections = useMemo(() => {
-    return currentClassSkills
-      .filter(s => s.source === `Class: ${effectiveClassName}` && s.level === 'expertise')
-      .map(s => s.skill);
-  }, [currentClassSkills, effectiveClassName]);
-
   const userSelectedClassSkills = useMemo(() => {
-    return currentClassSkills
-      .filter(s => s.source === `Class: ${effectiveClassName}` && s.level !== 'expertise')
+    const selected = currentClassSkills
+      .filter(s => s.source === `Class: ${effectiveClassName}` && s.level !== 'none')
       .map(s => s.skill)
       .filter(skill => !lockedSkills.has(skill));
+    return [...new Set(selected)];
   }, [currentClassSkills, effectiveClassName, lockedSkills]);
 
   const allProficientSkills = useMemo(() => {
     const classProficient = currentClassSkills
-      .filter(s => s.source === `Class: ${effectiveClassName}` && s.level !== 'expertise')
+      .filter(s => s.source === `Class: ${effectiveClassName}` && s.level !== 'none')
       .map(s => s.skill);
     const bgProficient = backgroundSkills.map(s => s.skill);
     const raceProficient = raceSkills.map(s => s.skill);
     return [...new Set([...classProficient, ...bgProficient, ...raceProficient])];
   }, [currentClassSkills, effectiveClassName, backgroundSkills, raceSkills]);
-
-  const allExpertiseSelections = useMemo(() => {
-    const classExpertise = currentClassSkills
-      .filter(s => s.source === `Class: ${effectiveClassName}` && s.level === 'expertise')
-      .map(s => s.skill);
-    const bgExpertise = backgroundSkills
-      .filter(s => s.level === 'expertise')
-      .map(s => s.skill);
-    const raceExpertise = raceSkills
-      .filter(s => s.level === 'expertise')
-      .map(s => s.skill);
-    return [...new Set([...classExpertise, ...bgExpertise, ...raceExpertise])];
-  }, [currentClassSkills, effectiveClassName, backgroundSkills, raceSkills]);
-
-  const allProficientSkillsForExpertise = useMemo(() => {
-    return allProficientSkills;
-  }, [allProficientSkills]);
 
   const remainingChoices = skillChoicesCount;
 
@@ -170,80 +132,16 @@ export default function ProficienciesStep() {
     }
   };
 
-  const handleExpertiseToggle = (skill: Skill) => {
-    const skills = draftSkills;
-    const isCurrentlyExpertise = allExpertiseSelections.includes(skill);
-    
-    if (isCurrentlyExpertise) {
-      const updatedSkills = skills.filter(s => {
-        if (s.skill === skill && s.level === 'expertise' && s.source === `Class: ${effectiveClassName}`) {
-          return false;
-        }
-        return true;
-      });
-      dispatch({ type: 'UPDATE_DRAFT', updates: { skills: updatedSkills } });
-    } else {
-      if (expertiseSelections.length >= expertiseChoicesCount) return;
-      
-      const isClassSkill = effectiveClassNameSkills.includes(skill);
-      const isBackgroundSkill = backgroundSkills.some(s => s.skill === skill);
-      const isRaceSkill = raceSkills.some(s => s.skill === skill);
-      
-      if (isClassSkill) {
-        dispatch({
-          type: 'ADD_ITEM_WITH_SOURCE',
-          listName: 'skills',
-          item: {
-            skill,
-            ability: SKILL_ABILITY_MAP[skill],
-            level: 'expertise',
-            source: `Class: ${effectiveClassName}`,
-          },
-        });
-      } else if (isBackgroundSkill) {
-        dispatch({
-          type: 'ADD_ITEM_WITH_SOURCE',
-          listName: 'skills',
-          item: {
-            skill,
-            ability: SKILL_ABILITY_MAP[skill],
-            level: 'expertise',
-            source: 'Background',
-          },
-        });
-      } else if (isRaceSkill) {
-        const raceSource = raceSkills.find(s => s.skill === skill)?.source || 'Race';
-        dispatch({
-          type: 'ADD_ITEM_WITH_SOURCE',
-          listName: 'skills',
-          item: {
-            skill,
-            ability: SKILL_ABILITY_MAP[skill],
-            level: 'expertise',
-            source: raceSource,
-          },
-        });
-      }
-    }
-  };
-
   const isValid = useMemo(() => {
     if (!classData) return false;
     
     if (userSelectedClassSkills.length !== skillChoicesCount) return false;
     
-    if (hasExpertise) {
-      if (expertiseSelections.length !== expertiseChoicesCount) return false;
-    }
-    
     return true;
   }, [
     classData, 
     userSelectedClassSkills.length, 
-    skillChoicesCount, 
-    hasExpertise, 
-    expertiseSelections.length, 
-    expertiseChoicesCount
+    skillChoicesCount
   ]);
 
   useEffect(() => {
@@ -359,52 +257,6 @@ export default function ProficienciesStep() {
             </div>
           </div>
 
-          {hasExpertise && (
-            <div className="bg-white border border-slate-200 rounded-lg p-6">
-              <h3 className="font-semibold text-lg mb-3">
-                Expertise
-              </h3>
-              <p className="text-sm text-slate-500 mb-4">
-                Choose {expertiseChoicesCount} of your proficient skills to gain Expertise (double proficiency bonus).
-              </p>
-              
-              <div className="expertise-grid grid grid-cols-2 md:grid-cols-3 gap-2 mb-4">
-                {allProficientSkillsForExpertise.map(skill => {
-                  const hasExpertiseOnSkill = allExpertiseSelections.includes(skill);
-                  const isFromBackground = backgroundSkills.some(s => s.skill === skill);
-                  const isFromRace = raceSkills.some(s => s.skill === skill);
-                  const isClassSkill = effectiveClassNameSkills.includes(skill);
-                  
-                  return (
-                    <button
-                      key={`exp-${skill}`}
-                      onClick={() => handleExpertiseToggle(skill)}
-                      disabled={!hasExpertiseOnSkill && allExpertiseSelections.length >= expertiseChoicesCount}
-                      className={`px-3 py-2 rounded text-sm font-medium transition-colors ${
-                        hasExpertiseOnSkill
-                          ? 'bg-yellow-500 text-white hover:bg-yellow-600'
-                          : 'bg-slate-100 text-slate-700 hover:bg-slate-200'
-                      }`}
-                    >
-                      <div className="flex items-center justify-between">
-                        <span>{SKILL_DISPLAY_NAMES[skill]}</span>
-                        {hasExpertiseOnSkill && <span className="text-xs">★</span>}
-                        {!hasExpertiseOnSkill && (isFromBackground || isFromRace || !isClassSkill) && (
-                          <span className="text-xs opacity-50">
-                            {isFromBackground ? 'BG' : isFromRace ? 'R' : ''}
-                          </span>
-                        )}
-                      </div>
-                    </button>
-                  );
-                })}
-              </div>
-              
-                <div className="text-sm text-slate-600">
-                {allExpertiseSelections.length}/{expertiseChoicesCount} selected for Expertise
-              </div>
-            </div>
-          )}
         </>
       )}
 
@@ -412,9 +264,6 @@ export default function ProficienciesStep() {
         <h4 className="font-semibold text-green-800 mb-2">Selection Summary</h4>
         <ul className="text-sm text-green-700 space-y-1">
           <li>Class Skills: {userSelectedClassSkills.length}/{remainingChoices}</li>
-          {hasExpertise && (
-            <li>Expertise: {expertiseSelections.length}/{expertiseChoicesCount}</li>
-          )}
         </ul>
         {isValid ? (
           <p className="text-green-800 font-medium mt-2">All selections complete!</p>
